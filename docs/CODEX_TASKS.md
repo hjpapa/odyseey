@@ -9,11 +9,16 @@ P0(뼈대·계약·테스트)가 main 에 올라가 있으면 바로 시작할 �
 | A2 문제 생성기 | **지금** | `src/learning/generators/` | Astra High | `npm run test:accept -- tests/generators` |
 | A3 효과음·배경음 | **지금** | `src/audio/` | Astra High | `npm run test:accept -- tests/audio` + 개발 페이지에서 귀로 확인 |
 | A4 블록 모델 | **지금** | `src/models/` | Astra High | `npm run test:accept -- tests/models` + 갤러리에서 눈으로 확인 |
-| B1 챕터 데이터 | **지금** | `data/chapters/` | Medium | `npm run test:accept -- tests/chapters` |
-| B2 섬 레이아웃 | P1 이후 (지형 생성기 확정 뒤) | `data/islands/` | Medium | `npm run test:accept -- tests/islands` |
+| B1 챕터 데이터 (3~17장) | **지금** | `data/chapters/` | Medium | `npm run test:accept -- tests/chapters` |
+| B2 섬 레이아웃 (12곳) | **B1 이 main 에 들어간 뒤** | `data/islands/` | Medium | `npm run test:accept -- tests/islands` |
 | 보스 패턴 | P2 (폴리페모스 템플릿 이후) | `src/enemies/bosses/<이름>.ts` | Astra High | P2 때 안내 |
 
-> B1 은 지금 시작해도 됩니다. P1 에서 챕터 형식이 조금 바뀌면 Claude 가 JSON 을 일괄 변환합니다.
+> **P1 완료 (2026-11-07)**: 1·2장은 Claude 가 만들어 두었습니다 — `data/chapters/ch01.json`, `ch02.json`,
+> `data/islands/ogygia.json`, `stormSea.json`. Codex 는 이 네 파일을 **수정하지 말고 형식·말투의 견본**으로 쓰세요.
+> 지금 Codex 에서 B1 을 이미 돌리고 있다면 ch01·ch02 결과는 버리고 ch03~ch17 만 PR 에 넣으면 됩니다.
+>
+> **눈으로 확인하는 법** (`npm run dev` 후): `http://localhost:5173/?play=ch03&fast=1` — 그 장을 바로 시작하고 대사를 빨리 넘깁니다.
+> 그 장의 섬 데이터가 아직 없으면 '준비 중' 화면이 나옵니다.
 
 ---
 
@@ -150,14 +155,22 @@ P0(뼈대·계약·테스트)가 main 에 올라가 있으면 바로 시작할 �
 
 ```
 작업명: chapter-data
-수정 폴더: data/chapters/ (ch01.json ~ ch17.json)
+수정 폴더: data/chapters/ (ch03.json ~ ch17.json 새로 만들기. ch01·ch02 는 이미 있으니 수정 금지 — 견본으로 읽기)
 수용 테스트: tests/chapters/chapters.accept.test.ts (+ tests/chapters/chapters.test.ts)
 형식: ChapterData (contracts.ts 9장). 원본: docs/STORY.md
 
 - titleCard.childText = src/story/childStory.ts 의 CHILD_STORY 와 글자 하나까지 같게 (복사해서 붙이기)
 - 섬·보스·학습 과목은 tests/chapters/chapters.accept.test.ts 의 EXPECT 표를 따름 (= PLAN.md 3-4)
-- ch01 시작 장면에 프롤로그(아테나의 부엉이 'athenaOwl' 대사), ch02 끝에 회상 시작 caption('…떠올렸어요')
+- 3장 첫 장면은 회상 속이라는 느낌으로 (예: caption '…그날, 외눈 거인의 섬에서'), 11장 끝에 회상 끝,
+  12장 시작에 해변에서 눈을 뜨는 장면
 - 이름 병기: 폴리페모스(폴리페오스), 몰리(욜리꽃) — 아이 표기를 지움 없이 함께
+- 미니게임 목표의 target 은 contracts.ts 의 MINIGAME_IDS 중에서 (STORY.md 의 '게임' 항목과 맞는 것)
+- 엔진 동작 규칙 (ch01.json 을 보면 쉬움):
+  · talk 목표는 그 npc 의 talk 장면을 재생한 뒤 완료 / reach 목표는 zone 에 들어가면 완료
+  · collect·rescue 목표는 섬의 collectibles 에서 item 이름이 같은 것을 count 개 주우면 완료
+  · defeat 목표의 적 그룹은 그 목표가 켜질 때 나타난다
+  · quiz 목표: placement 'gate' 면 섬의 지혜의 문에서, 그 밖은 목표가 켜지자마자 묻는다
+  · enterZone 장면은 한 번만 재생 (바다 코스에서는 그 zone 의 z 위치를 지날 때)
 - 대사 한 줄 25자 권장(30자 이내), caption 40자 이내, 목표 text 20자 이내
 - 퀴즈 자리: 장마다 2개 이상, 보스 장은 placement 'boss' 1개 이상, 12장은 kind 'order'(이야기 순서),
   16장은 4과목 이상 종합. npc·story 자리는 장면의 quiz step 이나 quiz 목표에서 사용
@@ -167,16 +180,22 @@ P0(뼈대·계약·테스트)가 main 에 올라가 있으면 바로 시작할 �
 - 학습 데이터 id 를 ids 로 고정할 때는 data/learning 에 실제로 있는 id 만
 ```
 
-## B2. 섬 레이아웃 초안 — P1 이후 / 추천: Medium
+## B2. 섬 레이아웃 초안 — B1 병합 후 / 추천: Medium
 
 ```
 작업명: island-layouts   (B1 이 main 에 들어간 뒤 시작)
-수정 폴더: data/islands/ (ISLAND_IDS 14곳)
+수정 폴더: data/islands/ (나머지 12곳 새로 만들기. ogygia·stormSea 는 이미 있으니 수정 금지 — 견본으로 읽기)
 수용 테스트: tests/islands/islands.accept.test.ts (+ tests/islands/islands.test.ts)
 형식: IslandLayout (contracts.ts 8장)
 
 - 동선: 시작 → 탐험 → 목표 → 보스, 샛길 1~2개, 섬 하나 5분 내외
 - 챕터 데이터와 연결: gate 의 quizSlot, boss, 목표 target(zone·npc·collectible·enemy 그룹)이 모두 존재해야 함
+- 미니게임 목표가 섬 위 특정 장소에서 시작해야 하면, 미니게임 id 와 같은 id 의 zone 을 만든다 (예: ogygia 의 raftBuild)
 - 섬: 체크포인트 1·부엉이 신전 1·보물상자 2 이상 / 바다 코스: 체크포인트 2 이상
 - 허브 맵에서 섬끼리 120m 이상 떨어지게, 스토리 순서대로 한 바퀴 항로가 되게
+- 지형 생성기(src/world/terrain.ts) 특징:
+  · 이웃 칸 높이 차이를 0.5m 이하로 다듬기 때문에 지형만으로는 길을 막을 수 없다
+  · 지혜의 문 뒤 구역은 boulder 소품을 둥글게 둘러 막는다 (간격 3m, 문 양옆 기둥까지 빈틈없이 — ogygia.json 의 비밀 숲 참고)
+  · 좌표는 섬 반지름 - beachWidth×0.3 안쪽, 중요한 자리(시작점·문·NPC·zone 중심)는 자동으로 평평해진다
+  · 바다 코스(kind seaCourse)는 x 가 ±width/2, z 가 0~length
 ```

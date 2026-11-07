@@ -643,6 +643,28 @@ export type PlayStyle =
   | 'explore' | 'combat' | 'runner' | 'sailing' | 'dialogue'
   | 'defense' | 'stealth' | 'survival' | 'boss' | 'minigame';
 
+/**
+ * 미니게임 id — Objective(type 'minigame').target 에 쓴다.
+ * 섬에 같은 id 의 zone 이 있으면 그 자리에서 시작(상호작용), 없으면 목표가 켜지는 즉시 시작.
+ * 아직 구현되지 않은 미니게임은 '준비 중' 안내 후 자동 통과된다.
+ */
+export const MINIGAME_IDS = [
+  'raftBuild', // 1장 뗏목 만들기
+  'waveRunner', // 2장 폭풍 파도 러너
+  'sheepEscape', // 3장 양 밑에 숨어 동굴 탈출
+  'windSail', // 5장 바람 타고 항해
+  'nightWatch', // 5장 불침번 교대 (시계)
+  'lightningDodge', // 9장 헬리오스 벼락 피하기
+  'whirlpoolSteer', // 10장 소용돌이 피해 배 조종
+  'rhythmShield', // 11장 세이렌 음표 막기
+  'ballGame', // 12장 나우시카 공놀이
+  'hideWeapons', // 15장 무기 숨기기 퍼즐
+  'bowString', // 16장 활시위 걸기
+  'axeArchery', // 16장 도끼 12개 꿰뚫기
+  'feast', // 17장 잔치 (식사 예절)
+] as const;
+export type MinigameId = (typeof MINIGAME_IDS)[number];
+
 export interface ChapterData {
   id: ChapterId;
   /** 1~17 */

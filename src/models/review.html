@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>오디세이 · 신화 캐릭터 아틀리에</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#ede7da;color:#283b42;font-family:'Malgun Gothic',system-ui,sans-serif}
+    header{height:145px;padding:28px 4vw 23px;border-bottom:1px solid #c7c5b5;display:flex;align-items:end;justify-content:space-between;gap:24px}
+    .eyebrow{font-size:11px;letter-spacing:3px;color:#79765a;font-weight:700}h1{font-size:30px;letter-spacing:-1px;margin:7px 0}header p{margin:0;font-size:13px;color:#5e6e6b;line-height:1.7}.edition{font-size:12px;text-align:right;line-height:1.8;color:#6b786d;white-space:nowrap}
+    main{display:grid;grid-template-columns:minmax(0,1fr) 272px;height:calc(100dvh - 145px);min-height:440px}
+    #stage{position:relative;min-height:0;background:radial-gradient(ellipse at 50% 65%,#f4eee2,#d4dfd5);overflow:hidden}canvas{display:block;width:100%;height:100%;touch-action:none}
+    #caption{position:absolute;left:30px;top:25px;pointer-events:none}.tag{font-size:10px;letter-spacing:2px;color:#627e79}.scene-title{font-size:19px;font-weight:700;margin-top:8px}
+    #names{position:absolute;left:4%;right:4%;bottom:42px;display:flex;justify-content:space-around;gap:10px;pointer-events:none}#names div{flex:1;text-align:center;font-size:12px;font-weight:bold}#names small{display:block;margin-top:7px;font-size:10px;font-weight:normal;color:#657976}
+    .hint{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:11px;color:#658079;pointer-events:none}
+    aside{padding:27px 22px;background:#f8f4eb;border-left:1px solid #c7c5b5}h2{font-size:18px;margin:0 0 9px}#description{font-size:12px;line-height:1.85;color:#64746e;min-height:67px}label{display:block;font-size:11px;font-weight:bold;color:#62716a;margin:20px 0 7px}select,button,input[type=color]{width:100%;border:1px solid #c7cbbb;border-radius:7px;background:#fffdf7;color:#2a4747;padding:10px;font:inherit;font-size:12px}select{cursor:pointer}button{cursor:pointer;margin-top:9px;background:#2d5e5a;color:#fffdf7;border-color:#2d5e5a}button.secondary{background:transparent;color:#2d5e5a}.check{display:flex;align-items:center;gap:8px;font-weight:normal;font-size:12px;margin-top:14px}.check input{accent-color:#376b62}#avatar{border-top:1px solid #dddcca;margin-top:20px;padding-top:2px}#avatar[hidden]{display:none}.colors{display:flex;gap:8px}.colors label{flex:1}input[type=color]{height:35px;padding:3px}.footnote{margin-top:24px;padding-top:15px;border-top:1px solid #d8d6c8;font-size:10px;line-height:1.8;color:#7c887b}#health{font-size:10px;color:#748875;margin-top:10px}
+    aside{overflow:auto}
+    @media(max-width:760px){header{padding:20px;height:auto}.edition{display:none}h1{font-size:24px}main{display:flex;flex-direction:column;height:auto}#stage{height:55vh;min-height:360px}aside{border-left:0;border-top:1px solid #c7c5b5;padding:22px;overflow:visible}#names{bottom:34px}#names div{font-size:10px}#names small{font-size:9px}.scene-title{font-size:16px}}
+  </style>
+</head>
+<body>
+  <header><div><div class="eyebrow">ODYSSEY / CHARACTER ATELIER</div><h1>에게해에서 온 모험가들</h1><p>리넨 튜닉, 청동 장비, 신화를 담은 작은 상징들.</p></div><div class="edition">그리스 신화 캐릭터 컬렉션<br>인물 27명 · 동물과 괴물 9종</div></header>
+  <main>
+    <section id="stage" aria-label="회전 가능한 3D 캐릭터 미리보기">
+      <div id="caption"><div class="tag">AEGEAN COLLECTION / 01</div><div class="scene-title" id="scene-title">신화 속 다섯 인물</div></div>
+      <div id="names"></div><div class="hint">드래그해서 회전 · 휠로 확대</div>
+    </section>
+    <aside>
+      <h2 id="name">신화 속 다섯 인물</h2><div id="description">같은 세계에 살지만, 옷차림과 상징만으로도 알아볼 수 있게.</div>
+      <label for="character">등장인물</label><select id="character"><option value="lineup">대표 캐릭터 함께 보기</option></select>
+      <label for="pose">움직임</label><select id="pose"><option value="idle">가만히 서 있기</option><option value="walk">걷기</option><option value="attack">검 휘두르기</option><option value="jump">점프 자세</option></select>
+      <label class="check"><input type="checkbox" id="compare">기존 임시 모델과 비교</label>
+      <label class="check"><input type="checkbox" id="rotate">천천히 회전</label>
+      <button id="front">정면으로 보기</button><button id="back" class="secondary">뒷모습 보기</button>
+      <div id="avatar" hidden>
+        <label for="helmet">오디세우스의 머리 장식</label><select id="helmet"><option value="bronze">청동 투구</option><option value="crested">깃 달린 투구</option><option value="laurel">월계관</option><option value="owl">부엉이 투구</option><option value="none">장식 없음</option></select>
+        <div class="colors"><label>튜닉<input aria-label="튜닉 색상" id="tunic" type="color" value="#3b6fd8"></label><label>망토<input aria-label="망토 색상" id="cape" type="color" value="#c0392b"></label></div>
+        <label class="check"><input type="checkbox" id="cape-on" checked>망토 입기</label>
+      </div>
+      <label for="variant">복식 색상 변형</label><select id="variant"><option value="0">테라코타</option><option value="1">에게해 파랑</option><option value="2">올리브</option><option value="3">자주</option></select>
+      <div class="footnote">게임과 같은 3D 모델 · 인물마다 다른 복식<br>거인과 동물은 비교하기 편한 크기로 표시합니다.</div><div id="health" role="status">모델을 불러오는 중…</div>
+    </aside>
+  </main>
+  <script type="module" src="./review.ts"></script>
+</body>
+</html>
