@@ -1,43 +1,53 @@
-/**
- * [임시 구현 — Codex A2 가 교체]
- * 지금은 학년과 상관없이 10 이내 덧셈·뺄셈만 냅니다. 계약: MathGenerator (src/types/contracts.ts)
- */
-import type { ChoiceQuestion, MathGenerator, NumberQuestion } from '../../types/contracts';
+import type { Grade, MathGenerator, MathOp } from '../../types/contracts';
 import { createRng } from '../../core/rng';
+import { numberChoices } from './choices';
 
-export const generateMath: MathGenerator = ({ grade, seed, format = 'choice' }) => {
+const operations: Record<Grade, MathOp[]> = { 1: ['add', 'sub'], 2: ['add', 'sub', 'mul'], 3: ['add', 'sub', 'mul', 'div'] };
+const symbols: Record<MathOp, string> = { add: '+', sub: '-', mul: 'x', div: '/' };
+const hints: Record<MathOp, string> = {
+  add: '10을 먼저 만들고 남은 수를 더해 볼까요?',
+  sub: '일의 자리부터 빼고, 모자라면 십에서 빌려요.',
+  mul: '같은 수를 묶음 수만큼 더해 볼까요?',
+  div: '한 묶음씩 똑같이 나누어 볼까요?',
+};
+
+export const generateMath: MathGenerator = ({ grade, seed, ops, template, format = 'choice' }) => {
   const rng = createRng(seed);
-  const isAdd = rng.chance(0.5);
-  let a = rng.int(1, 9);
-  let b = rng.int(1, 9);
-  if (isAdd) {
-    b = rng.int(0, 10 - a);
-  } else if (b > a) {
-    [a, b] = [b, a];
+  const op = template?.op ?? rng.pick(ops?.length ? ops : operations[grade]);
+  let a: number, b: number;
+  if (op === 'mul' || op === 'div') {
+    // Explicit operations and story templates can ask for a later-grade concept.
+    const group = rng.int(2, grade === 3 ? 9 : grade === 2 ? 5 : 4);
+    const size = rng.int(1, grade === 1 ? 5 : 9);
+    a = op === 'div' ? group * size : group;
+    b = op === 'div' ? group : size;
+  } else if (grade === 1) {
+    a = rng.int(0, 20);
+    b = rng.int(0, op === 'add' ? 20 - a : a);
+  } else {
+    const min = grade === 2 ? 10 : 100;
+    const max = grade === 2 ? 99 : 999;
+    a = rng.int(min, max);
+    b = rng.int(min, max);
+    if (op === 'sub' && b > a) [a, b] = [b, a];
   }
-  const answer = isAdd ? a + b : a - b;
-  const sign = isAdd ? '+' : '-';
+  const answer = { add: a + b, sub: a - b, mul: a * b, div: a / b }[op];
+  const symbol = symbols[op];
   const base = {
-    id: `math:${isAdd ? 'add' : 'sub'}:${a}${sign}${b}`,
+    id: `math:${op}:${a}${symbol}${b}`,
     subject: 'math' as const,
     grade,
-    prompt: `${a} ${sign} ${b} = ?`,
+    prompt: template ? template.text.replaceAll('{a}', String(a)).replaceAll('{b}', String(b)) : `${a} ${op === 'mul' ? '×' : op === 'div' ? '÷' : symbol} ${b} = ?`,
+    ...(template?.emoji ? { emoji: template.emoji } : {}),
+    hint: grade === 1 && op === 'sub' ? '물건을 하나씩 빼며 남은 수를 세어 봐요.' : hints[op],
+    explain: `${a} ${op === 'mul' ? '×' : op === 'div' ? '÷' : symbol} ${b} = ${answer}`,
   };
-  if (format === 'number') {
-    const q: NumberQuestion = { ...base, kind: 'number', answer };
-    return q;
-  }
-  const wrong = new Set<number>();
-  for (const d of rng.shuffle([1, -1, 2, -2, 3])) {
-    if (answer + d >= 0) wrong.add(answer + d);
-    if (wrong.size === 3) break;
-  }
-  const choices = rng.shuffle([answer, ...wrong]);
-  const q: ChoiceQuestion = {
-    ...base,
-    kind: 'choice',
-    choices: choices.map(String),
-    answerIndex: choices.indexOf(answer),
-  };
-  return q;
+  if (format === 'number') return { ...base, kind: 'number', answer };
+  const swapped = Number(String(answer).split('').reverse().join(''));
+  const mistakes = [swapped, answer - 10, answer + 10,
+    ...(op === 'mul' ? [answer - a, answer + a, a + b] : []),
+    ...(op === 'sub' ? [Math.abs(Math.floor(a / 10) - Math.floor(b / 10)) * 10 + Math.abs(a % 10 - b % 10)] : []),
+  ];
+  const choices = numberChoices(answer, mistakes, { 1: 20, 2: 200, 3: 1998 }[grade], rng);
+  return { ...base, kind: 'choice', choices: choices.map(String), answerIndex: choices.indexOf(answer) };
 };
