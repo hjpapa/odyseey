@@ -1,36 +1,21 @@
 import './style.css';
-import { createAudio } from './audio';
-import { startTitleScene } from './boot/titleScene';
-
-const audio = createAudio();
-
-const sha = document.getElementById('sha');
-if (sha) sha.textContent = __BUILD_SHA__;
-
-// 첫 입력 때 오디오를 깨우고 타이틀 음악 재생 (브라우저 자동재생 정책)
-const unlockAudio = () => {
-  if (audio.unlocked) return;
-  audio.unlock();
-  audio.playBgm('title');
-};
-window.addEventListener('pointerdown', unlockAudio, { once: true });
-window.addEventListener('keydown', unlockAudio, { once: true });
-
-const toast = document.getElementById('toast');
-let toastTimer = 0;
-document.getElementById('start')?.addEventListener('click', () => {
-  unlockAudio();
-  audio.sfx('ui_click');
-  if (!toast) return;
-  toast.textContent = '1장 「칼립소의 섬」은 다음 업데이트에서 열려요! ⛵';
-  toast.classList.add('show');
-  window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toast.classList.remove('show'), 3200);
-});
+import { Game } from './game/game';
 
 const canvas = document.getElementById('scene') as HTMLCanvasElement;
+const ui = document.getElementById('ui') as HTMLElement;
+const labels = document.getElementById('labels') as HTMLElement;
+
 try {
-  startTitleScene(canvas);
+  const game = new Game(canvas, ui, labels);
+  game.start();
+  if (import.meta.env.DEV) {
+    // 개발용: ?play=ch02 로 그 장 바로 시작, ?fast=1 로 대사 빨리 넘기기
+    (window as unknown as { game: Game }).game = game;
+    const params = new URLSearchParams(location.search);
+    if (params.get('fast')) game.debugFast(true);
+    const play = params.get('play');
+    if (play && /^ch\d\d$/.test(play)) void game.debugPlay(play as Parameters<Game['debugPlay']>[0]);
+  }
 } catch (err) {
   console.error(err);
   const box = document.createElement('div');

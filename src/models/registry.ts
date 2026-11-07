@@ -1,7 +1,11 @@
-/**
- * [Codex A4] 블록 모델 등록부 — ModelId 전부 채우기.
- * 비어 있는 모델은 엔진이 임시 블록(src/core/placeholders.ts)으로 대신 보여 줍니다.
- */
-import type { ModelRegistry } from '../types/contracts';
+/** Characters and their equipment. World props still use the engine's fallback. */
+import { CREATURE_IDS, HUMANOID_IDS, type ModelRegistry } from '../types/contracts';
+import { humanoid } from './humanoids';
+import { creature } from './creatures';
+import { arrow, bow, caduceus, shield, sword, trident, wand } from './equipment';
 
-export const modelRegistry: Partial<ModelRegistry> = {};
+export const modelRegistry: Partial<ModelRegistry> = {
+  sword, shield: opts => shield(opts?.avatar?.shieldColor), bow, arrow, trident, caduceus, wand,
+};
+for (const id of HUMANOID_IDS) modelRegistry[id] = opts => humanoid(id, opts);
+for (const id of CREATURE_IDS) modelRegistry[id] = () => creature(id);

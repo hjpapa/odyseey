@@ -1,0 +1,113 @@
+{
+  "id": "ch01",
+  "no": 1,
+  "title": "칼립소의 섬",
+  "titleCard": {
+    "childText": "칼립소의 포로 오디세우스는 여신 칼립소의 섬에서 칼립소에게 허락을 받고 갇다.",
+    "subtitle": "집으로 가는 뗏목을 만들어요"
+  },
+  "memory": false,
+  "island": "ogygia",
+  "playStyles": ["explore", "combat", "minigame"],
+  "bgm": { "explore": "island" },
+  "learning": ["manners", "math"],
+  "scenes": [
+    {
+      "id": "s-prologue",
+      "trigger": { "on": "chapterStart" },
+      "steps": [
+        { "type": "caption", "text": "트로이 전쟁이 끝나고 10년이 흘렀어요." },
+        { "type": "line", "speaker": "athenaOwl", "text": "안녕! 나는 아테나 여신의 부엉이 '아테'야.", "emote": "happy" },
+        { "type": "line", "speaker": "athenaOwl", "text": "오디세우스는 7년째 이 섬에 머물고 있어." },
+        { "type": "line", "speaker": "athenaOwl", "text": "고향 이타카에서는 가족이 기다리고 있지." },
+        { "type": "line", "speaker": "odysseus", "text": "페넬로페, 텔레마코스… 보고 싶구나.", "emote": "sad" },
+        { "type": "line", "speaker": "athenaOwl", "text": "헤르메스님이 오셨어! 꽃 풀밭으로 가 보자!" }
+      ]
+    },
+    {
+      "id": "s-hermes",
+      "trigger": { "on": "talk", "npc": "hermes" },
+      "steps": [
+        { "type": "line", "speaker": "hermes", "text": "오디세우스! 제우스님의 말씀을 전하러 왔단다." },
+        { "type": "line", "speaker": "hermes", "text": "칼립소가 너를 집에 보내 주기로 했어." },
+        { "type": "line", "speaker": "odysseus", "text": "정말요? 고맙습니다, 헤르메스님!", "emote": "happy" },
+        { "type": "line", "speaker": "hermes", "text": "하지만 바다는 위험해. 칼 쓰는 법을 연습하자!" },
+        { "type": "line", "speaker": "hermes", "text": "내가 만든 연습 그림자 3개를 물리쳐 봐!" },
+        { "type": "line", "speaker": "athenaOwl", "text": "칼을 휘두르고, 굴러서 피하는 거야!" }
+      ]
+    },
+    {
+      "id": "s-trained",
+      "trigger": { "on": "objectiveDone", "objective": "o-train" },
+      "steps": [
+        { "type": "line", "speaker": "hermes", "text": "훌륭해! 이제 뗏목 만들 통나무가 필요해.", "emote": "happy" },
+        { "type": "line", "speaker": "athenaOwl", "text": "올리브 숲에서 통나무 5개를 모으자!" },
+        { "type": "line", "speaker": "athenaOwl", "text": "숲 안쪽은 지혜의 문으로 막혀 있대." }
+      ]
+    },
+    {
+      "id": "s-grove",
+      "trigger": { "on": "enterZone", "zone": "grove" },
+      "steps": [{ "type": "line", "speaker": "athenaOwl", "text": "와, 비밀 숲이다! 여기에도 통나무가 있어.", "emote": "surprised" }]
+    },
+    {
+      "id": "s-logs",
+      "trigger": { "on": "objectiveDone", "objective": "o-logs" },
+      "steps": [
+        { "type": "line", "speaker": "odysseus", "text": "통나무를 다 모았다!", "emote": "happy" },
+        { "type": "line", "speaker": "athenaOwl", "text": "남쪽 해변에서 뗏목을 만들자!" }
+      ]
+    },
+    {
+      "id": "s-raft",
+      "trigger": { "on": "objectiveDone", "objective": "o-raft" },
+      "steps": [
+        { "type": "line", "speaker": "calypso", "text": "통나무를 멋지게 엮었네요!", "emote": "happy" },
+        { "type": "line", "speaker": "calypso", "text": "이제 밧줄로 단단히 묶어 볼까요?" },
+        { "type": "quiz", "slot": "raft-math" },
+        { "type": "line", "speaker": "calypso", "text": "뗏목이 완성됐어요. 정말 튼튼해요!" },
+        { "type": "line", "speaker": "calypso", "text": "떠나기 전에 제게 인사해 줄래요?" }
+      ]
+    },
+    {
+      "id": "s-farewell",
+      "trigger": { "on": "talk", "npc": "calypso" },
+      "steps": [
+        { "type": "line", "speaker": "calypso", "text": "오디세우스, 함께해서 즐거웠어요." },
+        { "type": "quiz", "slot": "farewell" },
+        { "type": "line", "speaker": "calypso", "text": "고마워요. 조심해서 가세요!", "emote": "happy" },
+        { "type": "line", "speaker": "odysseus", "text": "안녕히 계세요, 칼립소!" }
+      ]
+    },
+    {
+      "id": "s-end",
+      "trigger": { "on": "chapterEnd" },
+      "steps": [{ "type": "caption", "text": "오디세우스는 뗏목을 타고 넓은 바다로 떠났어요." }]
+    }
+  ],
+  "objectives": [
+    { "id": "o-hermes", "type": "talk", "text": "헤르메스와 이야기하기", "target": "hermes" },
+    { "id": "o-train", "type": "defeat", "text": "연습 그림자 물리치기", "target": "shadows", "count": 3 },
+    { "id": "o-logs", "type": "collect", "text": "통나무 5개 모으기", "target": "log", "count": 5 },
+    { "id": "o-raft", "type": "minigame", "text": "해변에서 뗏목 만들기", "target": "raftBuild" },
+    { "id": "o-farewell", "type": "talk", "text": "칼립소에게 인사하기", "target": "calypso" }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-1",
+      "subject": "math",
+      "placement": "gate",
+      "count": 2,
+      "mathTemplate": { "op": "add", "text": "통나무 {a}개와 {b}개를 모으면 모두 몇 개?", "emoji": "🪵" }
+    },
+    {
+      "id": "raft-math",
+      "subject": "math",
+      "placement": "story",
+      "count": 1,
+      "mathTemplate": { "op": "sub", "text": "밧줄 {a}개 중 {b}개를 썼어요. 남은 밧줄은?", "emoji": "🪢" }
+    },
+    { "id": "farewell", "subject": "manners", "placement": "npc", "count": 1, "ids": ["mn-001"] }
+  ],
+  "reward": { "coins": 20 }
+}

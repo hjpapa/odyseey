@@ -1,0 +1,28 @@
+{
+  "id": "stormSea",
+  "name": "폭풍의 바다",
+  "kind": "seaCourse",
+  "chapters": ["ch02"],
+  "hubPos": [-330, 380],
+  "terrain": { "radius": 30, "maxHeight": 0, "seed": 1925, "roughness": 0, "beachWidth": 4, "palette": "rock" },
+  "course": { "length": 900, "width": 12 },
+  "spawn": [0, 0],
+  "zones": [
+    { "id": "ino-scarf", "name": "이노의 스카프", "center": [0, 5], "radius": 3 },
+    { "id": "calm-1", "name": "잠잠한 바다", "center": [0, 300], "radius": 8 },
+    { "id": "calm-2", "name": "잠잠한 바다", "center": [0, 600], "radius": 8 },
+    { "id": "shore", "name": "파이아케스 해변", "center": [0, 890], "radius": 10 }
+  ],
+  "checkpoints": [
+    { "id": "cp-0", "pos": [0, 0] },
+    { "id": "cp-1", "pos": [0, 300] },
+    { "id": "cp-2", "pos": [0, 600] }
+  ],
+  "gates": [],
+  "shrines": [],
+  "chests": [],
+  "npcs": [{ "id": "ino", "model": "ino", "pos": [4, 305], "rotY": 3.1416 }],
+  "enemies": [],
+  "collectibles": [],
+  "props": []
+}

@@ -6,7 +6,7 @@ import { Mesh, type Group, type Object3D } from 'three';
 import {
   ATTACH_POINTS, BGM_IDS, BOSS_IDS, CHAPTER_IDS, CREATURE_IDS, CREATURE_PART_HINTS,
   ENGLISH_TOPICS, HANJA_LEVELS, HUMANOID_IDS, HUMANOID_PARTS, ISLAND_IDS,
-  MANNERS_CATEGORIES, MODEL_HEIGHT_RANGE, PROP_IDS, SFX_IDS, SUBJECTS,
+  MANNERS_CATEGORIES, MINIGAME_IDS, MODEL_HEIGHT_RANGE, PROP_IDS, SFX_IDS, SUBJECTS,
   type BgmTrack, type ChapterData, type CreatureId, type EnglishWord, type Hanja,
   type IslandLayout, type MannersScene, type ModelId, type Question, type ScaleMode,
   type XZ,
@@ -293,6 +293,7 @@ export function validateChapter(c: ChapterData, file: string): string[] {
     if (!isStr(o.text) || len(o.text) > 20) e.push(`${w}: text 20자 이내 ('${o.text}')`);
     if (o.type === 'quiz' && !slotIds.has(o.target ?? '')) e.push(`${w}: quiz 목표의 target 은 quizSlot id`);
     if (o.type === 'boss' && !has(BOSS_IDS, o.target)) e.push(`${w}: boss 목표의 target 은 BossId`);
+    if (o.type === 'minigame' && !has(MINIGAME_IDS, o.target)) e.push(`${w}: minigame 목표의 target 은 MINIGAME_IDS 중 하나 ('${o.target}')`);
     if (['collect', 'defeat', 'rescue'].includes(o.type) && !(isInt(o.count) && o.count > 0)) e.push(`${w}: count 필요`);
     if (o.type === 'survive' && !(isInt(o.timeLimitSec) && o.timeLimitSec > 0)) e.push(`${w}: timeLimitSec 필요`);
   }
