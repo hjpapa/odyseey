@@ -1,0 +1,143 @@
+{
+  "id": "ch03",
+  "no": 3,
+  "title": "외눈 거인의 동굴",
+  "titleCard": {
+    "childText": "폴리페오스를 물리치고 계속 모험을 이어갔다.",
+    "subtitle": "양들과 함께 탈출해요"
+  },
+  "memory": true,
+  "island": "cyclops",
+  "playStyles": [
+    "explore",
+    "boss",
+    "stealth"
+  ],
+  "bgm": {
+    "explore": "cave",
+    "boss": "boss"
+  },
+  "learning": [
+    "math",
+    "english"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "caption",
+          "text": "기억의 바다, 첫 번째 모험이에요."
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "폴리페모스(폴리페오스)의 동굴이야."
+        },
+        {
+          "type": "line",
+          "speaker": "polyphemus",
+          "text": "너는 이름이 뭐니?"
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "내 이름은 아무도 아니야!"
+        }
+      ]
+    },
+    {
+      "id": "sleepy",
+      "trigger": {
+        "on": "objectiveDone",
+        "objective": "giant-battle"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "거인이 쉬는 사이 양들과 나가자."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "polyphemus",
+          "text": "아버지 포세이돈, 도와주세요!"
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "그래서 포세이돈이 화가 났구나."
+        },
+        {
+          "type": "caption",
+          "text": "양들과 함께 무사히 동굴을 나왔어요."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "find-pen",
+      "type": "reach",
+      "text": "양 우리 찾기",
+      "target": "cyclops-pen"
+    },
+    {
+      "id": "learn-cave",
+      "type": "quiz",
+      "text": "동굴 단어 알아보기",
+      "target": "gate-cave"
+    },
+    {
+      "id": "giant-battle",
+      "type": "boss",
+      "text": "거인을 잠깐 쉬게 하기",
+      "target": "polyphemus"
+    },
+    {
+      "id": "sheep-escape",
+      "type": "minigame",
+      "text": "양들 곁에 숨어 나가기",
+      "target": "sheepEscape"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-cave",
+      "subject": "english",
+      "placement": "gate",
+      "count": 2,
+      "ids": [
+        "en-eye",
+        "en-sheep",
+        "en-cave"
+      ]
+    },
+    {
+      "id": "boss-count",
+      "subject": "math",
+      "placement": "boss",
+      "count": 1,
+      "mathTemplate": {
+        "op": "sub",
+        "text": "양 {a}마리 중 {b}마리가 나갔어요. 남은 양은?",
+        "emoji": "🐑"
+      }
+    }
+  ],
+  "reward": {
+    "coins": 35
+  },
+  "boss": "polyphemus"
+}

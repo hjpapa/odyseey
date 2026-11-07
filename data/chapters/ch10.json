@@ -1,0 +1,113 @@
+{
+  "id": "ch10",
+  "no": 10,
+  "title": "스킬라와 카리브디스",
+  "titleCard": {
+    "childText": "오디세우스가 스킬라와 카리브디스를 피해서 물리쳤다.",
+    "subtitle": "좁은 바닷길을 지나요"
+  },
+  "memory": true,
+  "island": "strait",
+  "playStyles": [
+    "sailing",
+    "boss"
+  ],
+  "bgm": {
+    "explore": "sailing",
+    "boss": "boss"
+  },
+  "learning": [
+    "math"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "한쪽에는 큰 소용돌이가 있어."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "스킬라는 머리가 여섯 개나 있네!"
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "caption",
+          "text": "스킬라가 비켜 주어 바닷길이 열렸어요."
+        },
+        {
+          "type": "line",
+          "speaker": "crewman",
+          "text": "다 같이 힘을 모아 지나왔어요!"
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "safe-lane",
+      "type": "reach",
+      "text": "소용돌이 옆 안전한 길 찾기",
+      "target": "strait-safe-lane"
+    },
+    {
+      "id": "count-waves",
+      "type": "quiz",
+      "text": "물방울의 수 세기",
+      "target": "gate-drops"
+    },
+    {
+      "id": "scylla-battle",
+      "type": "boss",
+      "text": "스킬라 지나가기",
+      "target": "scylla"
+    },
+    {
+      "id": "leave-strait",
+      "type": "reach",
+      "text": "해협 출구로 나가기",
+      "target": "strait-exit"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-drops",
+      "subject": "math",
+      "placement": "gate",
+      "count": 2,
+      "mathTemplate": {
+        "op": "add",
+        "text": "물방울 {a}개와 {b}개가 모였어요. 모두 몇 개?",
+        "emoji": "💧"
+      }
+    },
+    {
+      "id": "boss-subtract",
+      "subject": "math",
+      "placement": "boss",
+      "count": 1,
+      "mathTemplate": {
+        "op": "sub",
+        "text": "공 {a}개 중 {b}개를 막았어요. 남은 공은?",
+        "emoji": "🔵"
+      }
+    }
+  ],
+  "reward": {
+    "coins": 70
+  },
+  "boss": "scylla"
+}

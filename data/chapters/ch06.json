@@ -1,0 +1,115 @@
+{
+  "id": "ch06",
+  "no": 6,
+  "title": "거인의 항구",
+  "titleCard": {
+    "childText": "식인 거인들이 부하들을 잡아먹지만 오디세우스는 식인 거인들을 물리쳤다.",
+    "subtitle": "붙잡힌 동료를 구해요"
+  },
+  "memory": true,
+  "island": "laestrygonia",
+  "playStyles": [
+    "defense",
+    "combat",
+    "boss"
+  ],
+  "bgm": {
+    "explore": "island",
+    "boss": "boss"
+  },
+  "learning": [
+    "math"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "crewman",
+          "text": "큰 그물에 친구들이 갇혔어요!"
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "바위가 떨어질 자리를 잘 살펴봐."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "caption",
+          "text": "거인 왕은 별가루와 함께 물러났어요."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "모두 구했구나! 함께 배에 타자."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "harbor-defense",
+      "type": "survive",
+      "text": "항구에서 바위 피하기",
+      "timeLimitSec": 40
+    },
+    {
+      "id": "count-boats",
+      "type": "quiz",
+      "text": "배에 탈 인원 세기",
+      "target": "gate-boats"
+    },
+    {
+      "id": "giant-king",
+      "type": "boss",
+      "text": "거인 왕 물리치기",
+      "target": "laestrygonianKing"
+    },
+    {
+      "id": "cage-rescue",
+      "type": "rescue",
+      "text": "우리 속 동료 4명 구하기",
+      "target": "crew",
+      "count": 4
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-boats",
+      "subject": "math",
+      "placement": "gate",
+      "count": 2,
+      "mathTemplate": {
+        "op": "mul",
+        "text": "배 {a}척에 {b}명씩 타면 모두 몇 명?",
+        "emoji": "🚢"
+      }
+    },
+    {
+      "id": "boss-groups",
+      "subject": "math",
+      "placement": "boss",
+      "count": 1,
+      "mathTemplate": {
+        "op": "mul",
+        "text": "그물 {a}개에 공 {b}개씩 있어요. 모두 몇 개?",
+        "emoji": "🕸️"
+      }
+    }
+  ],
+  "reward": {
+    "coins": 50
+  },
+  "boss": "laestrygonianKing"
+}

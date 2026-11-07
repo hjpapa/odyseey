@@ -1,0 +1,83 @@
+{
+  "id": "ch02",
+  "no": 2,
+  "title": "포세이돈의 폭풍",
+  "titleCard": {
+    "childText": "오디세우스는 포세이돈을 탈출하고 파도를 지나 육지에 다다랐다.",
+    "subtitle": "파도를 넘어 육지로!"
+  },
+  "memory": false,
+  "island": "stormSea",
+  "playStyles": ["runner", "minigame"],
+  "bgm": { "explore": "sailing" },
+  "learning": ["english"],
+  "scenes": [
+    {
+      "id": "s-start",
+      "trigger": { "on": "chapterStart" },
+      "steps": [
+        { "type": "caption", "text": "칼립소의 섬을 떠난 지 17일째…" },
+        { "type": "line", "speaker": "odysseus", "text": "저기 육지가 보인다! 조금만 더 가면 돼!", "emote": "happy" },
+        { "type": "sfx", "id": "thunder" },
+        { "type": "line", "speaker": "poseidon", "text": "오디세우스! 감히 내 바다를 건너려고?", "emote": "angry" },
+        { "type": "line", "speaker": "poseidon", "text": "파도야, 일어나라! 번개야, 내리쳐라!", "emote": "angry" },
+        { "type": "line", "speaker": "athenaOwl", "text": "포세이돈이 화가 났어! 파도를 피해야 해!", "emote": "scared" },
+        { "type": "line", "speaker": "athenaOwl", "text": "영어 글자 방울을 순서대로 모아 봐!" }
+      ]
+    },
+    {
+      "id": "s-calm1",
+      "trigger": { "on": "enterZone", "zone": "calm-1" },
+      "steps": [
+        { "type": "caption", "text": "폭풍이 잠깐 잠잠해졌어요." },
+        { "type": "line", "speaker": "ino", "text": "나는 바다 요정 이노예요. 도와줄게요!", "emote": "happy" },
+        { "type": "line", "speaker": "ino", "text": "바다에 사는 것들을 영어로 알아볼까요?" },
+        { "type": "quiz", "slot": "ino-1" },
+        { "type": "line", "speaker": "ino", "text": "잘했어요! 조금만 더 힘내요!" }
+      ]
+    },
+    {
+      "id": "s-calm2",
+      "trigger": { "on": "enterZone", "zone": "calm-2" },
+      "steps": [
+        { "type": "line", "speaker": "ino", "text": "거의 다 왔어요! 이번엔 철자를 맞혀 봐요." },
+        { "type": "quiz", "slot": "ino-2" }
+      ]
+    },
+    {
+      "id": "s-scarf",
+      "trigger": { "on": "enterZone", "zone": "ino-scarf" },
+      "steps": [
+        { "type": "line", "speaker": "ino", "text": "앗, 뗏목이 부서졌어요! 이걸 받아요!", "emote": "surprised" },
+        { "type": "line", "speaker": "ino", "text": "이 하얀 스카프가 당신을 지켜 줄 거예요." }
+      ]
+    },
+    {
+      "id": "s-landed",
+      "trigger": { "on": "objectiveDone", "objective": "o-storm" },
+      "steps": [
+        { "type": "line", "speaker": "odysseus", "text": "드디어… 육지다…!", "emote": "happy" },
+        { "type": "line", "speaker": "ino", "text": "마지막으로 바다 단어를 복습해요!" }
+      ]
+    },
+    {
+      "id": "s-end",
+      "trigger": { "on": "chapterEnd" },
+      "steps": [
+        { "type": "line", "speaker": "odysseus", "text": "너무 지쳤어… 조금만 쉬어야지…", "emote": "sad" },
+        { "type": "caption", "text": "오디세우스는 해변에 쓰러져 깊이 잠들었어요." },
+        { "type": "caption", "text": "꿈속에서, 오디세우스는 지난 모험을 떠올렸어요…" }
+      ]
+    }
+  ],
+  "objectives": [
+    { "id": "o-storm", "type": "minigame", "text": "폭풍을 뚫고 육지로!", "target": "waveRunner" },
+    { "id": "o-review", "type": "quiz", "text": "이노의 단어 복습", "target": "ino-final" }
+  ],
+  "quizSlots": [
+    { "id": "ino-1", "subject": "english", "placement": "npc", "count": 1, "kind": "choice", "topic": "sea" },
+    { "id": "ino-2", "subject": "english", "placement": "npc", "count": 1, "kind": "spell", "topic": "sea" },
+    { "id": "ino-final", "subject": "english", "placement": "story", "count": 2, "topic": "sea" }
+  ],
+  "reward": { "coins": 15 }
+}

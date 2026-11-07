@@ -1,0 +1,178 @@
+{
+  "id": "ch16",
+  "no": 16,
+  "title": "페넬로페의 구혼자들",
+  "titleCard": {
+    "childText": "오디세우스는 페넬로페의 구혼자들을 무찔렀다.",
+    "subtitle": "지혜와 용기를 모아요"
+  },
+  "memory": false,
+  "island": "ithacaPalace",
+  "playStyles": [
+    "minigame",
+    "combat",
+    "boss"
+  ],
+  "bgm": {
+    "explore": "palace",
+    "boss": "finalBoss"
+  },
+  "learning": [
+    "math",
+    "english",
+    "hanja",
+    "clock",
+    "manners"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "penelope",
+          "text": "활로 도끼 열두 개의 구멍을 맞혀요."
+        },
+        {
+          "type": "line",
+          "speaker": "antinous",
+          "text": "누가 이 활을 당길 수 있겠어?"
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "제가 한번 해 보겠습니다."
+        }
+      ]
+    },
+    {
+      "id": "bow-success",
+      "trigger": {
+        "on": "objectiveDone",
+        "objective": "twelve-axes"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "내가 돌아왔소. 이제 집을 돌려주시오."
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "그동안 배운 지혜를 함께 써 보자!"
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "caption",
+          "text": "구혼자들은 별가루와 함께 물러났어요."
+        },
+        {
+          "type": "line",
+          "speaker": "telemachus",
+          "text": "아버지, 드디어 집을 되찾았어요!"
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "count-axes",
+      "type": "quiz",
+      "text": "도끼의 수 세기",
+      "target": "gate-axes"
+    },
+    {
+      "id": "string-bow",
+      "type": "minigame",
+      "text": "활시위 당기기",
+      "target": "bowString"
+    },
+    {
+      "id": "twelve-axes",
+      "type": "minigame",
+      "text": "열두 구멍에 활 쏘기",
+      "target": "axeArchery"
+    },
+    {
+      "id": "palace-guards",
+      "type": "defeat",
+      "text": "궁전의 길 열기",
+      "target": "palace-suitors",
+      "count": 4
+    },
+    {
+      "id": "final-battle",
+      "type": "boss",
+      "text": "안티노오스 물리치기",
+      "target": "antinous"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-axes",
+      "subject": "math",
+      "placement": "gate",
+      "count": 2,
+      "mathTemplate": {
+        "op": "sub",
+        "text": "표적 {a}개 중 {b}개를 맞혔어요. 남은 표적은?",
+        "emoji": "🏹"
+      }
+    },
+    {
+      "id": "boss-math",
+      "subject": "math",
+      "placement": "boss",
+      "count": 1
+    },
+    {
+      "id": "boss-english",
+      "subject": "english",
+      "placement": "boss",
+      "count": 1,
+      "ids": [
+        "en-bow",
+        "en-home"
+      ]
+    },
+    {
+      "id": "boss-hanja",
+      "subject": "hanja",
+      "placement": "boss",
+      "count": 1,
+      "ids": [
+        "hj-家",
+        "hj-人",
+        "hj-門"
+      ]
+    },
+    {
+      "id": "boss-clock",
+      "subject": "clock",
+      "placement": "boss",
+      "count": 1
+    },
+    {
+      "id": "boss-manners",
+      "subject": "manners",
+      "placement": "boss",
+      "count": 1,
+      "topic": "honesty"
+    }
+  ],
+  "reward": {
+    "coins": 100
+  },
+  "boss": "antinous"
+}

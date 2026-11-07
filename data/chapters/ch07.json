@@ -1,0 +1,145 @@
+{
+  "id": "ch07",
+  "no": 7,
+  "title": "키르케와 몰리(욜리꽃)",
+  "titleCard": {
+    "childText": "헤르메스가 준 욜리꽃을 얻어 키르케를 퇴치하였다.",
+    "subtitle": "마법에 걸린 친구들"
+  },
+  "memory": true,
+  "island": "aeaea",
+  "playStyles": [
+    "explore",
+    "boss"
+  ],
+  "bgm": {
+    "explore": "island",
+    "boss": "boss"
+  },
+  "learning": [
+    "english"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "crewman",
+          "text": "친구들이 돼지로 변했어요!"
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "숲에서 헤르메스를 찾아보자."
+        }
+      ]
+    },
+    {
+      "id": "moly-gift",
+      "trigger": {
+        "on": "talk",
+        "npc": "hermes"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "hermes",
+          "text": "몰리(욜리꽃)가 마법을 막아 줄 거야."
+        },
+        {
+          "type": "line",
+          "speaker": "hermes",
+          "text": "하얀 꽃을 소중히 챙기렴."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "circe",
+          "text": "미안해. 친구들을 돌려줄게."
+        },
+        {
+          "type": "sfx",
+          "id": "magic"
+        },
+        {
+          "type": "line",
+          "speaker": "circe",
+          "text": "테이레시아스에게 길을 물어보렴."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "find-hermes",
+      "type": "talk",
+      "text": "숲의 헤르메스 찾기",
+      "target": "hermes"
+    },
+    {
+      "id": "get-moly",
+      "type": "collect",
+      "text": "몰리(욜리꽃) 얻기",
+      "target": "moly",
+      "count": 1
+    },
+    {
+      "id": "animal-door",
+      "type": "quiz",
+      "text": "동물 단어로 문 열기",
+      "target": "gate-animals"
+    },
+    {
+      "id": "circe-battle",
+      "type": "boss",
+      "text": "키르케의 마법 막기",
+      "target": "circe"
+    },
+    {
+      "id": "restore-crew",
+      "type": "rescue",
+      "text": "친구 3명 돌아오게 하기",
+      "target": "crew",
+      "count": 3
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-animals",
+      "subject": "english",
+      "placement": "gate",
+      "count": 2,
+      "ids": [
+        "en-pig",
+        "en-lion",
+        "en-wolf"
+      ]
+    },
+    {
+      "id": "boss-animals",
+      "subject": "english",
+      "placement": "boss",
+      "count": 1,
+      "ids": [
+        "en-cat",
+        "en-dog",
+        "en-pig"
+      ]
+    }
+  ],
+  "reward": {
+    "coins": 55
+  },
+  "boss": "circe"
+}

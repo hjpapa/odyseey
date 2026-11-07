@@ -1,0 +1,138 @@
+{
+  "id": "ch05",
+  "no": 5,
+  "title": "아이올로스의 바람주머니",
+  "titleCard": {
+    "childText": "아이올로스가 바람주머니를 주었지만 오디세우스는 다시 돌아왔다.",
+    "subtitle": "시간과 약속을 지켜요"
+  },
+  "memory": true,
+  "island": "aeolia",
+  "playStyles": [
+    "sailing",
+    "dialogue"
+  ],
+  "bgm": {
+    "explore": "sailing"
+  },
+  "learning": [
+    "clock",
+    "manners"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "aeolus",
+          "text": "나쁜 바람을 이 주머니에 담았어."
+        },
+        {
+          "type": "line",
+          "speaker": "aeolus",
+          "text": "열지 말고 잘 지켜 주렴."
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "시간을 정해 번갈아 지키자."
+        }
+      ]
+    },
+    {
+      "id": "near-home",
+      "trigger": {
+        "on": "objectiveDone",
+        "objective": "wind-sailing"
+      },
+      "steps": [
+        {
+          "type": "caption",
+          "text": "아홉 날 뒤, 멀리 고향이 보였어요."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "잠깐 쉬고 올게. 주머니를 부탁해."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "crewman",
+          "text": "금이 궁금해서 주머니를 열었어요."
+        },
+        {
+          "type": "sfx",
+          "id": "wind"
+        },
+        {
+          "type": "caption",
+          "text": "바람에 밀려 아이올로스의 섬으로 돌아왔어요."
+        },
+        {
+          "type": "line",
+          "speaker": "crewman",
+          "text": "다음에는 약속을 꼭 지킬게요."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "receive-bag",
+      "type": "talk",
+      "text": "아이올로스 만나기",
+      "target": "aeolus"
+    },
+    {
+      "id": "bag-promise",
+      "type": "quiz",
+      "text": "주머니의 약속 정하기",
+      "target": "bag-manners"
+    },
+    {
+      "id": "watch-time",
+      "type": "quiz",
+      "text": "교대 시각 맞추기",
+      "target": "watch-clock"
+    },
+    {
+      "id": "wind-sailing",
+      "type": "minigame",
+      "text": "바람을 타고 항해하기",
+      "target": "windSail"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "bag-manners",
+      "subject": "manners",
+      "placement": "npc",
+      "count": 1,
+      "ids": [
+        "mn-002"
+      ]
+    },
+    {
+      "id": "watch-clock",
+      "subject": "clock",
+      "placement": "gate",
+      "count": 2,
+      "clockType": "set"
+    }
+  ],
+  "reward": {
+    "coins": 45
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "id": "ch13",
+  "no": 13,
+  "title": "드디어 이타카",
+  "titleCard": {
+    "childText": "드디어 고향 이타카로 갔다.",
+    "subtitle": "그리운 고향의 풍경"
+  },
+  "memory": false,
+  "island": "ithaca",
+  "playStyles": [
+    "stealth",
+    "explore"
+  ],
+  "bgm": {
+    "explore": "ithaca"
+  },
+  "learning": [
+    "hanja"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "caption",
+          "text": "배는 잠든 오디세우스를 고향에 내려 주었어요."
+        },
+        {
+          "type": "line",
+          "speaker": "athena",
+          "text": "궁전에 나쁜 구혼자들이 있어요."
+        },
+        {
+          "type": "line",
+          "speaker": "athena",
+          "text": "변장하고 에우마이오스에게 가세요."
+        },
+        {
+          "type": "sfx",
+          "id": "magic"
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "eumaeus",
+          "text": "어서 오세요. 따뜻한 곳에서 쉬세요."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "고맙습니다. 참 반가운 고향이네요."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "home-view",
+      "type": "quiz",
+      "text": "고향의 한자 읽기",
+      "target": "gate-landscape"
+    },
+    {
+      "id": "olive-path",
+      "type": "reach",
+      "text": "올리브 숲 지나가기",
+      "target": "ithaca-olive-path"
+    },
+    {
+      "id": "hut-gate",
+      "type": "quiz",
+      "text": "오두막 문 열기",
+      "target": "gate-home"
+    },
+    {
+      "id": "meet-eumaeus",
+      "type": "talk",
+      "text": "에우마이오스 만나기",
+      "target": "eumaeus"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-landscape",
+      "subject": "hanja",
+      "placement": "gate",
+      "count": 2,
+      "ids": [
+        "hj-山",
+        "hj-水",
+        "hj-木"
+      ]
+    },
+    {
+      "id": "gate-home",
+      "subject": "hanja",
+      "placement": "gate",
+      "count": 2,
+      "ids": [
+        "hj-土",
+        "hj-門"
+      ]
+    }
+  ],
+  "reward": {
+    "coins": 85
+  }
+}

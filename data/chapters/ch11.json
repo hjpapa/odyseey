@@ -1,0 +1,127 @@
+{
+  "id": "ch11",
+  "no": 11,
+  "title": "세이렌의 멜로디",
+  "titleCard": {
+    "childText": "오디세우스는 세이렌을 물리쳤다.",
+    "subtitle": "친구의 도움을 받아요"
+  },
+  "memory": true,
+  "island": "sirens",
+  "playStyles": [
+    "minigame",
+    "boss"
+  ],
+  "bgm": {
+    "explore": "siren",
+    "boss": "siren"
+  },
+  "learning": [
+    "english",
+    "manners"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "신기한 악기 소리에 길을 잃지 마."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "내 몸을 돛대에 묶어 줄래?"
+        },
+        {
+          "type": "line",
+          "speaker": "crewman",
+          "text": "네! 우리는 밀랍으로 귀를 막을게요."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "도와줘서 고마워. 모두 잘했어!"
+        },
+        {
+          "type": "caption",
+          "text": "함께 힘을 모아 세이렌 바위를 지났어요."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "thank-crew",
+      "type": "quiz",
+      "text": "동료에게 고마움 전하기",
+      "target": "crew-thanks"
+    },
+    {
+      "id": "true-words",
+      "type": "quiz",
+      "text": "올바른 철자 찾기",
+      "target": "gate-words"
+    },
+    {
+      "id": "rhythm-shield",
+      "type": "minigame",
+      "text": "음표를 방패로 막기",
+      "target": "rhythmShield"
+    },
+    {
+      "id": "siren-battle",
+      "type": "boss",
+      "text": "세이렌의 마법 벗어나기",
+      "target": "sirenQueen"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "crew-thanks",
+      "subject": "manners",
+      "placement": "npc",
+      "count": 1,
+      "topic": "thanks"
+    },
+    {
+      "id": "gate-words",
+      "subject": "english",
+      "placement": "gate",
+      "count": 2,
+      "kind": "spell",
+      "ids": [
+        "en-sea",
+        "en-ship",
+        "en-wind"
+      ]
+    },
+    {
+      "id": "boss-word",
+      "subject": "english",
+      "placement": "boss",
+      "count": 1,
+      "kind": "spell",
+      "ids": [
+        "en-star",
+        "en-home"
+      ]
+    }
+  ],
+  "reward": {
+    "coins": 75
+  },
+  "boss": "sirenQueen"
+}

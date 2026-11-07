@@ -1,0 +1,119 @@
+{
+  "id": "ch14",
+  "no": 14,
+  "title": "그리스군의 초소",
+  "titleCard": {
+    "childText": "오디세우스는 그리스군을 무찌르고 집으로 갔다.",
+    "subtitle": "집으로 가는 길을 열어요"
+  },
+  "memory": false,
+  "island": "ithaca",
+  "playStyles": [
+    "combat",
+    "boss"
+  ],
+  "bgm": {
+    "explore": "ithaca",
+    "boss": "boss"
+  },
+  "learning": [
+    "math"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "eumaeus",
+          "text": "병사들이 길을 막고 있어요."
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "텔레마코스를 노리는 배도 있어."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "초소를 살피고 안전한 길을 만들자."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "caption",
+          "text": "병사들은 별가루와 함께 물러났어요."
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "이제 오두막으로 돌아갈 수 있어!"
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "outpost-quiz",
+      "type": "quiz",
+      "text": "초소의 수 나누기",
+      "target": "gate-outposts"
+    },
+    {
+      "id": "clear-outposts",
+      "type": "defeat",
+      "text": "초소 병사 6명 물리치기",
+      "target": "ithaca-outpost-guards",
+      "count": 6
+    },
+    {
+      "id": "ambush-ship",
+      "type": "reach",
+      "text": "숨겨 둔 배 찾기",
+      "target": "ithaca-hidden-dock"
+    },
+    {
+      "id": "captain-battle",
+      "type": "boss",
+      "text": "병사 대장 물리치기",
+      "target": "soldierCaptain"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-outposts",
+      "subject": "math",
+      "placement": "gate",
+      "count": 2,
+      "mathTemplate": {
+        "op": "div",
+        "text": "병사 {a}명을 초소 {b}곳에 나누면 한 곳에 몇 명?",
+        "emoji": "🛡️"
+      }
+    },
+    {
+      "id": "boss-division",
+      "subject": "math",
+      "placement": "boss",
+      "count": 1,
+      "mathTemplate": {
+        "op": "div",
+        "text": "깃발 {a}개를 배 {b}척에 나누면 한 척에 몇 개?",
+        "emoji": "🚩"
+      }
+    }
+  ],
+  "reward": {
+    "coins": 90
+  },
+  "boss": "soldierCaptain"
+}

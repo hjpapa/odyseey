@@ -1,0 +1,125 @@
+{
+  "id": "ch08",
+  "no": 8,
+  "title": "예언자 테이레시아스",
+  "titleCard": {
+    "childText": "테이레시아스랑 대화를 했다.",
+    "subtitle": "귀 기울여 들어요"
+  },
+  "memory": true,
+  "island": "underworld",
+  "playStyles": [
+    "explore",
+    "dialogue"
+  ],
+  "bgm": {
+    "explore": "shadow"
+  },
+  "learning": [
+    "manners",
+    "hanja"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "등불을 따라 천천히 걸어 보자."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "길을 알려 주실 분을 찾아보자."
+        }
+      ]
+    },
+    {
+      "id": "greet-prophet",
+      "trigger": {
+        "on": "talk",
+        "npc": "tiresias"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "tiresias",
+          "text": "반갑구나. 내 이야기를 들어 보렴."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "tiresias",
+          "text": "헬리오스의 소를 건드리지 마라."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "말씀을 기억하겠습니다."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "lantern-road",
+      "type": "reach",
+      "text": "등불이 있는 길 찾기",
+      "target": "shadow-lanterns"
+    },
+    {
+      "id": "light-letters",
+      "type": "quiz",
+      "text": "해와 달의 글자 읽기",
+      "target": "gate-light"
+    },
+    {
+      "id": "meet-prophet",
+      "type": "talk",
+      "text": "예언자 만나기",
+      "target": "tiresias"
+    },
+    {
+      "id": "listen-carefully",
+      "type": "quiz",
+      "text": "끝까지 듣고 대답하기",
+      "target": "prophet-manners"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-light",
+      "subject": "hanja",
+      "placement": "gate",
+      "count": 2,
+      "ids": [
+        "hj-人",
+        "hj-大",
+        "hj-小",
+        "hj-日",
+        "hj-月"
+      ]
+    },
+    {
+      "id": "prophet-manners",
+      "subject": "manners",
+      "placement": "npc",
+      "count": 1,
+      "topic": "honorific"
+    }
+  ],
+  "reward": {
+    "coins": 60
+  }
+}
