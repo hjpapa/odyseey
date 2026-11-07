@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>모델 갤러리 (개발용)</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #cfe8ff; font-family: system-ui, sans-serif; }
+      #bar { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 8px 12px; background: rgba(255,255,255,.92); box-shadow: 0 1px 4px rgba(0,0,0,.15); font-size: 14px; }
+      #bar strong { font-size: 15px; }
+      #stats { margin-left: auto; color: #333; }
+      .label { padding: 2px 6px; border-radius: 6px; font-size: 12px; background: rgba(255,255,255,.9); white-space: nowrap; transform: translateY(-6px); }
+      .label.real { color: #1b7a2d; }
+      .label.temp { color: #b03a2e; }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="bar">
+      <strong>모델 갤러리</strong>
+      <label>보기
+        <select id="filter">
+          <option value="all">전체</option>
+          <option value="humanoid">사람형</option>
+          <option value="creature">동물·괴물</option>
+          <option value="prop">소품</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="animate" checked /> 리그 움직이기 (관절 확인)</label>
+      <label>variant <input type="number" id="variant" min="0" max="3" value="0" style="width: 3em" /></label>
+      <span id="stats"></span>
+    </div>
+    <script type="module" src="./model-gallery.ts"></script>
+  </body>
+</html>

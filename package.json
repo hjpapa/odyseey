@@ -1,0 +1,30 @@
+{
+  "name": "odyseey",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "아이가 쓴 이야기로 만드는 오디세이 학습 액션 RPG",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:accept": "vitest run --config vitest.accept.config.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "three": "^0.187.0",
+    "zzfx": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/three": "^0.187.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
+  }
+}

@@ -1,0 +1,31 @@
+[
+  {
+    "id": "en-sea",
+    "word": "sea",
+    "meaningKo": "바다",
+    "grade": 1,
+    "topic": "sea",
+    "emoji": "🌊",
+    "sentence": "I see the sea.",
+    "sentenceKo": "나는 바다를 봐요.",
+    "chapterHint": ["ch02"]
+  },
+  {
+    "id": "en-sheep",
+    "word": "sheep",
+    "meaningKo": "양",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐑",
+    "chapterHint": ["ch03"]
+  },
+  {
+    "id": "en-pig",
+    "word": "pig",
+    "meaningKo": "돼지",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐷",
+    "chapterHint": ["ch07"]
+  }
+]

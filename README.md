@@ -7,3 +7,15 @@
 - 스토리: [docs/STORY.md](docs/STORY.md)
 - Codex 작업 지시서: [docs/CODEX_TASKS.md](docs/CODEX_TASKS.md)
 - 배포: https://odyseey1924.vercel.app
+
+## 개발
+
+```bash
+npm ci
+npm run dev          # http://localhost:5173
+npm test             # 형식 검사 (항상 통과)
+npm run test:accept  # Codex 작업 완료 검사 (작업 전에는 실패가 정상)
+npm run build
+```
+
+개발용 페이지: `/dev/model-gallery.html` (블록 모델), `/dev/audio-test.html` (효과음·배경음)

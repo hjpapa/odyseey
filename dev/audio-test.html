@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>사운드 테스트 (개발용)</title>
+    <style>
+      body { margin: 0; padding: 16px; font-family: system-ui, sans-serif; background: #f4f7fb; color: #1d2433; }
+      h1 { font-size: 20px; margin: 0 0 4px; }
+      h2 { font-size: 16px; margin: 20px 0 8px; }
+      p { margin: 0 0 8px; color: #555; font-size: 14px; }
+      .grid { display: flex; flex-wrap: wrap; gap: 6px; }
+      button { padding: 8px 10px; border: 1px solid #b8c6d8; border-radius: 8px; background: #fff; cursor: pointer; font-size: 14px; }
+      button.missing { color: #999; border-style: dashed; }
+      button:hover { background: #e8f1ff; }
+      .vol { display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <h1>사운드 테스트</h1>
+    <p>점선 버튼 = 아직 프리셋·곡이 없음 (Codex A3 작업 대상). 첫 클릭 때 오디오가 켜집니다.</p>
+    <div class="vol">
+      <label>master <input type="range" id="v-master" min="0" max="1" step="0.05" value="0.8" /></label>
+      <label>sfx <input type="range" id="v-sfx" min="0" max="1" step="0.05" value="0.8" /></label>
+      <label>bgm <input type="range" id="v-bgm" min="0" max="1" step="0.05" value="0.6" /></label>
+    </div>
+    <h2>효과음 <span id="sfx-count"></span></h2>
+    <div class="grid" id="sfx"></div>
+    <h2>배경음 <span id="bgm-count"></span></h2>
+    <div class="grid" id="bgm"></div>
+    <script type="module" src="./audio-test.ts"></script>
+  </body>
+</html>

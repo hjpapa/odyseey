@@ -1,0 +1,37 @@
+[
+  {
+    "id": "hj-一",
+    "char": "一",
+    "hun": "한",
+    "eum": "일",
+    "level": "8급",
+    "grade": 1,
+    "strokes": 1,
+    "exampleWords": [{ "hanja": "一日", "reading": "일일", "meaning": "하루" }]
+  },
+  {
+    "id": "hj-山",
+    "char": "山",
+    "hun": "메",
+    "eum": "산",
+    "level": "8급",
+    "grade": 1,
+    "strokes": 3,
+    "exampleWords": [
+      { "hanja": "火山", "reading": "화산", "meaning": "불을 뿜는 산" },
+      { "hanja": "山水", "reading": "산수", "meaning": "산과 물, 자연 경치" }
+    ],
+    "chapterHint": ["ch13"]
+  },
+  {
+    "id": "hj-家",
+    "char": "家",
+    "hun": "집",
+    "eum": "가",
+    "level": "7급II",
+    "grade": 2,
+    "strokes": 10,
+    "exampleWords": [{ "hanja": "家族", "reading": "가족", "meaning": "한집에 사는 사람들" }],
+    "chapterHint": ["ch04"]
+  }
+]
