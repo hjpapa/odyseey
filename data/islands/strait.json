@@ -1,0 +1,52 @@
+{
+  "id": "strait",
+  "name": "스킬라와 카리브디스의 해협",
+  "kind": "seaCourse",
+  "chapters": ["ch10"],
+  "hubPos": [200, -420],
+  "terrain": { "radius": 30, "maxHeight": 0, "seed": 1933, "roughness": 0, "beachWidth": 4, "palette": "rock" },
+  "course": { "length": 540, "width": 16 },
+  "spawn": [0, 0],
+  "zones": [
+    { "id": "strait-mouth", "name": "해협 입구", "center": [0, 24], "radius": 5 },
+    { "id": "strait-safe-lane", "name": "소용돌이 옆 안전한 길", "center": [3.5, 116], "radius": 4 },
+    { "id": "scylla-water", "name": "스킬라가 지키는 길", "center": [0, 310], "radius": 6 },
+    { "id": "strait-exit", "name": "해협 출구", "center": [0, 508], "radius": 6 }
+  ],
+  "checkpoints": [
+    { "id": "cp-strait-mouth", "pos": [0, 0] },
+    { "id": "cp-quiet-lane", "pos": [3.5, 138] },
+    { "id": "cp-past-scylla", "pos": [0, 386] }
+  ],
+  "gates": [
+    { "id": "gate-drops", "pos": [2.5, 190], "rotY": 3.142, "chapter": "ch10", "quizSlot": "gate-drops" }
+  ],
+  "shrines": [],
+  "chests": [],
+  "npcs": [],
+  "enemies": [],
+  "collectibles": [],
+  "props": [
+    { "model": "cliff", "pos": [-6.3, 24], "rotY": 0.2, "scale": 0.75 },
+    { "model": "cliff", "pos": [6.2, 28], "rotY": -0.2, "scale": 0.78 },
+    { "model": "rock", "pos": [-6.5, 50], "rotY": 0.5 },
+    { "model": "rock", "pos": [6.4, 68], "rotY": 1.2 },
+    { "model": "cliff", "pos": [6.2, 92], "rotY": -0.1, "scale": 0.78 },
+    { "model": "whirlpool", "pos": [-5.1, 98], "rotY": 0.3, "scale": 1.22 },
+    { "model": "whirlpool", "pos": [-5.3, 119], "rotY": 1.15, "scale": 1.25 },
+    { "model": "rock", "pos": [6.6, 129], "rotY": 0.8 },
+    { "model": "whirlpool", "pos": [-5, 152], "rotY": 0.9, "scale": 1.1 },
+    { "model": "cliff", "pos": [-6.2, 177], "rotY": 0.2, "scale": 0.75 },
+    { "model": "rock", "pos": [6.5, 190], "rotY": 0.3 },
+    { "model": "cliff", "pos": [6.25, 263], "rotY": 0.25, "scale": 0.75 },
+    { "model": "cliff", "pos": [6.2, 283], "rotY": -0.3, "scale": 0.8 },
+    { "model": "cliff", "pos": [6.2, 300], "rotY": 0.15, "scale": 0.8 },
+    { "model": "cliff", "pos": [6.2, 322], "rotY": -0.2, "scale": 0.8 },
+    { "model": "cliff", "pos": [6.3, 338], "rotY": 0.25, "scale": 0.75 },
+    { "model": "rock", "pos": [-6.6, 365], "rotY": 0.4 },
+    { "model": "rock", "pos": [6.5, 438], "rotY": 0.55 },
+    { "model": "cliff", "pos": [-6.2, 475], "rotY": 0.25, "scale": 0.8 },
+    { "model": "cliff", "pos": [6.2, 478], "rotY": -0.1, "scale": 0.75 }
+  ],
+  "boss": { "id": "scylla", "arenaCenter": [0, 310], "arenaRadius": 6 }
+}

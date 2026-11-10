@@ -1,0 +1,91 @@
+{
+  "id": "underworld",
+  "name": "그림자 나라",
+  "kind": "island",
+  "chapters": ["ch08"],
+  "hubPos": [535, -85],
+  "terrain": { "radius": 52, "maxHeight": 6, "seed": 1931, "roughness": 0.3, "beachWidth": 5, "palette": "shadow" },
+  "spawn": [-3, -40],
+  "zones": [
+    { "id": "shadow-landing", "name": "그림자 물가", "center": [-3, -37], "radius": 5 },
+    { "id": "shadow-lanterns", "name": "등불길", "center": [-6, -17], "radius": 7 },
+    { "id": "prophet-court", "name": "예언자의 뜰", "center": [2, 9], "radius": 6 },
+    { "id": "quiet-ruins", "name": "고요한 돌기둥", "center": [23, -6], "radius": 5 }
+  ],
+  "checkpoints": [
+    { "id": "cp-lantern-path", "pos": [-7, -29] }
+  ],
+  "gates": [
+    { "id": "gate-light", "pos": [-0.5, 0.88], "rotY": -2.843, "chapter": "ch08", "quizSlot": "gate-light" }
+  ],
+  "shrines": [
+    { "id": "shrine-quiet-ruins", "pos": [22, -8] }
+  ],
+  "chests": [
+    { "id": "chest-ruin-column", "pos": [24, -2], "coins": 5 },
+    { "id": "chest-moon-alcove", "pos": [-23, 8], "coins": 7 }
+  ],
+  "npcs": [
+    { "id": "tiresias", "model": "tiresias", "pos": [2, 11.5], "rotY": -2.9 }
+  ],
+  "enemies": [],
+  "collectibles": [],
+  "props": [
+    { "model": "dock", "pos": [-5.5, -42], "rotY": 0.3 },
+    { "model": "rock", "pos": [-7, -39], "rotY": 1.2 },
+    { "model": "cliff", "pos": [5, -36], "rotY": 0.6 },
+    { "model": "cliff", "pos": [-13, -35], "rotY": 0.8 },
+    { "model": "cliff", "pos": [-17, -28], "rotY": 0.3 },
+    { "model": "boulder", "pos": [1, -33], "rotY": 1.7 },
+    { "model": "rock", "pos": [2, -27], "rotY": 1.3 },
+    { "model": "boulder", "pos": [-12, -25], "rotY": 2.2 },
+    { "model": "rock", "pos": [-14, -21], "rotY": 0.3 },
+    { "model": "torch", "pos": [-8, -36], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-2, -34], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-11, -31], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-4, -27], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-10.5, -23], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-3, -21], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-9.5, -16.5], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-2.5, -15.5], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-7, -11], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [0, -9], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-5.9, -3.5], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [2.4, -4.5], "rotY": 0, "scale": 1.15 },
+    { "model": "torch", "pos": [-0.8, 12], "rotY": 0, "scale": 1.05 },
+    { "model": "torch", "pos": [4.5, 13], "rotY": 0, "scale": 1.05 },
+    { "model": "column", "pos": [17, -13] },
+    { "model": "brokenColumn", "pos": [19, -5], "rotY": 0.6 },
+    { "model": "column", "pos": [26, -10] },
+    { "model": "brokenColumn", "pos": [27, -3], "rotY": 1.1 },
+    { "model": "temple", "pos": [26, 6], "rotY": 2.95 },
+    { "model": "torch", "pos": [20, -11] },
+    { "model": "torch", "pos": [25, -6] },
+    { "model": "cliff", "pos": [-27, 2], "rotY": 0.6, "scale": 1.15 },
+    { "model": "cliff", "pos": [-30, 11], "rotY": 1.35, "scale": 1.1 },
+    { "model": "boulder", "pos": [-27, 16], "rotY": 2.55 },
+    { "model": "rock", "pos": [-25, 5], "rotY": 0.2 },
+    { "model": "brokenColumn", "pos": [-20, 10] },
+    { "model": "torch", "pos": [-21, 5] },
+    { "model": "cliff", "pos": [2, 25], "rotY": 0.2 },
+    { "model": "cliff", "pos": [13, 28], "rotY": 1.6 },
+    { "model": "brokenColumn", "pos": [9, 22], "rotY": 1.1 },
+    { "model": "column", "pos": [-5, 22] },
+    { "model": "boulder", "pos": [-3.98, 2.96], "rotY": -0.79 },
+    { "model": "boulder", "pos": [-5.71, 5.42], "rotY": -0.435 },
+    { "model": "boulder", "pos": [-6.47, 8.32], "rotY": -0.081 },
+    { "model": "boulder", "pos": [-6.18, 11.3], "rotY": 0.274 },
+    { "model": "boulder", "pos": [-4.88, 14], "rotY": 0.628 },
+    { "model": "boulder", "pos": [-2.71, 16.07], "rotY": 0.983 },
+    { "model": "boulder", "pos": [0.03, 17.27], "rotY": 1.337 },
+    { "model": "boulder", "pos": [3.03, 17.44], "rotY": 1.692 },
+    { "model": "boulder", "pos": [5.89, 16.56], "rotY": 2.047 },
+    { "model": "boulder", "pos": [8.27, 14.73], "rotY": 2.401 },
+    { "model": "boulder", "pos": [9.87, 12.2], "rotY": 2.756 },
+    { "model": "boulder", "pos": [10.5, 9.27], "rotY": 3.11 },
+    { "model": "boulder", "pos": [10.06, 6.3], "rotY": 3.465 },
+    { "model": "boulder", "pos": [8.62, 3.67], "rotY": 3.819 },
+    { "model": "boulder", "pos": [6.36, 1.7], "rotY": 4.174 },
+    { "model": "boulder", "pos": [3.56, 0.64], "rotY": 4.528 }
+  ]
+}

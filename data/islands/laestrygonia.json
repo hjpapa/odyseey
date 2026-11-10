@@ -1,0 +1,88 @@
+{
+  "id": "laestrygonia",
+  "name": "거인의 항구",
+  "kind": "island",
+  "chapters": ["ch06"],
+  "hubPos": [390, 355],
+  "terrain": { "radius": 58, "maxHeight": 10, "seed": 1929, "roughness": 0.45, "beachWidth": 8, "palette": "rock" },
+  "spawn": [0, -37],
+  "zones": [
+    { "id": "laestrygonia-harbor", "name": "배가 모인 항구", "center": [0, -31], "radius": 11 },
+    { "id": "laestrygonia-warehouse", "name": "항구 창고", "center": [-14, -12], "radius": 6 },
+    { "id": "laestrygonia-crew-yard", "name": "동료들이 갇힌 우리", "center": [-5, 15], "radius": 6 },
+    { "id": "laestrygonia-king-court", "name": "거인 왕의 마당", "center": [18, 15], "radius": 11 }
+  ],
+  "checkpoints": [
+    { "id": "cp-harbor", "pos": [3, -33] },
+    { "id": "cp-yard", "pos": [3, 6] }
+  ],
+  "gates": [
+    { "id": "gate-boats", "pos": [-4.08, 6.55], "rotY": 3.0333, "chapter": "ch06", "quizSlot": "gate-boats" }
+  ],
+  "shrines": [
+    { "id": "shrine-docks", "pos": [10, -20] }
+  ],
+  "chests": [
+    { "id": "chest-warehouse", "pos": [-14, -11], "coins": 5 },
+    { "id": "chest-crew-yard", "pos": [0, 15], "coins": 8 }
+  ],
+  "npcs": [],
+  "enemies": [],
+  "collectibles": [
+    { "id": "crew-1", "item": "crew", "pos": [-7, 13] },
+    { "id": "crew-2", "item": "crew", "pos": [-3, 13] },
+    { "id": "crew-3", "item": "crew", "pos": [-7, 17] },
+    { "id": "crew-4", "item": "crew", "pos": [-3, 17] }
+  ],
+  "props": [
+    { "model": "ship", "pos": [-13, -43], "rotY": 0.5 },
+    { "model": "rowboat", "pos": [-7, -44], "rotY": 1.5 },
+    { "model": "rowboat", "pos": [-4, -43], "rotY": 1.25 },
+    { "model": "dock", "pos": [-9, -40], "rotY": 1.5708, "scale": 1.2 },
+    { "model": "net", "pos": [-7, -37], "rotY": 0.5, "scale": 1.8 },
+    { "model": "crate", "pos": [-6, -34], "rotY": 0.6 },
+    { "model": "barrel", "pos": [-8, -32], "rotY": 0.3 },
+    { "model": "signpost", "pos": [4, -29], "rotY": 0.6 },
+    { "model": "cliff", "pos": [-14, -26], "rotY": 0.8, "scale": 1.5 },
+    { "model": "cliff", "pos": [13, -31], "rotY": 0.9, "scale": 1.35 },
+    { "model": "cliff", "pos": [15, -24], "rotY": 0.5, "scale": 1.25 },
+    { "model": "hut", "pos": [-18, -13], "rotY": 1.9, "scale": 1.15 },
+    { "model": "crate", "pos": [-11, -14], "rotY": 0.65 },
+    { "model": "barrel", "pos": [-13, -16], "rotY": 0.6 },
+    { "model": "net", "pos": [-13, -9], "rotY": 1.2, "scale": 1.8 },
+    { "model": "pineTree", "pos": [-20, -17], "rotY": 2.3 },
+    { "model": "brokenColumn", "pos": [7, -14], "rotY": 0.7 },
+    { "model": "rock", "pos": [12, -8], "rotY": 0.5, "scale": 1.25 },
+    { "model": "torch", "pos": [-9, 4], "rotY": 0.6 },
+    { "model": "torch", "pos": [0.5, 5], "rotY": 0.25 },
+    { "model": "cage", "pos": [-7, 13], "rotY": 0, "scale": 1.45 },
+    { "model": "cage", "pos": [-3, 13], "rotY": 0, "scale": 1.45 },
+    { "model": "cage", "pos": [-7, 17], "rotY": 0, "scale": 1.45 },
+    { "model": "cage", "pos": [-3, 17], "rotY": 0, "scale": 1.45 },
+    { "model": "net", "pos": [-9, 15], "rotY": 0.35, "scale": 1.35 },
+    { "model": "cliff", "pos": [33, 10], "rotY": 0.8, "scale": 1.45 },
+    { "model": "cliff", "pos": [30, 24], "rotY": 0.4, "scale": 1.2 },
+    { "model": "cliff", "pos": [16, 31], "rotY": 1.2, "scale": 1.3 },
+    { "model": "pineTree", "pos": [7, 31], "rotY": 1.8 },
+    { "model": "pineTree", "pos": [-19, 23], "rotY": 2 },
+    { "model": "pineTree", "pos": [-24, 15], "rotY": 0.4 },
+    { "model": "rock", "pos": [11, 29], "rotY": 0.8 },
+    { "model": "boulder", "pos": [-8.09, 7.08], "rotY": -2.7693 },
+    { "model": "boulder", "pos": [-10.65, 8.65], "rotY": -2.4145 },
+    { "model": "boulder", "pos": [-12.5, 11.01], "rotY": -2.0597 },
+    { "model": "boulder", "pos": [-13.42, 13.86], "rotY": -1.7049 },
+    { "model": "boulder", "pos": [-13.29, 16.86], "rotY": -1.3501 },
+    { "model": "boulder", "pos": [-12.13, 19.63], "rotY": -0.9953 },
+    { "model": "boulder", "pos": [-10.08, 21.82], "rotY": -0.6405 },
+    { "model": "boulder", "pos": [-7.4, 23.16], "rotY": -0.2857 },
+    { "model": "boulder", "pos": [-4.41, 23.48], "rotY": 0.0691 },
+    { "model": "boulder", "pos": [-1.5, 22.75], "rotY": 0.4239 },
+    { "model": "boulder", "pos": [0.97, 21.05], "rotY": 0.7787 },
+    { "model": "boulder", "pos": [2.7, 18.6], "rotY": 1.1335 },
+    { "model": "boulder", "pos": [3.47, 15.7], "rotY": 1.4883 },
+    { "model": "boulder", "pos": [3.19, 12.71], "rotY": 1.8431 },
+    { "model": "boulder", "pos": [1.88, 10.01], "rotY": 2.1979 },
+    { "model": "boulder", "pos": [-0.28, 7.93], "rotY": 2.5527 }
+  ],
+  "boss": { "id": "laestrygonianKing", "arenaCenter": [18, 15], "arenaRadius": 12 }
+}
