@@ -9,22 +9,12 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <canvas id="scene" aria-label="오디세이 섬 풍경"></canvas>
-    <div class="overlay">
-      <header class="title-card">
-        <p class="kicker">아이가 쓴 17장의 이야기</p>
-        <h1>오디세이</h1>
-        <p class="sub">집으로 가는 길</p>
-      </header>
-      <div class="bottom">
-        <button class="start" id="start" type="button">⛵ 모험 시작</button>
-        <p class="toast" id="toast" role="status" aria-live="polite"></p>
-        <footer class="build">P0 · build <span id="sha"></span></footer>
-      </div>
-    </div>
+    <canvas id="scene" aria-label="오디세이 게임 화면"></canvas>
+    <div id="labels"></div>
+    <div id="ui"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

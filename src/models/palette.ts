@@ -1,21 +1,21 @@
-import { Color, MeshBasicMaterial, MeshToonMaterial } from 'three';
+/** Shared, texture-free materials for the Aegean character collection. */
+import { MeshToonMaterial } from 'three';
 
-export const palette = {
-  skin: '#efbe91', skinDark: '#ac714d', cream: '#fff0ce', white: '#fffaf0',
-  ink: '#263648', hair: '#533a31', wood: '#995c38', woodLight: '#cc9857',
-  gold: '#edc560', bronze: '#b8884d', stone: '#b9c6cd', marble: '#eee8dc',
-  sea: '#54b7cb', blue: '#487bc3', leaf: '#69994b', leafLight: '#a1c965',
-  purple: '#9d79bd', rose: '#e69aaf', coral: '#db7863', sand: '#e7ce93',
+export const P = {
+  linen: '#f2e4c4', ivory: '#fff4da', bronze: '#ae713c', gold: '#e2b85d',
+  darkGold: '#80532b', leather: '#694533', sole: '#43332b', ink: '#292e38',
+  skin: '#dca778', blush: '#c17c59', hair: '#49352f', gray: '#d9d6c9',
+  blue: '#376a93', sea: '#398c8a', red: '#9f4844', plum: '#785570',
+  olive: '#6e8050', wood: '#866045', white: '#fffaf0',
 } as const;
-const toons = new Map<string, MeshToonMaterial>(), lights = new Map<string, MeshBasicMaterial>();
-export function toon(color: string): MeshToonMaterial {
-  const key = new Color(color).getHexString();
-  let material = toons.get(key);
-  if (!material) { material = new MeshToonMaterial({ color: '#' + key }); toons.set(key, material); }
-  return material;
-}
-export function glow(color: string): MeshBasicMaterial {
-  let material = lights.get(color);
-  if (!material) { material = new MeshBasicMaterial({ color }); lights.set(color, material); }
-  return material;
+
+const cache = new Map<string, MeshToonMaterial>();
+export function material(color: string): MeshToonMaterial {
+  const key = color.toLowerCase();
+  let result = cache.get(key);
+  if (!result) {
+    result = new MeshToonMaterial({ color });
+    cache.set(key, result);
+  }
+  return result;
 }

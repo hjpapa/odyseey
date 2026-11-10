@@ -1,131 +1,248 @@
-import { Group } from 'three';
-import { DEFAULT_AVATAR, type HumanoidId, type ModelOptions } from '../types/contracts';
-import { palette as P } from './palette';
-import { block, face, finish, joint } from './parts';
-import { helmet, weapon } from './equipment';
+/** Greek myth costumes on the existing six-joint gameplay rig. Front is +Z. */
+import { Group, type Object3D } from 'three';
+import { DEFAULT_AVATAR, type HelmetId, type HumanoidId, type ModelOptions } from '../types/contracts';
+import { box, disc, drape, finish, part } from './geometry';
+import { P } from './palette';
+import { cape, caduceus, helmet, laurel, shield, sword, trident, wand, wing } from './equipment';
 
-const clothing: Record<HumanoidId, string> = {
-  odysseus: P.blue, crewman: P.sea, telemachus: P.leaf, athena: P.cream, hermes: P.sand,
-  calypso: P.sea, ino: P.white, aeolus: P.blue, circe: P.purple, tiresias: P.marble,
-  nausicaa: P.rose, alcinous: P.purple, penelope: P.coral, eumaeus: P.wood,
-  poseidon: P.sea, helios: P.gold, polyphemus: P.woodLight, lotusEater: P.rose,
-  lotusKing: P.purple, laestrygonian: P.leaf, laestrygonianKing: P.coral,
-  siren: P.sea, sirenQueen: P.purple, greekSoldier: P.stone, soldierCaptain: P.blue,
-  suitor: P.purple, antinous: P.coral,
+interface Look {
+  name: string; role: string; cloth: string; trim: string; hair: string;
+  skin?: string; robe?: boolean; longHair?: boolean; beard?: boolean;
+  armor?: boolean; hat?: HelmetId; cloak?: string; height?: number;
+}
+
+export const CHARACTER_LOOKS: Record<HumanoidId, Look> = {
+  odysseus: { name:'오디세우스', role:'이타카로 돌아가는 모험가 · 청동 투구와 붉은 망토', cloth:P.blue, trim:P.gold, hair:P.hair, beard:true, armor:true },
+  crewman: { name:'동료 선원', role:'바다를 건너는 동료 · 짧은 튜닉과 어깨띠', cloth:P.red, trim:P.linen, hair:P.hair },
+  telemachus: { name:'텔레마코스', role:'이타카의 왕자 · 푸른 어깨 망토와 가죽 흉대', cloth:P.linen, trim:P.blue, hair:P.hair, cloak:P.blue, height:1.92 },
+  athena: { name:'아테나', role:'지혜의 여신 · 부엉이 투구와 청동 방패', cloth:P.linen, trim:P.gold, hair:P.hair, longHair:true, robe:true, armor:true, hat:'owl', cloak:P.blue },
+  hermes: { name:'헤르메스', role:'신들의 전령 · 날개 모자와 두 뱀 지팡이', cloth:P.linen, trim:P.sea, hair:'#79523b', cloak:P.red },
+  calypso: { name:'칼립소', role:'섬의 요정 · 바다빛 주름옷과 꽃관', cloth:P.sea, trim:P.gold, hair:'#925c36', longHair:true, robe:true },
+  ino: { name:'이노', role:'바다의 요정 · 하얀 스카프와 물결빛 옷', cloth:'#a5d6d1', trim:P.white, hair:'#536b73', longHair:true, robe:true },
+  aeolus: { name:'아이올로스', role:'바람의 왕 · 바람주머니와 소용돌이 장식', cloth:'#9ebfca', trim:P.gold, hair:P.gray, beard:true, robe:true, cloak:P.blue },
+  circe: { name:'키르케', role:'마법의 여인 · 자줏빛 주름옷과 마법봉', cloth:P.plum, trim:P.gold, hair:'#3b334b', longHair:true, robe:true },
+  tiresias: { name:'테이레시아스', role:'지혜로운 예언자 · 긴 겉옷과 나무 지팡이', cloth:'#84859d', trim:P.linen, hair:P.gray, beard:true, robe:true, cloak:'#5c607c' },
+  nausicaa: { name:'나우시카', role:'파이아케스의 공주 · 산호빛 옷과 머리띠', cloth:'#d68976', trim:P.linen, hair:'#654435', longHair:true, robe:true, height:1.94 },
+  alcinous: { name:'알키노오스', role:'파이아케스의 왕 · 황금 잎관과 자주색 망토', cloth:P.linen, trim:P.gold, hair:'#675346', beard:true, robe:true, cloak:P.plum },
+  penelope: { name:'페넬로페', role:'이타카의 왕비 · 직조 무늬 숄과 실꾸리', cloth:'#914f67', trim:P.gold, hair:P.hair, longHair:true, robe:true },
+  eumaeus: { name:'에우마이오스', role:'이타카의 돼지치기 · 양털 조끼와 목동 지팡이', cloth:P.olive, trim:P.linen, hair:'#91806b', beard:true },
+  poseidon: { name:'포세이돈', role:'바다의 신 · 삼지창과 파도 왕관', cloth:'#317879', trim:P.gold, hair:'#c3ded5', beard:true, longHair:true, robe:true, height:8 },
+  helios: { name:'헬리오스', role:'태양의 신 · 햇살 왕관과 황금빛 옷', cloth:'#e6af4e', trim:P.ivory, hair:'#ac6834', robe:true, cloak:P.red, height:7.5 },
+  polyphemus: { name:'폴리페모스', role:'외눈 거인 · 커다란 눈과 양치기 차림', cloth:'#977850', trim:P.linen, hair:P.hair, beard:true, height:6 },
+  lotusEater: { name:'연꽃족', role:'연꽃 섬 사람 · 꽃 장식과 풀빛 튜닉', cloth:'#869964', trim:'#d89eac', hair:'#685345' },
+  lotusKing: { name:'연꽃 왕', role:'연꽃 섬의 왕 · 연꽃 왕관과 잎사귀 망토', cloth:'#72845b', trim:'#e2a6b8', hair:'#6a4b68', robe:true, cloak:P.olive, height:2.5 },
+  laestrygonian: { name:'라이스트리고네스', role:'항구의 거인 · 거친 어깨옷과 넓은 허리띠', cloth:'#ab7352', trim:P.linen, hair:'#5b463c', beard:true, height:4.3 },
+  laestrygonianKing: { name:'거인 왕', role:'거인의 왕 · 돌빛 왕관과 붉은 어깨옷', cloth:'#8f5448', trim:P.gold, hair:'#51443b', beard:true, cloak:P.red, height:6.2 },
+  siren: { name:'세이렌', role:'노래하는 새의 요정 · 깃털 날개와 작은 리라', cloth:'#8098ba', trim:P.ivory, hair:'#625074', longHair:true },
+  sirenQueen: { name:'세이렌 여왕', role:'노래의 여왕 · 큰 날개와 황금 리라', cloth:'#74658f', trim:P.gold, hair:'#42435f', longHair:true, height:2.5 },
+  greekSoldier: { name:'그리스 병사', role:'청동 갑옷과 둥근 방패를 든 병사', cloth:P.red, trim:P.gold, hair:P.hair, armor:true, hat:'bronze' },
+  soldierCaptain: { name:'병사 대장', role:'붉은 깃 투구와 청동 갑옷', cloth:P.red, trim:P.gold, hair:P.hair, beard:true, armor:true, hat:'crested', cloak:P.red, height:2.3 },
+  suitor: { name:'구혼자', role:'궁전의 손님 · 비스듬한 겉옷과 장식띠', cloth:'#9c7397', trim:P.gold, hair:'#6c4c38', robe:true },
+  antinous: { name:'안티노오스', role:'구혼자의 우두머리 · 황금 머리띠와 자주색 겉옷', cloth:'#6e476b', trim:P.gold, hair:'#3a313b', armor:true, cloak:P.plum, height:2.3 },
 };
-const heights: Partial<Record<HumanoidId, number>> = { odysseus: 2.1, crewman: 1.95, telemachus: 1.85, poseidon: 8, helios: 8, polyphemus: 6.1, laestrygonian: 4.2, laestrygonianKing: 6.4 };
-const variants = [P.sea, P.coral, P.leaf, P.purple];
-const royals: HumanoidId[] = ['alcinous', 'antinous', 'lotusKing', 'laestrygonianKing', 'sirenQueen'];
-const longHair: HumanoidId[] = ['athena', 'calypso', 'ino', 'circe', 'nausicaa', 'penelope', 'siren', 'sirenQueen'];
+
+const variants = [P.red, P.blue, P.olive, P.plum];
+const skins = [P.skin, '#bc875f', '#e4b88d', '#986647'];
+
+function badge(parent: Object3D, color: string, x: number, y: number, z: number, radius = .065) {
+  disc(parent, color, radius, .035, x, y, z).rotation.x = Math.PI / 2;
+}
+
+function face(head: Group, look: Look, cyclops: boolean) {
+  const skin = look.skin ?? P.skin;
+  box(head, skin, .60, .55, .53, 0, .27);
+  box(head, look.hair, .64, .16, .56, 0, .55, -.025);
+  box(head, look.hair, .60, .39, .09, 0, .34, -.265);
+  for (const side of [-1, 1]) {
+    box(head, skin, .09, .14, .13, side * .31, .25);
+    box(head, look.hair, .11, .22, .39, side * .26, .43, -.055);
+  }
+  if (look.longHair) {
+    box(head, look.hair, .65, .62, .19, 0, .17, -.25);
+    for (const s of [-1, 1]) box(head, look.hair, .16, .55, .23, s * .29, .12, -.06);
+  }
+  if (cyclops) {
+    badge(head, P.ivory, 0, .30, .275, .15);
+    badge(head, P.ink, 0, .30, .30, .075);
+    box(head, P.white, .035, .04, .018, -.025, .33, .33);
+  } else {
+    for (const s of [-1, 1]) {
+      box(head, P.ink, .065, .085, .025, s * .135, .29, .272);
+      box(head, look.hair, .10, .035, .027, s * .135, .365, .272);
+    }
+    box(head, skin, .075, .085, .07, 0, .21, .285);
+  }
+  if (look.beard) {
+    box(head, look.hair, .38, .15, .12, 0, .045, .22);
+    box(head, look.hair, .24, .13, .12, 0, -.04, .22);
+  }
+  box(head, look.beard ? P.skin : P.blush, .14, .025, .025, 0, .105, .292);
+}
+
+function flower(parent: Object3D, color: string, x: number, y: number, z: number) {
+  const g = part(parent, 'flower', x, y, z);
+  for (const s of [-1, 1]) box(g, color, .15, .09, .06, s * .055, 0).rotation.z = s * .55;
+  badge(g, P.gold, 0, .015, .045, .045);
+}
+
+function lyre(parent: Object3D) {
+  const g = part(parent, 'lyre', 0, -.05, .12);
+  box(g, P.gold, .38, .15, .1, 0, 0);
+  for (const s of [-1, 1]) box(g, P.wood, .065, .46, .08, s * .16, .20).rotation.z = -s * .16;
+  box(g, P.gold, .43, .065, .08, 0, .42);
+  for (const x of [-.09, 0, .09]) box(g, P.linen, .014, .32, .025, x, .22, .04);
+}
+
+function staff(parent: Object3D, shepherd: boolean) {
+  const g = part(parent, 'staff');
+  box(g, P.wood, .065, 1.5, .065, 0, .05);
+  if (shepherd) {
+    box(g, P.wood, .25, .075, .07, .09, .8);
+    box(g, P.wood, .075, .20, .07, .19, .73);
+  } else badge(g, P.gold, 0, .86, 0, .12);
+}
+
+function adorn(id: HumanoidId, root: Group, head: Group, torso: Group, top: Group, handL: Group, handR: Group) {
+  switch (id) {
+    case 'athena': handL.add(shield(P.blue)); staff(handR, false); break;
+    case 'hermes': {
+      const hat = part(top, 'petasos');
+      disc(hat, P.bronze, .42, .065, 0, -.09);
+      box(hat, P.bronze, .54, .16, .49, 0, -.02);
+      for (const s of [-1, 1]) {
+        wing(hat, s, s * .32, .13, 0, .8);
+        const leg = root.getObjectByName(s > 0 ? 'legL' : 'legR')!;
+        wing(leg, s, s * .15, -.52, -.04, .45);
+      }
+      handR.add(caduceus()); break;
+    }
+    case 'calypso':
+      laurel(top); flower(top, P.ivory, .23, -.05, .24); break;
+    case 'ino': {
+      box(torso, P.white, .74, .14, .55, 0, .60);
+      const scarf = part(handL, 'whiteScarf');
+      box(scarf, P.white, .22, .55, .045, .08, -.08, .12).rotation.z = -.18;
+      break;
+    }
+    case 'aeolus': {
+      laurel(top, P.gold);
+      const bag = part(handL, 'windBag', 0, -.15, .04);
+      box(bag, P.leather, .37, .40, .31, 0, -.12);
+      box(bag, P.linen, .23, .07, .27, 0, .08);
+      badge(bag, P.gold, 0, -.10, .17, .10); break;
+    }
+    case 'circe':
+      laurel(top, P.gold); handR.add(wand());
+      badge(torso, '#bcb0dc', 0, .53, .31, .09); break;
+    case 'tiresias': staff(handR, false); break;
+    case 'nausicaa':
+      box(top, P.linen, .65, .07, .57, 0, -.1);
+      flower(top, P.ivory, -.23, -.075, .25); break;
+    case 'alcinous': case 'antinous': laurel(top, P.gold); break;
+    case 'penelope': {
+      const shawl = part(torso, 'wovenShawl');
+      box(shawl, P.linen, .84, .21, .53, 0, .59);
+      for (const s of [-1, 1]) box(shawl, P.plum, .08, .23, .03, s * .31, .59, .28);
+      box(handL, P.wood, .22, .07, .12, 0, -.12, .08);
+      box(handL, P.linen, .14, .23, .11, 0, -.02, .08);
+      break;
+    }
+    case 'eumaeus':
+      for (const s of [-1, 1]) box(torso, P.linen, .21, .42, .11, s * .28, .43, .26);
+      staff(handR, true); break;
+    case 'poseidon': {
+      const crown = part(top, 'waveCrown');
+      box(crown, P.gold, .67, .075, .58, 0, -.07);
+      for (const s of [-1, 0, 1]) box(crown, P.gold, .10, s ? .23 : .33, .09, s * .24, .07, .24).rotation.z = -s * .2;
+      handR.add(trident()); break;
+    }
+    case 'helios': {
+      const crown = part(top, 'sunCrown');
+      for (let i = 0; i < 7; i++) {
+        const a = -.5 * Math.PI + i * Math.PI / 6;
+        box(crown, P.gold, .08, .27, .08, Math.sin(a) * .38, Math.cos(a) * .35, -.05).rotation.z = -a;
+      }
+      badge(torso, P.gold, 0, .43, .30, .18); break;
+    }
+    case 'polyphemus': case 'laestrygonian': case 'laestrygonianKing':
+      box(torso, P.linen, .25, .55, .08, .16, .40, .29).rotation.z = -.5;
+      if (id === 'laestrygonianKing') laurel(top, P.gray);
+      break;
+    case 'lotusEater': case 'lotusKing':
+      laurel(top);
+      flower(top, '#dba8be', 0, .04, .25);
+      if (id === 'lotusKing') { flower(top, P.ivory, -.25, -.02, .14); flower(top, P.ivory, .25, -.02, .14); }
+      break;
+    case 'siren': case 'sirenQueen':
+      for (const s of [-1, 1]) wing(torso, s, s * .45, .60, -.27, id === 'sirenQueen' ? 2.5 : 2);
+      lyre(handL);
+      if (id === 'sirenQueen') laurel(top, P.gold);
+      break;
+    case 'greekSoldier': case 'soldierCaptain':
+      handL.add(shield(P.red)); handR.add(sword()); break;
+  }
+  // Keep ornaments on the head so looking/talking rotates them with the face.
+  head.userData.face = id === 'polyphemus' ? 'single-eye' : 'friendly';
+}
 
 export function humanoid(id: HumanoidId, opts: ModelOptions = {}): Group {
-  const rig = new Group();
+  const v = Math.abs(Math.trunc(opts.variant ?? 0)) % 4;
+  const look = { ...CHARACTER_LOOKS[id] };
+  if (['crewman', 'suitor', 'greekSoldier', 'lotusEater'].includes(id)) {
+    look.cloth = variants[v]; look.skin = skins[v];
+  }
   const avatar = opts.avatar ?? DEFAULT_AVATAR;
-  const variant = ((Math.trunc(opts.variant ?? 0) % 4) + 4) % 4;
-  const shirt = id === 'odysseus' ? avatar.tunicColor : ['crewman', 'suitor', 'greekSoldier', 'lotusEater'].includes(id) ? variants[variant] : clothing[id];
-  const skin = ['eumaeus', 'laestrygonian', 'laestrygonianKing'].includes(id) ? P.skinDark : P.skin;
-  const hair = ['tiresias', 'poseidon', 'aeolus'].includes(id) ? P.white : id === 'helios' ? P.gold : P.hair;
-  const torso = joint(rig, 'torso', 0, .73);
-  block(torso, [.72, .66, .42], [0, .33, 0], shirt);
-  block(torso, [.77, .12, .46], [0, .12, 0], P.wood);
-  block(torso, [.15, .14, .055], [0, .12, .25], P.gold);
-  block(torso, [.85, .22, .48], [0, -.06, 0], shirt);
-  const back = joint(torso, 'back', 0, .58, -.25);
-  for (const side of [-1, 1]) {
-    const leg = joint(rig, side === 1 ? 'legL' : 'legR', side * .21, .73);
-    block(leg, [.31, .59, .34], [0, -.3, 0], skin);
-    block(leg, [.35, .14, .46], [0, -.66, .04], P.wood);
-    block(leg, [.34, .07, .36], [0, -.51, 0], P.woodLight);
-    const arm = joint(torso, side === 1 ? 'armL' : 'armR', side * .53, .61);
-    block(arm, [.3, .25, .38], [0, -.1, 0], shirt);
-    block(arm, [.25, .38, .29], [0, -.39, 0], skin);
-    block(arm, [.28, .15, .31], [0, -.59, 0], skin);
-    joint(arm, side === 1 ? 'handL' : 'handR', 0, -.62, .05);
-  }
-  const head = joint(torso, 'head', 0, .68);
-  block(head, [.66, .58, .57], [0, .29, 0], skin);
-  block(head, [.7, .14, .61], [0, .6, -.02], hair);
-  if (longHair.includes(id)) block(head, [.69, .5, .15], [0, .25, -.31], hair);
-  face(head, .34, .3, .65, id === 'polyphemus');
-  const top = joint(head, 'headTop', 0, .68);
-  const handR = rig.getObjectByName('handR')!, handL = rig.getObjectByName('handL')!;
-  const equip = (kind: Parameters<typeof weapon>[0], left = false, color: string = P.gold) => {
-    const item = weapon(kind, color);
-    item.scale.setScalar(kind === 'trident' || kind === 'caduceus' ? .95 : .65);
-    item.position.z = .25;
-    if (!left) item.rotation.z = .22;
-    (left ? handL : handR).add(item); return item;
-  };
-  const crown = () => {
-    block(top, [.7, .12, .58], [0, .03, 0], P.gold);
-    for (const x of [-.26, 0, .26]) block(top, [.1, .19, .1], [x, .17, .23], P.gold);
-  };
-  if (id === 'odysseus') {
-    if (avatar.helmet !== 'none') top.add(helmet(avatar.helmet));
-    if (avatar.capeColor) {
-      block(back, [.74, .8, .055], [0, -.38, -.06], avatar.capeColor).rotation.x = -.12;
+  if (id === 'odysseus') { look.cloth = avatar.tunicColor; look.hat = avatar.helmet; look.cloak = avatar.capeColor ?? undefined; }
+  const root = new Group(); root.name = id;
+  const torso = part(root, 'torso', 0, .79);
+  box(torso, look.cloth, .76, .67, .45, 0, .36);
+  // The peplos has a continuous flared silhouette, distinct from the short chiton.
+  const hem = part(torso, 'chiton');
+  if (look.robe) {
+    drape(hem, look.cloth, 1.02, .77, .60, -.27);
+    box(hem, look.trim, 1.02, .055, .61, 0, -.64);
+    // Three folds read as draped fabric, not trouser legs.
+    for (const x of [-.28, 0, .28]) {
+      const fold = box(hem, look.cloth, .055, .63, .055, x, -.29, .28);
+      fold.rotation.x = -.09;
     }
-    equip('shield', true, avatar.shieldColor); equip('sword');
+  } else {
+    drape(hem, look.cloth, .88, .29, .51, -.07);
+    box(hem, look.trim, .89, .055, .52, 0, -.19);
   }
-  if (id === 'athena') { top.add(helmet('owl')); equip('shield', true); equip('wand'); }
-  if (id === 'hermes') {
-    block(top, [.82, .08, .64], [0, .02, 0], P.sand);
-    block(top, [.46, .15, .46], [0, .12, 0], P.sand);
-    for (const side of [-1, 1]) for (let i = 0; i < 3; i++) block(top, [.16, .08, .12], [side * (.42 + i * .07), .09 + i * .07, 0], P.white);
-    equip('caduceus');
+  for (const s of [-1, 1]) {
+    const leg = part(root, s > 0 ? 'legL' : 'legR', s * .21, .77);
+    box(leg, look.skin ?? P.skin, .28, .61, .30, 0, -.32);
+    box(leg, P.sole, .34, .09, .47, 0, -.725, .06);
+    box(leg, P.leather, .31, .06, .40, 0, -.65, .035);
+    box(leg, P.leather, .31, .055, .32, 0, -.51);
+    if (!look.robe && look.armor) box(leg, P.bronze, .23, .30, .09, 0, -.41, .16);
   }
-  if (['calypso', 'lotusEater', 'lotusKing'].includes(id)) {
-    for (let i = 0; i < 5; i++) {
-      const a = i * Math.PI * 2 / 5;
-      block(top, [.19, .13, .22], [Math.cos(a) * .24, .06, Math.sin(a) * .24], P.rose).rotation.y = -a;
-    }
-    block(top, [.13, .14, .13], [0, .12, 0], P.gold);
+  box(torso, P.leather, .79, .10, .48, 0, .09);
+  badge(torso, look.trim, 0, .09, .26, .075);
+  const sash = box(torso, look.trim, .16, .62, .045, .02, .39, .255);
+  sash.rotation.z = -.53;
+  if (look.armor) {
+    box(torso, P.bronze, .62, .34, .09, 0, .45, .25);
+    box(torso, look.trim, .62, .045, .10, 0, .29, .26);
   }
-  if (id === 'ino') {
-    block(torso, [.8, .12, .5], [0, .57, 0], P.white);
-    block(torso, [.14, .6, .06], [-.24, .21, .27], P.white);
+  badge(torso, look.trim, .28, .64, .27);
+  const back = part(torso, 'back', 0, .62, -.25);
+  if (look.cloak) cape(back, look.cloak);
+
+  const hands: Group[] = [];
+  for (const s of [-1, 1]) {
+    const arm = part(torso, s > 0 ? 'armL' : 'armR', s * .55, .65);
+    box(arm, look.skin ?? P.skin, .29, .57, .31, 0, -.28);
+    box(arm, look.cloth, .34, look.robe ? .12 : .20, .36, 0, -.035);
+    box(arm, look.trim, .32, .055, .33, 0, -.43);
+    box(arm, look.skin ?? P.skin, .30, .18, .33, 0, -.58, .01);
+    hands.push(part(arm, s > 0 ? 'handL' : 'handR', 0, -.63, .06));
   }
-  if (id === 'aeolus') {
-    for (const x of [-.4, -.2, 0, .2, .4]) block(top, [.22, .15, .28], [x, .05 + Math.abs(x) * .1, 0], P.white);
-    block(handL, [.35, .42, .3], [0, -.05, 0], P.blue);
-    block(handL, [.39, .06, .32], [0, .1, 0], P.gold);
-  }
-  if (id === 'circe') {
-    for (let i = 0; i < 3; i++) block(top, [.6 - i * .16, .16, .5 - i * .13], [0, i * .14, 0], P.purple);
-    equip('wand');
-  }
-  if (id === 'tiresias' || id === 'eumaeus') {
-    block(handR, [.07, 1.35, .07], [-.08, .05, .3], P.woodLight);
-    block(handR, [.22, .07, .07], [-.01, .72, .3], P.woodLight);
-  }
-  if (['tiresias', 'poseidon', 'eumaeus', 'polyphemus'].includes(id)) block(head, [.4, .18, .1], [0, .07, .29], hair);
-  if (id === 'nausicaa') block(handL, [.32, .32, .32], [0, .1, .3], P.coral);
-  if (id === 'penelope') {
-    block(back, [.88, .54, .07], [0, -.23, -.03], P.purple);
-    for (const x of [-.32, -.16, 0, .16, .32]) block(back, [.04, .58, .03], [x, -.24, -.08], P.gold);
-    block(handL, [.07, .4, .07], [0, .1, 0], P.woodLight);
-    block(handL, [.2, .17, .15], [0, .1, 0], P.cream);
-  }
-  if (id === 'poseidon') { crown(); equip('trident'); }
-  if (id === 'helios') {
-    for (let i = 0; i < 9; i++) {
-      const a = i * Math.PI * 2 / 9;
-      block(head, [.1, .22, .08], [Math.sin(a) * .47, .35 + Math.cos(a) * .47, -.1], P.gold, true).rotation.z = -a;
-    }
-  }
-  if (royals.includes(id)) crown();
-  if (['greekSoldier', 'soldierCaptain', 'antinous', 'telemachus'].includes(id)) {
-    if (id !== 'antinous') top.add(helmet(id === 'soldierCaptain' ? 'crested' : 'bronze'));
-    equip('sword'); equip('shield', true, shirt);
-    block(torso, [.54, .38, .08], [0, .36, .25], P.bronze);
-  }
-  if (id === 'siren' || id === 'sirenQueen') {
-    for (const side of [-1, 1]) {
-      const wing = joint(back, side === 1 ? 'wingL' : 'wingR', side * .35, -.1);
-      for (let i = 0; i < 3; i++) block(wing, [.2, .53 - i * .1, .11], [side * (.1 + i * .14), -.1 - i * .06, 0], P.sea).rotation.z = side * -.3;
-    }
-    block(handR, [.08, .65, .08], [0, .16, .03], P.gold);
-  }
-  if (id === 'crewman') block(top, [.7, .1, .61], [0, 0, 0], P.cream);
-  return finish(rig, id, heights[id] ?? 2.05);
+  const head = part(torso, 'head', 0, .73);
+  face(head, look, id === 'polyphemus');
+  const top = part(head, 'headTop', 0, .63);
+  if (look.hat) helmet(top, look.hat);
+  adorn(id, root, head, torso, top, hands[1], hands[0]);
+  return finish(root, look.height ?? 2.15, .46);
 }

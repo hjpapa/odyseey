@@ -1,8 +1,11 @@
-import { Box3, Group, Vector3 } from 'three';
+import { Group } from 'three';
 import type { PropId } from '../types/contracts';
-import { palette as P } from './palette';
+import { palette as P } from './propPalette';
 import { block, cylinder, finish, joint } from './parts';
-import { weapon } from './equipment';
+import { arrow, bow, caduceus, shield, sword, trident, wand } from './equipment';
+
+/** 장비는 신화 캐릭터 세트(equipment.ts)를 쓴다 — 손잡이가 원점이라 손에 바로 붙는다 */
+const EQUIPMENT = { sword, shield: () => shield(), bow, arrow, trident, caduceus, wand };
 
 export function prop(id: PropId): Group {
   const g = new Group();
@@ -20,12 +23,9 @@ export function prop(id: PropId): Group {
     }
   };
   switch (id) {
-    case 'sword': case 'shield': case 'bow': case 'arrow': case 'trident': case 'caduceus': case 'wand': {
+    case 'sword': case 'shield': case 'bow': case 'arrow': case 'trident': case 'caduceus': case 'wand':
       // Equipment retains its hand grip at (0,0,0), unlike floor-standing props.
-      const item = weapon(id), size = new Box3().setFromObject(item).getSize(new Vector3());
-      item.userData = { height: size.y, radius: Math.hypot(size.x, size.z) / 2 };
-      return item;
-    }
+      return EQUIPMENT[id]();
     case 'raft': case 'ship': case 'phaeacianShip': case 'rowboat': {
       const raft = id === 'raft', small = id === 'rowboat', w = small ? 1.6 : raft ? 2.5 : 3.4, length = small ? 3 : raft ? 3.5 : 6.4;
       if (raft) for (let i = 0; i < 6; i++) box(.36, .35, length, (i - 2.5) * .4, .2, 0, i % 2 ? P.wood : P.woodLight);

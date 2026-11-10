@@ -1,5 +1,5 @@
 import { Box3, BoxGeometry, CylinderGeometry, Group, Mesh, Object3D, Vector3 } from 'three';
-import { glow, palette as P, toon } from './palette';
+import { glow, palette as P, toon } from './propPalette';
 
 const cube = new BoxGeometry(1, 1, 1);
 const column = new CylinderGeometry(.5, .5, 1, 8);
