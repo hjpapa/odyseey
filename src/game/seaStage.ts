@@ -14,7 +14,7 @@ import { createRng, type Rng } from '../core/rng';
 import { getModel } from '../core/models';
 import { block } from '../core/placeholders';
 import { createEnvironment, type Environment } from '../world/environment';
-import { makeProp } from '../world/props';
+import { alignLengthToZ, makeProp, splitByHeight } from '../world/props';
 import { Effects, label } from '../play/effects';
 import { HumanoidRig } from '../play/rig';
 import { englishWords } from '../learning/data';
@@ -96,10 +96,9 @@ export class SeaStage extends ChapterStage {
     this.fx = new Effects(this.scene);
 
     const raftModel = makeProp('raft');
-    raftModel.rotation.y = Math.PI / 2;
-    // 폭풍에 돛이 부러졌다 — 앞이 잘 보이도록 돛대는 숨긴다
-    const mast = raftModel.getObjectByName('mast');
-    if (mast) mast.visible = false;
+    alignLengthToZ(raftModel);
+    // 폭풍에 돛이 부러졌다 — 앞이 잘 보이도록 높은 부분(돛대·돛)은 숨긴다
+    splitByHeight(raftModel, 0.9).tall.forEach((m) => (m.visible = false));
     this.raft.add(raftModel);
     this.hero = getModel('odysseus', { avatar: svc.save.data?.avatar });
     this.hero.position.set(0, 0.4, -0.6);
@@ -115,9 +114,13 @@ export class SeaStage extends ChapterStage {
     this.rain = this.buildRain();
     this.scene.add(this.rain);
 
-    const pool = englishWords.filter((w) => (w.topic === 'sea' || w.chapterHint?.includes('ch02')) && /^[a-z]{2,6}$/.test(w.word));
+    // 2장 이야기 단어(sea, wave, boat …)를 먼저, 그다음 학년에 맞는 바다 단어
+    const grade = svc.save.data?.grade ?? 1;
+    const fits = (w: EnglishWord) => /^[a-z]{2,6}$/.test(w.word) && w.grade <= grade;
+    const story = englishWords.filter((w) => fits(w) && w.chapterHint?.includes('ch02'));
+    const sea = englishWords.filter((w) => fits(w) && w.topic === 'sea' && !story.includes(w));
     const seen = new Set<string>();
-    this.words = [...this.rng.shuffle(pool), ...FALLBACK_WORDS].filter((w) => !seen.has(w.word) && seen.add(w.word));
+    this.words = [...this.rng.shuffle(story), ...this.rng.shuffle(sea), ...FALLBACK_WORDS].filter((w) => !seen.has(w.word) && seen.add(w.word));
 
     this.svc.ui.hud.setHearts(this.hp, MAX_HP);
     this.svc.ui.hud.setCoins(svc.save.data?.coins ?? 0);

@@ -1,0 +1,116 @@
+{
+  "id": "ch04",
+  "no": 4,
+  "title": "연꽃 먹는 사람들",
+  "titleCard": {
+    "childText": "오디세우스는 연꽃 먹는 악당들을 물리치고 모험을 계속했다.",
+    "subtitle": "가족을 떠올려요"
+  },
+  "memory": true,
+  "island": "lotus",
+  "playStyles": [
+    "explore",
+    "combat",
+    "boss"
+  ],
+  "bgm": {
+    "explore": "island",
+    "boss": "boss"
+  },
+  "learning": [
+    "hanja"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "crewman",
+          "text": "이 꽃을 먹으니 집이 생각나지 않아."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "우리 함께 가족을 떠올려 보자."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "crewman",
+          "text": "가족이 기다려요. 함께 돌아갈래요!"
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "기억을 되찾은 친구들과 출발하자."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "family-letters",
+      "type": "quiz",
+      "text": "가족 한자 떠올리기",
+      "target": "gate-family"
+    },
+    {
+      "id": "lotus-path",
+      "type": "defeat",
+      "text": "정원의 길 열기",
+      "target": "lotus-guards",
+      "count": 3
+    },
+    {
+      "id": "lotus-battle",
+      "type": "boss",
+      "text": "연꽃 왕의 마법 풀기",
+      "target": "lotusKing"
+    },
+    {
+      "id": "save-crew",
+      "type": "rescue",
+      "text": "동료 3명 데려오기",
+      "target": "crew",
+      "count": 3
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-family",
+      "subject": "hanja",
+      "placement": "gate",
+      "count": 2,
+      "ids": [
+        "hj-家",
+        "hj-父",
+        "hj-母"
+      ]
+    },
+    {
+      "id": "boss-memory",
+      "subject": "hanja",
+      "placement": "boss",
+      "count": 1,
+      "ids": [
+        "hj-兄",
+        "hj-弟"
+      ]
+    }
+  ],
+  "reward": {
+    "coins": 40
+  },
+  "boss": "lotusKing"
+}

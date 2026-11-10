@@ -61,7 +61,7 @@ export class Player {
     this.root.add(this.pivot);
     this.rig = new HumanoidRig(this.model);
     this.model.getObjectByName('handR')?.add(makeProp('sword'));
-    const shield = makeProp('shield');
+    const shield = makeProp('shield', { avatar });
     shield.position.x = 0.12;
     this.model.getObjectByName('handL')?.add(shield);
     this.body = makeBody(0, 0, 0, 0.45);

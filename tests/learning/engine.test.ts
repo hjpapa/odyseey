@@ -79,6 +79,18 @@ describe('학습 엔진', () => {
     }
   });
 
+  it('이야기에 맞춘 자리(문장형 템플릿)는 복습 문제 대신 템플릿 문제를 낸다', () => {
+    const { engine, progress } = engineWith([]);
+    const old = engine.next({ id: 'x', subject: 'math', placement: 'shrine', count: 1 });
+    engine.record(old, false);
+    expect(progress.review).toHaveLength(1);
+    const slot: QuizSlot = {
+      id: 'gate-1', subject: 'math', placement: 'gate', count: 1,
+      mathTemplate: { op: 'add', text: '통나무 {a}개와 {b}개를 모으면 모두 몇 개?' },
+    };
+    for (let i = 0; i < 30; i++) expect(engine.next(slot).prompt).toContain('통나무');
+  });
+
   it('맞히면 복습 목록에서 빠진다', () => {
     const { engine, progress } = engineWith([]);
     const q = engine.next({ id: 'x', subject: 'math', placement: 'gate', count: 1 });

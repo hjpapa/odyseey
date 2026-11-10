@@ -7,7 +7,13 @@
     "level": "8급",
     "grade": 1,
     "strokes": 1,
-    "exampleWords": [{ "hanja": "一日", "reading": "일일", "meaning": "하루" }]
+    "exampleWords": [
+      {
+        "hanja": "一日",
+        "reading": "일일",
+        "meaning": "하루"
+      }
+    ]
   },
   {
     "id": "hj-山",
@@ -18,10 +24,20 @@
     "grade": 1,
     "strokes": 3,
     "exampleWords": [
-      { "hanja": "火山", "reading": "화산", "meaning": "불을 뿜는 산" },
-      { "hanja": "山水", "reading": "산수", "meaning": "산과 물, 자연 경치" }
+      {
+        "hanja": "火山",
+        "reading": "화산",
+        "meaning": "불을 뿜는 산"
+      },
+      {
+        "hanja": "山水",
+        "reading": "산수",
+        "meaning": "산과 물, 자연 경치"
+      }
     ],
-    "chapterHint": ["ch13"]
+    "chapterHint": [
+      "ch13"
+    ]
   },
   {
     "id": "hj-家",
@@ -31,7 +47,1462 @@
     "level": "7급II",
     "grade": 2,
     "strokes": 10,
-    "exampleWords": [{ "hanja": "家族", "reading": "가족", "meaning": "한집에 사는 사람들" }],
-    "chapterHint": ["ch04"]
+    "exampleWords": [
+      {
+        "hanja": "家族",
+        "reading": "가족",
+        "meaning": "한집에 사는 사람들"
+      }
+    ],
+    "chapterHint": [
+      "ch04"
+    ]
+  },
+  {
+    "id": "hj-校",
+    "char": "校",
+    "hun": "학교",
+    "eum": "교",
+    "strokes": 10,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "學校",
+        "reading": "학교",
+        "meaning": "친구들과 배우는 곳"
+      }
+    ]
+  },
+  {
+    "id": "hj-敎",
+    "char": "敎",
+    "hun": "가르칠",
+    "eum": "교",
+    "strokes": 11,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "敎室",
+        "reading": "교실",
+        "meaning": "학교에서 공부하는 방"
+      }
+    ]
+  },
+  {
+    "id": "hj-九",
+    "char": "九",
+    "hun": "아홉",
+    "eum": "구",
+    "strokes": 2,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "九月",
+        "reading": "구월",
+        "meaning": "한 해의 아홉째 달"
+      }
+    ]
+  },
+  {
+    "id": "hj-國",
+    "char": "國",
+    "hun": "나라",
+    "eum": "국",
+    "strokes": 11,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "韓國",
+        "reading": "한국",
+        "meaning": "우리가 사는 나라"
+      }
+    ]
+  },
+  {
+    "id": "hj-軍",
+    "char": "軍",
+    "hun": "군사",
+    "eum": "군",
+    "strokes": 9,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "軍人",
+        "reading": "군인",
+        "meaning": "나라를 지키는 일을 하는 사람"
+      }
+    ]
+  },
+  {
+    "id": "hj-金",
+    "char": "金",
+    "hun": "쇠",
+    "eum": "금",
+    "strokes": 8,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "金色",
+        "reading": "금색",
+        "meaning": "금처럼 빛나는 노란색"
+      }
+    ]
+  },
+  {
+    "id": "hj-南",
+    "char": "南",
+    "hun": "남녘",
+    "eum": "남",
+    "strokes": 9,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "南北",
+        "reading": "남북",
+        "meaning": "남쪽과 북쪽"
+      }
+    ]
+  },
+  {
+    "id": "hj-女",
+    "char": "女",
+    "hun": "계집",
+    "eum": "녀",
+    "strokes": 3,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "女子",
+        "reading": "여자",
+        "meaning": "여성인 사람"
+      }
+    ]
+  },
+  {
+    "id": "hj-年",
+    "char": "年",
+    "hun": "해",
+    "eum": "년",
+    "strokes": 6,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "學年",
+        "reading": "학년",
+        "meaning": "학교에서 배우는 단계"
+      }
+    ]
+  },
+  {
+    "id": "hj-大",
+    "char": "大",
+    "hun": "큰",
+    "eum": "대",
+    "strokes": 3,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "大門",
+        "reading": "대문",
+        "meaning": "집의 큰 출입문"
+      }
+    ],
+    "chapterHint": [
+      "ch08"
+    ]
+  },
+  {
+    "id": "hj-東",
+    "char": "東",
+    "hun": "동녘",
+    "eum": "동",
+    "strokes": 8,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "東西",
+        "reading": "동서",
+        "meaning": "동쪽과 서쪽"
+      }
+    ]
+  },
+  {
+    "id": "hj-六",
+    "char": "六",
+    "hun": "여섯",
+    "eum": "륙",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "六月",
+        "reading": "유월",
+        "meaning": "한 해의 여섯째 달"
+      }
+    ]
+  },
+  {
+    "id": "hj-萬",
+    "char": "萬",
+    "hun": "일만",
+    "eum": "만",
+    "strokes": 13,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "一萬",
+        "reading": "일만",
+        "meaning": "천이 열 개 모인 수"
+      }
+    ]
+  },
+  {
+    "id": "hj-母",
+    "char": "母",
+    "hun": "어미",
+    "eum": "모",
+    "strokes": 5,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "父母",
+        "reading": "부모",
+        "meaning": "아버지와 어머니"
+      }
+    ],
+    "chapterHint": [
+      "ch04"
+    ]
+  },
+  {
+    "id": "hj-木",
+    "char": "木",
+    "hun": "나무",
+    "eum": "목",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "木工",
+        "reading": "목공",
+        "meaning": "나무로 물건을 만드는 일"
+      }
+    ],
+    "chapterHint": [
+      "ch13"
+    ]
+  },
+  {
+    "id": "hj-門",
+    "char": "門",
+    "hun": "문",
+    "eum": "문",
+    "strokes": 8,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "校門",
+        "reading": "교문",
+        "meaning": "학교로 들어가는 문"
+      }
+    ],
+    "chapterHint": [
+      "ch13"
+    ]
+  },
+  {
+    "id": "hj-民",
+    "char": "民",
+    "hun": "백성",
+    "eum": "민",
+    "strokes": 5,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "國民",
+        "reading": "국민",
+        "meaning": "한 나라에 속한 사람들"
+      }
+    ]
+  },
+  {
+    "id": "hj-白",
+    "char": "白",
+    "hun": "흰",
+    "eum": "백",
+    "strokes": 5,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "白色",
+        "reading": "백색",
+        "meaning": "눈처럼 하얀 색"
+      }
+    ]
+  },
+  {
+    "id": "hj-父",
+    "char": "父",
+    "hun": "아비",
+    "eum": "부",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "父母",
+        "reading": "부모",
+        "meaning": "아버지와 어머니"
+      }
+    ],
+    "chapterHint": [
+      "ch04"
+    ]
+  },
+  {
+    "id": "hj-北",
+    "char": "北",
+    "hun": "북녘",
+    "eum": "북",
+    "strokes": 5,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "北風",
+        "reading": "북풍",
+        "meaning": "북쪽에서 부는 바람"
+      }
+    ]
+  },
+  {
+    "id": "hj-四",
+    "char": "四",
+    "hun": "넉",
+    "eum": "사",
+    "strokes": 5,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "四月",
+        "reading": "사월",
+        "meaning": "한 해의 넷째 달"
+      }
+    ]
+  },
+  {
+    "id": "hj-三",
+    "char": "三",
+    "hun": "석",
+    "eum": "삼",
+    "strokes": 3,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "三角",
+        "reading": "삼각",
+        "meaning": "세 개의 모서리가 있는 모양"
+      }
+    ]
+  },
+  {
+    "id": "hj-生",
+    "char": "生",
+    "hun": "날",
+    "eum": "생",
+    "strokes": 5,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "生日",
+        "reading": "생일",
+        "meaning": "태어난 날"
+      }
+    ]
+  },
+  {
+    "id": "hj-西",
+    "char": "西",
+    "hun": "서녘",
+    "eum": "서",
+    "strokes": 6,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "西海",
+        "reading": "서해",
+        "meaning": "우리나라 서쪽에 있는 바다"
+      }
+    ]
+  },
+  {
+    "id": "hj-先",
+    "char": "先",
+    "hun": "먼저",
+    "eum": "선",
+    "strokes": 6,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "先生",
+        "reading": "선생",
+        "meaning": "배움을 도와주는 분"
+      }
+    ]
+  },
+  {
+    "id": "hj-小",
+    "char": "小",
+    "hun": "작을",
+    "eum": "소",
+    "strokes": 3,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "小雨",
+        "reading": "소우",
+        "meaning": "조금 내리는 비"
+      }
+    ],
+    "chapterHint": [
+      "ch08"
+    ]
+  },
+  {
+    "id": "hj-水",
+    "char": "水",
+    "hun": "물",
+    "eum": "수",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "水泳",
+        "reading": "수영",
+        "meaning": "물에서 헤엄치는 운동"
+      }
+    ],
+    "chapterHint": [
+      "ch13"
+    ]
+  },
+  {
+    "id": "hj-室",
+    "char": "室",
+    "hun": "집",
+    "eum": "실",
+    "strokes": 9,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "敎室",
+        "reading": "교실",
+        "meaning": "학교에서 공부하는 방"
+      }
+    ]
+  },
+  {
+    "id": "hj-十",
+    "char": "十",
+    "hun": "열",
+    "eum": "십",
+    "strokes": 2,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "十月",
+        "reading": "시월",
+        "meaning": "한 해의 열째 달"
+      }
+    ]
+  },
+  {
+    "id": "hj-五",
+    "char": "五",
+    "hun": "다섯",
+    "eum": "오",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "五月",
+        "reading": "오월",
+        "meaning": "한 해의 다섯째 달"
+      }
+    ]
+  },
+  {
+    "id": "hj-王",
+    "char": "王",
+    "hun": "임금",
+    "eum": "왕",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "王子",
+        "reading": "왕자",
+        "meaning": "임금의 아들"
+      }
+    ]
+  },
+  {
+    "id": "hj-外",
+    "char": "外",
+    "hun": "바깥",
+    "eum": "외",
+    "strokes": 5,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "室外",
+        "reading": "실외",
+        "meaning": "방의 바깥"
+      }
+    ]
+  },
+  {
+    "id": "hj-月",
+    "char": "月",
+    "hun": "달",
+    "eum": "월",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "月光",
+        "reading": "월광",
+        "meaning": "달에서 오는 빛"
+      }
+    ],
+    "chapterHint": [
+      "ch08"
+    ]
+  },
+  {
+    "id": "hj-二",
+    "char": "二",
+    "hun": "두",
+    "eum": "이",
+    "strokes": 2,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "二月",
+        "reading": "이월",
+        "meaning": "한 해의 둘째 달"
+      }
+    ]
+  },
+  {
+    "id": "hj-人",
+    "char": "人",
+    "hun": "사람",
+    "eum": "인",
+    "strokes": 2,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "人氣",
+        "reading": "인기",
+        "meaning": "여러 사람에게 사랑받는 것"
+      }
+    ],
+    "chapterHint": [
+      "ch08"
+    ]
+  },
+  {
+    "id": "hj-日",
+    "char": "日",
+    "hun": "날",
+    "eum": "일",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "生日",
+        "reading": "생일",
+        "meaning": "태어난 날"
+      }
+    ],
+    "chapterHint": [
+      "ch08"
+    ]
+  },
+  {
+    "id": "hj-長",
+    "char": "長",
+    "hun": "긴",
+    "eum": "장",
+    "strokes": 8,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "成長",
+        "reading": "성장",
+        "meaning": "몸과 마음이 자라는 것"
+      }
+    ]
+  },
+  {
+    "id": "hj-弟",
+    "char": "弟",
+    "hun": "아우",
+    "eum": "제",
+    "strokes": 7,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "兄弟",
+        "reading": "형제",
+        "meaning": "형과 아우"
+      }
+    ],
+    "chapterHint": [
+      "ch04"
+    ]
+  },
+  {
+    "id": "hj-中",
+    "char": "中",
+    "hun": "가운데",
+    "eum": "중",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "中心",
+        "reading": "중심",
+        "meaning": "한가운데가 되는 곳"
+      }
+    ]
+  },
+  {
+    "id": "hj-靑",
+    "char": "靑",
+    "hun": "푸를",
+    "eum": "청",
+    "strokes": 8,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "靑空",
+        "reading": "청공",
+        "meaning": "맑고 푸른 하늘"
+      }
+    ]
+  },
+  {
+    "id": "hj-寸",
+    "char": "寸",
+    "hun": "마디",
+    "eum": "촌",
+    "strokes": 3,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "三寸",
+        "reading": "삼촌",
+        "meaning": "아버지의 남자 형제"
+      }
+    ]
+  },
+  {
+    "id": "hj-七",
+    "char": "七",
+    "hun": "일곱",
+    "eum": "칠",
+    "strokes": 2,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "七月",
+        "reading": "칠월",
+        "meaning": "한 해의 일곱째 달"
+      }
+    ]
+  },
+  {
+    "id": "hj-土",
+    "char": "土",
+    "hun": "흙",
+    "eum": "토",
+    "strokes": 3,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "國土",
+        "reading": "국토",
+        "meaning": "한 나라의 땅"
+      }
+    ],
+    "chapterHint": [
+      "ch13"
+    ]
+  },
+  {
+    "id": "hj-八",
+    "char": "八",
+    "hun": "여덟",
+    "eum": "팔",
+    "strokes": 2,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "八月",
+        "reading": "팔월",
+        "meaning": "한 해의 여덟째 달"
+      }
+    ]
+  },
+  {
+    "id": "hj-學",
+    "char": "學",
+    "hun": "배울",
+    "eum": "학",
+    "strokes": 16,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "學生",
+        "reading": "학생",
+        "meaning": "학교에서 배우는 사람"
+      }
+    ]
+  },
+  {
+    "id": "hj-韓",
+    "char": "韓",
+    "hun": "한국",
+    "eum": "한",
+    "strokes": 17,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "韓國",
+        "reading": "한국",
+        "meaning": "우리가 사는 나라"
+      }
+    ]
+  },
+  {
+    "id": "hj-兄",
+    "char": "兄",
+    "hun": "형",
+    "eum": "형",
+    "strokes": 5,
+    "level": "8급",
+    "grade": 2,
+    "exampleWords": [
+      {
+        "hanja": "兄弟",
+        "reading": "형제",
+        "meaning": "형과 아우"
+      }
+    ],
+    "chapterHint": [
+      "ch04"
+    ]
+  },
+  {
+    "id": "hj-火",
+    "char": "火",
+    "hun": "불",
+    "eum": "화",
+    "strokes": 4,
+    "level": "8급",
+    "grade": 1,
+    "exampleWords": [
+      {
+        "hanja": "火山",
+        "reading": "화산",
+        "meaning": "땅속의 뜨거운 물질이 나오는 산"
+      }
+    ]
+  },
+  {
+    "id": "hj-間",
+    "char": "間",
+    "hun": "사이",
+    "eum": "간",
+    "strokes": 12,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "時間",
+        "reading": "시간",
+        "meaning": "때가 흐르는 길이"
+      }
+    ]
+  },
+  {
+    "id": "hj-江",
+    "char": "江",
+    "hun": "강",
+    "eum": "강",
+    "strokes": 6,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "江水",
+        "reading": "강수",
+        "meaning": "강에 흐르는 물"
+      }
+    ]
+  },
+  {
+    "id": "hj-車",
+    "char": "車",
+    "hun": "수레",
+    "eum": "차",
+    "strokes": 7,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "汽車",
+        "reading": "기차",
+        "meaning": "철길 위를 달리는 차"
+      }
+    ]
+  },
+  {
+    "id": "hj-工",
+    "char": "工",
+    "hun": "장인",
+    "eum": "공",
+    "strokes": 3,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "工場",
+        "reading": "공장",
+        "meaning": "물건을 만드는 곳"
+      }
+    ]
+  },
+  {
+    "id": "hj-空",
+    "char": "空",
+    "hun": "빌",
+    "eum": "공",
+    "strokes": 8,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "空氣",
+        "reading": "공기",
+        "meaning": "우리 주위를 둘러싼 기체"
+      }
+    ]
+  },
+  {
+    "id": "hj-氣",
+    "char": "氣",
+    "hun": "기운",
+    "eum": "기",
+    "strokes": 10,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "元氣",
+        "reading": "원기",
+        "meaning": "몸의 튼튼한 기운"
+      }
+    ]
+  },
+  {
+    "id": "hj-記",
+    "char": "記",
+    "hun": "기록할",
+    "eum": "기",
+    "strokes": 10,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "日記",
+        "reading": "일기",
+        "meaning": "하루의 일을 적은 글"
+      }
+    ]
+  },
+  {
+    "id": "hj-男",
+    "char": "男",
+    "hun": "사내",
+    "eum": "남",
+    "strokes": 7,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "男子",
+        "reading": "남자",
+        "meaning": "남성인 사람"
+      }
+    ]
+  },
+  {
+    "id": "hj-內",
+    "char": "內",
+    "hun": "안",
+    "eum": "내",
+    "strokes": 4,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "室內",
+        "reading": "실내",
+        "meaning": "방의 안쪽"
+      }
+    ]
+  },
+  {
+    "id": "hj-農",
+    "char": "農",
+    "hun": "농사",
+    "eum": "농",
+    "strokes": 13,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "農夫",
+        "reading": "농부",
+        "meaning": "곡식과 채소를 기르는 사람"
+      }
+    ]
+  },
+  {
+    "id": "hj-答",
+    "char": "答",
+    "hun": "대답",
+    "eum": "답",
+    "strokes": 12,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "正答",
+        "reading": "정답",
+        "meaning": "물음에 맞는 답"
+      }
+    ]
+  },
+  {
+    "id": "hj-道",
+    "char": "道",
+    "hun": "길",
+    "eum": "도",
+    "strokes": 13,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "道路",
+        "reading": "도로",
+        "meaning": "사람과 차가 다니는 길"
+      }
+    ]
+  },
+  {
+    "id": "hj-動",
+    "char": "動",
+    "hun": "움직일",
+    "eum": "동",
+    "strokes": 11,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "動物",
+        "reading": "동물",
+        "meaning": "스스로 움직이며 살아가는 생물"
+      }
+    ]
+  },
+  {
+    "id": "hj-力",
+    "char": "力",
+    "hun": "힘",
+    "eum": "력",
+    "strokes": 2,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "體力",
+        "reading": "체력",
+        "meaning": "몸을 움직이는 힘"
+      }
+    ]
+  },
+  {
+    "id": "hj-立",
+    "char": "立",
+    "hun": "설",
+    "eum": "립",
+    "strokes": 5,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "起立",
+        "reading": "기립",
+        "meaning": "자리에서 일어서는 것"
+      }
+    ]
+  },
+  {
+    "id": "hj-名",
+    "char": "名",
+    "hun": "이름",
+    "eum": "명",
+    "strokes": 6,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "姓名",
+        "reading": "성명",
+        "meaning": "성과 이름"
+      }
+    ]
+  },
+  {
+    "id": "hj-物",
+    "char": "物",
+    "hun": "물건",
+    "eum": "물",
+    "strokes": 8,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "植物",
+        "reading": "식물",
+        "meaning": "풀과 나무 같은 생물"
+      }
+    ]
+  },
+  {
+    "id": "hj-上",
+    "char": "上",
+    "hun": "윗",
+    "eum": "상",
+    "strokes": 3,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "上下",
+        "reading": "상하",
+        "meaning": "위와 아래"
+      }
+    ]
+  },
+  {
+    "id": "hj-手",
+    "char": "手",
+    "hun": "손",
+    "eum": "수",
+    "strokes": 4,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "拍手",
+        "reading": "박수",
+        "meaning": "두 손을 마주치는 것"
+      }
+    ]
+  },
+  {
+    "id": "hj-時",
+    "char": "時",
+    "hun": "때",
+    "eum": "시",
+    "strokes": 10,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "時間",
+        "reading": "시간",
+        "meaning": "때가 흐르는 길이"
+      }
+    ]
+  },
+  {
+    "id": "hj-食",
+    "char": "食",
+    "hun": "밥",
+    "eum": "식",
+    "strokes": 9,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "食事",
+        "reading": "식사",
+        "meaning": "끼니로 음식을 먹는 일"
+      }
+    ]
+  },
+  {
+    "id": "hj-安",
+    "char": "安",
+    "hun": "편안",
+    "eum": "안",
+    "strokes": 6,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "安全",
+        "reading": "안전",
+        "meaning": "다칠 걱정이 없는 상태"
+      }
+    ]
+  },
+  {
+    "id": "hj-午",
+    "char": "午",
+    "hun": "낮",
+    "eum": "오",
+    "strokes": 4,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "午後",
+        "reading": "오후",
+        "meaning": "낮 열두 시가 지난 때"
+      }
+    ]
+  },
+  {
+    "id": "hj-子",
+    "char": "子",
+    "hun": "아들",
+    "eum": "자",
+    "strokes": 3,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "子女",
+        "reading": "자녀",
+        "meaning": "아들과 딸"
+      }
+    ]
+  },
+  {
+    "id": "hj-足",
+    "char": "足",
+    "hun": "발",
+    "eum": "족",
+    "strokes": 7,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "足跡",
+        "reading": "족적",
+        "meaning": "발이 지나가며 남긴 자국"
+      }
+    ]
+  },
+  {
+    "id": "hj-下",
+    "char": "下",
+    "hun": "아래",
+    "eum": "하",
+    "strokes": 3,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "下校",
+        "reading": "하교",
+        "meaning": "학교 공부를 마치고 집으로 감"
+      }
+    ]
+  },
+  {
+    "id": "hj-海",
+    "char": "海",
+    "hun": "바다",
+    "eum": "해",
+    "strokes": 10,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "海水",
+        "reading": "해수",
+        "meaning": "바다의 짠물"
+      }
+    ]
+  },
+  {
+    "id": "hj-話",
+    "char": "話",
+    "hun": "말씀",
+    "eum": "화",
+    "strokes": 13,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "對話",
+        "reading": "대화",
+        "meaning": "서로 이야기를 나누는 것"
+      }
+    ]
+  },
+  {
+    "id": "hj-孝",
+    "char": "孝",
+    "hun": "효도",
+    "eum": "효",
+    "strokes": 7,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "孝道",
+        "reading": "효도",
+        "meaning": "부모님을 아끼고 돕는 마음과 행동"
+      }
+    ]
+  },
+  {
+    "id": "hj-後",
+    "char": "後",
+    "hun": "뒤",
+    "eum": "후",
+    "strokes": 9,
+    "level": "7급II",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "午後",
+        "reading": "오후",
+        "meaning": "낮 열두 시가 지난 때"
+      }
+    ]
+  },
+  {
+    "id": "hj-歌",
+    "char": "歌",
+    "hun": "노래",
+    "eum": "가",
+    "strokes": 14,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "歌手",
+        "reading": "가수",
+        "meaning": "노래하는 일을 하는 사람"
+      }
+    ]
+  },
+  {
+    "id": "hj-口",
+    "char": "口",
+    "hun": "입",
+    "eum": "구",
+    "strokes": 3,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "入口",
+        "reading": "입구",
+        "meaning": "안으로 들어가는 곳"
+      }
+    ]
+  },
+  {
+    "id": "hj-冬",
+    "char": "冬",
+    "hun": "겨울",
+    "eum": "동",
+    "strokes": 5,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "冬眠",
+        "reading": "동면",
+        "meaning": "동물이 겨울에 오래 자는 잠"
+      }
+    ]
+  },
+  {
+    "id": "hj-林",
+    "char": "林",
+    "hun": "수풀",
+    "eum": "림",
+    "strokes": 8,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "山林",
+        "reading": "산림",
+        "meaning": "산과 숲"
+      }
+    ]
+  },
+  {
+    "id": "hj-文",
+    "char": "文",
+    "hun": "글월",
+    "eum": "문",
+    "strokes": 4,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "作文",
+        "reading": "작문",
+        "meaning": "생각을 글로 쓰는 것"
+      }
+    ]
+  },
+  {
+    "id": "hj-百",
+    "char": "百",
+    "hun": "일백",
+    "eum": "백",
+    "strokes": 6,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "一百",
+        "reading": "일백",
+        "meaning": "열이 열 개 모인 수"
+      }
+    ]
+  },
+  {
+    "id": "hj-心",
+    "char": "心",
+    "hun": "마음",
+    "eum": "심",
+    "strokes": 4,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "安心",
+        "reading": "안심",
+        "meaning": "걱정이 줄어 마음이 놓이는 것"
+      }
+    ]
+  },
+  {
+    "id": "hj-字",
+    "char": "字",
+    "hun": "글자",
+    "eum": "자",
+    "strokes": 6,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "漢字",
+        "reading": "한자",
+        "meaning": "뜻과 소리를 가진 글자"
+      }
+    ]
+  },
+  {
+    "id": "hj-天",
+    "char": "天",
+    "hun": "하늘",
+    "eum": "천",
+    "strokes": 4,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "天氣",
+        "reading": "천기",
+        "meaning": "하늘의 날씨"
+      }
+    ]
+  },
+  {
+    "id": "hj-花",
+    "char": "花",
+    "hun": "꽃",
+    "eum": "화",
+    "strokes": 8,
+    "level": "7급",
+    "grade": 3,
+    "exampleWords": [
+      {
+        "hanja": "花園",
+        "reading": "화원",
+        "meaning": "꽃을 심어 가꾸는 동산"
+      }
+    ]
   }
 ]

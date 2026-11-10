@@ -18,6 +18,16 @@ export interface Collider {
   tag?: string;
 }
 
+/**
+ * 모델이 충돌 기둥보다 작아 보이면 그만큼 키운다 (최대 2배).
+ * 그래야 '보이지 않는 벽' 없이, 보이는 만큼 막힌다 — 예: 비밀 숲을 둘러싼 바위.
+ */
+function fitToCollider(obj: Object3D, collider: number): number {
+  const r = obj.userData.radius;
+  if (typeof r !== 'number' || r <= 0 || r >= collider * 0.9) return 1;
+  return Math.min(2, collider / r);
+}
+
 export class IslandWorld {
   readonly scene = new Scene();
   readonly env: Environment;
@@ -60,9 +70,9 @@ export class IslandWorld {
     const obj = makeProp(id);
     obj.position.set(pos[0], this.ground(pos[0], pos[1]), pos[1]);
     obj.rotation.y = rotY;
-    obj.scale.setScalar(scale);
-    parent.add(obj);
     const r = SOLID_RADIUS[id];
+    obj.scale.setScalar(scale * (r ? fitToCollider(obj, r) : 1));
+    parent.add(obj);
     if (r) this.addCollider(pos[0], pos[1], r * scale, id);
     return obj;
   }

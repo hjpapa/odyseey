@@ -1,0 +1,141 @@
+{
+  "id": "ch09",
+  "no": 9,
+  "title": "헬리오스의 섬",
+  "titleCard": {
+    "childText": "헬리오스의 벼락을 피해서 갈수 있었다.",
+    "subtitle": "해가 지기 전에 돌아와요"
+  },
+  "memory": true,
+  "island": "thrinacia",
+  "playStyles": [
+    "survival",
+    "boss"
+  ],
+  "bgm": {
+    "explore": "island",
+    "boss": "boss"
+  },
+  "learning": [
+    "clock"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "바람이 멎었어. 식량을 모으자."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "소는 건드리지 않기로 약속했지."
+        }
+      ]
+    },
+    {
+      "id": "broken-promise",
+      "trigger": {
+        "on": "objectiveDone",
+        "objective": "return-time"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "crewman",
+          "text": "배가 고파 소에게 다가가 버렸어요."
+        },
+        {
+          "type": "line",
+          "speaker": "helios",
+          "text": "약속을 잊었구나!"
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "빛나는 자리를 피해 배로 돌아가자."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "helios",
+          "text": "이제 약속을 기억하거라."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "모두 배로 가자. 다시 출발이야!"
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "sun-clock",
+      "type": "quiz",
+      "text": "해시계 시각 읽기",
+      "target": "gate-sundial"
+    },
+    {
+      "id": "gather-food",
+      "type": "collect",
+      "text": "먹을 과일 5개 모으기",
+      "target": "fruit",
+      "count": 5
+    },
+    {
+      "id": "return-time",
+      "type": "quiz",
+      "text": "돌아올 시각 맞추기",
+      "target": "return-clock"
+    },
+    {
+      "id": "lightning-dodge",
+      "type": "boss",
+      "text": "벼락을 피해 배로 가기",
+      "target": "helios"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "gate-sundial",
+      "subject": "clock",
+      "placement": "gate",
+      "count": 2,
+      "clockType": "read"
+    },
+    {
+      "id": "return-clock",
+      "subject": "clock",
+      "placement": "gate",
+      "count": 2,
+      "clockType": "set"
+    },
+    {
+      "id": "boss-time",
+      "subject": "clock",
+      "placement": "boss",
+      "count": 1,
+      "clockType": "elapsed"
+    }
+  ],
+  "reward": {
+    "coins": 65,
+    "unlocks": [
+      "bow"
+    ]
+  },
+  "boss": "helios"
+}

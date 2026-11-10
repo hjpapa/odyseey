@@ -2,7 +2,8 @@
  * 섬 장면 — 플레이어·NPC·적·줍기·지혜의 문·부엉이 신전·보물상자·체크포인트·길잡이 빛.
  */
 import {
-  ConeGeometry, CylinderGeometry, Group, Mesh, MeshBasicMaterial, MeshToonMaterial, type Object3D, type Scene, Vector3,
+  Box3, BoxGeometry, ConeGeometry, CylinderGeometry, Group, Mesh, MeshBasicMaterial, MeshToonMaterial,
+  type Object3D, type Scene, Vector3,
 } from 'three';
 import {
   DEFAULT_AVATAR, MINIGAME_IDS, PROP_IDS,
@@ -64,7 +65,7 @@ export class IslandStage extends ChapterStage {
   private enemies: Enemy[] = [];
   private pendingGroups = new Map<string, () => void>();
   private pickups: Pickup[] = [];
-  private flags: { pos: Vector3; obj: Group; on: boolean }[] = [];
+  private flags: { pos: Vector3; obj: Group; on: boolean; ring?: Mesh }[] = [];
   private lids: { lid: Object3D; target: number }[] = [];
   private gateObjs = new Map<string, { obj: Group; open: boolean; barrier: Collider[] }>();
   private interactables: Interactable[] = [];
@@ -153,7 +154,7 @@ export class IslandStage extends ChapterStage {
     for (const g of this.layout.gates) {
       if (g.chapter !== this.chapter.id) continue;
       const slot = this.chapter.quizSlots.find((s) => s.id === g.quizSlot);
-      const obj = makeProp('wisdomGate');
+      const obj = buildGate();
       const y = this.world.ground(g.pos[0], g.pos[1]);
       obj.position.set(g.pos[0], y, g.pos[1]);
       obj.rotation.y = g.rotY;
@@ -196,8 +197,14 @@ export class IslandStage extends ChapterStage {
       const key = `${this.layout.id}:${s.id}`;
       let done = save?.shrines.includes(key) ?? false;
       const obj = this.world.placeProp('owlShrine', s.pos, 0, 1, this.scene);
-      const glow = obj.getObjectByName('glow');
-      if (glow && done) glow.visible = false;
+      let glow = obj.getObjectByName('glow');
+      if (!glow) {
+        // 모델에 빛나는 고리가 없으면 엔진이 붙인다 (아직 안 푼 신전 표시)
+        glow = glowRing(1.1, '#ffe066');
+        glow.position.copy(obj.position).setY(obj.position.y + 0.03);
+        this.scene.add(glow);
+      }
+      if (done) glow.visible = false;
       this.interactables.push({
         pos: obj.position.clone(),
         range: 2.8,
@@ -432,6 +439,13 @@ export class IslandStage extends ChapterStage {
       this.checkpoint.copy(f.pos);
       const flag = f.obj.getObjectByName('flag');
       if (flag instanceof Mesh) flag.material = new MeshToonMaterial({ color: '#f6c343' });
+      // 어떤 모델이든 '켜진 체크포인트'를 알 수 있게 금빛 고리를 둘러 준다
+      if (!f.ring) {
+        f.ring = glowRing(1.3, '#f6c343');
+        f.ring.position.copy(f.pos).setY(f.pos.y + 0.04);
+        this.scene.add(f.ring);
+      }
+      for (const other of this.flags) if (other.ring) other.ring.visible = other === f;
       this.svc.audio.sfx('checkpoint');
       this.svc.ui.hud.toast('🚩 여기서 다시 시작할 수 있어요');
       this.player.heal();
@@ -537,4 +551,39 @@ export class IslandStage extends ChapterStage {
       if (el instanceof HTMLElement) el.remove();
     });
   }
+}
+
+/** 지혜의 문 폭 — 기둥 충돌체(±2.25)와 섬 데이터의 바위 울타리가 이 폭을 기준으로 맞춰져 있다 */
+const GATE_WIDTH = 5.6;
+
+/**
+ * 지혜의 문: 어떤 모델이든 정해진 폭으로 맞추고, 닫힘을 보여 주는 'barrier' 막이 없으면 엔진이 붙인다.
+ * (barrier 는 문이 열릴 때 사라진다)
+ */
+function buildGate(): Group {
+  const model = makeProp('wisdomGate');
+  const width = new Box3().setFromObject(model).getSize(new Vector3()).x;
+  if (width > 0.5 && Math.abs(width - GATE_WIDTH) > 0.3) model.scale.setScalar(GATE_WIDTH / width);
+  const gate = new Group();
+  gate.add(model);
+  if (!model.getObjectByName('barrier')) {
+    const pane = new Mesh(
+      new BoxGeometry(3.4, 3.4, 0.12),
+      new MeshBasicMaterial({ color: '#7fd3ff', transparent: true, opacity: 0.45, depthWrite: false }),
+    );
+    pane.name = 'barrier';
+    pane.position.y = 1.75;
+    gate.add(pane);
+  }
+  return gate;
+}
+
+/** 바닥에 까는 빛나는 고리 */
+function glowRing(radius: number, color: string): Mesh {
+  const ring = new Mesh(
+    new CylinderGeometry(radius, radius, 0.05, 24),
+    new MeshBasicMaterial({ color, transparent: true, opacity: 0.5, depthWrite: false }),
+  );
+  ring.name = 'glow';
+  return ring;
 }

@@ -1,24 +1,27 @@
-/** 1장 미니게임 — 모은 통나무를 하나씩 놓아 뗏목을 만들고 돛을 올린다 */
+/**
+ * 1장 미니게임 — 모은 통나무를 하나씩 놓아 뗏목을 만들고 돛을 올린다.
+ * 어떤 뗏목 모델이든: 낮은 부분(통나무)은 누를 때마다 차례로 나타나고, 높은 부분(돛대·돛)은 마지막에 솟아오른다.
+ */
 import { Vector3 } from 'three';
-import { makeProp } from '../../world/props';
+import { alignLengthToZ, makeProp, splitByHeight } from '../../world/props';
 import type { IslandStage } from '../../game/islandStage';
 import { h, sleep } from '../../ui/dom';
 
 const PRESSES = 5;
+const RISE = 2.5;
 
 export async function raftBuild(stage: IslandStage, at: Vector3): Promise<void> {
   const { svc, world, fx } = stage;
   stage.block();
   const raft = makeProp('raft');
+  alignLengthToZ(raft);
+  const { low, tall } = splitByHeight(raft, 0.9);
   const y = world.ground(at.x, at.z);
   raft.position.set(at.x, y, at.z);
-  raft.rotation.y = Math.atan2(at.x, at.z) + Math.PI / 2;
-  const mast = raft.getObjectByName('mast');
-  const logs = raft.children.filter((c) => c !== mast);
-  const progressive = logs.length >= PRESSES;
-  if (progressive) logs.forEach((l) => (l.visible = false));
-  else raft.scale.setScalar(0.2);
-  if (mast) mast.scale.y = 0.001;
+  raft.rotation.y += Math.atan2(at.x, at.z); // 긴 쪽이 바다를 향하게
+  const progressive = low.length >= PRESSES;
+  [...low, ...tall].forEach((m) => (m.visible = false));
+  if (!progressive) raft.scale.setScalar(0.2);
   stage.scene.add(raft);
 
   // 오디세우스는 뗏목 옆에 서서 바라보고, 카메라는 비스듬히 위에서
@@ -44,8 +47,8 @@ export async function raftBuild(stage: IslandStage, at: Vector3): Promise<void> 
       info.textContent = `🪵 ${placed} / ${PRESSES}`;
       svc.audio.sfx('pickup', { pitch: 0.9 + placed * 0.06 });
       if (progressive) {
-        const show = Math.ceil((placed / PRESSES) * logs.length);
-        logs.forEach((l, i) => (l.visible = i < show));
+        const show = Math.ceil((placed / PRESSES) * low.length);
+        low.forEach((m, i) => (m.visible = i < show));
       } else raft.scale.setScalar(0.2 + (0.8 * placed) / PRESSES);
       fx.burst(at.clone().setY(y + 0.6), '#d7a86e', 10, 3, 2);
       if (placed >= PRESSES) {
@@ -65,20 +68,26 @@ export async function raftBuild(stage: IslandStage, at: Vector3): Promise<void> 
   });
 
   btn.remove();
+  low.forEach((m) => (m.visible = true));
+  raft.scale.setScalar(1);
   info.textContent = '⛵ 돛을 올려요!';
   svc.audio.sfx('rope');
   await sleep(350);
-  if (mast) {
-    const t0 = performance.now();
-    while (performance.now() - t0 < 700) {
-      if (stage.signal.aborted) return;
-      mast.scale.y = Math.max(0.001, (performance.now() - t0) / 700);
-      await sleep(16);
-    }
-    mast.scale.y = 1;
+  // 돛대·돛이 아래에서 솟아오른다 (메시 크기는 건드리지 않고 위치만)
+  const baseY = tall.map((m) => m.position.y);
+  tall.forEach((m) => {
+    m.position.y -= RISE;
+    m.visible = true;
+  });
+  const t0 = performance.now();
+  while (performance.now() - t0 < 700) {
+    if (stage.signal.aborted) return;
+    const k = (performance.now() - t0) / 700;
+    tall.forEach((m, i) => (m.position.y = baseY[i] - RISE * (1 - k) * (1 - k)));
+    await sleep(16);
   }
+  tall.forEach((m, i) => (m.position.y = baseY[i]));
   if (stage.signal.aborted) return;
-  raft.scale.setScalar(1);
   svc.audio.sfx('sail');
   fx.burst(at.clone().setY(y + 2), '#ffe066', 30, 6, 4);
   info.textContent = '뗏목 완성! 🎉';

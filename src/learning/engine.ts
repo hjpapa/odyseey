@@ -80,7 +80,9 @@ export class LearningEngine implements LearningApi {
   next(slot: QuizSlot): Question {
     const grade = this.o.getGrade();
     const rng = createRng(Math.floor(this.random() * 2 ** 31));
-    if (!slot.ids?.length && rng.next() < REVIEW_CHANCE) {
+    // 이야기에 맞춘 자리(문장형·주제·지정 항목·형식)는 그 맛을 살려 새 문제로, 일반 자리에서만 복습을 섞는다
+    const tailored = !!(slot.ids?.length || slot.mathTemplate || slot.topic || slot.kind || slot.clockType);
+    if (!tailored && rng.next() < REVIEW_CHANCE) {
       const review = this.fromReview(slot.subject, rng);
       if (review) return review;
     }

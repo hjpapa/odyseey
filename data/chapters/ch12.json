@@ -1,0 +1,156 @@
+{
+  "id": "ch12",
+  "no": 12,
+  "title": "나우시카에게 들려준 이야기",
+  "titleCard": {
+    "childText": "오디세우스는 나우시카에게 그동안 있었던 일을 말했다.",
+    "subtitle": "이제 꿈에서 깨어나요"
+  },
+  "memory": false,
+  "island": "scheria",
+  "playStyles": [
+    "minigame",
+    "dialogue",
+    "explore"
+  ],
+  "bgm": {
+    "explore": "palace"
+  },
+  "learning": [
+    "manners",
+    "english"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "caption",
+          "text": "오디세우스가 해변에서 눈을 떴어요."
+        },
+        {
+          "type": "line",
+          "speaker": "nausicaa",
+          "text": "괜찮으세요? 도움이 필요하신가요?"
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "안녕하세요. 길을 알려 주시겠어요?"
+        }
+      ]
+    },
+    {
+      "id": "story-invitation",
+      "trigger": {
+        "on": "objectiveDone",
+        "objective": "palace-road"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "alcinous",
+          "text": "어떤 모험을 했는지 들려주겠소?"
+        },
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "기억의 바다를 순서대로 떠올려 보자."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "alcinous",
+          "text": "고향으로 가는 배를 내어 주겠소."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "따뜻하게 맞아 주셔서 감사합니다."
+        },
+        {
+          "type": "caption",
+          "text": "지난 모험 이야기가 끝나고 귀향이 시작돼요."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "beach-ball",
+      "type": "minigame",
+      "text": "함께 공놀이하기",
+      "target": "ballGame"
+    },
+    {
+      "id": "ask-help",
+      "type": "quiz",
+      "text": "공손하게 도움 청하기",
+      "target": "guest-manners"
+    },
+    {
+      "id": "palace-road",
+      "type": "reach",
+      "text": "파이아케스 궁전 가기",
+      "target": "scheria-palace"
+    },
+    {
+      "id": "recap-story",
+      "type": "quiz",
+      "text": "지난 모험 순서 맞추기",
+      "target": "story-order"
+    },
+    {
+      "id": "recap-words",
+      "type": "quiz",
+      "text": "모험 속 단어 떠올리기",
+      "target": "recap-english"
+    },
+    {
+      "id": "thank-king",
+      "type": "talk",
+      "text": "왕께 감사 인사하기",
+      "target": "alcinous"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "guest-manners",
+      "subject": "manners",
+      "placement": "npc",
+      "count": 1,
+      "topic": "guest"
+    },
+    {
+      "id": "story-order",
+      "subject": "manners",
+      "placement": "story",
+      "count": 1,
+      "kind": "order"
+    },
+    {
+      "id": "recap-english",
+      "subject": "english",
+      "placement": "story",
+      "count": 2,
+      "ids": [
+        "en-boat",
+        "en-sheep",
+        "en-pig"
+      ]
+    }
+  ],
+  "reward": {
+    "coins": 80
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "id": "ch17",
+  "no": 17,
+  "title": "행복한 결말",
+  "titleCard": {
+    "childText": "그리고 텔레마코스와 페넬로페 오디세우스는 행복하게 살았다.",
+    "subtitle": "함께여서 따뜻한 집"
+  },
+  "memory": false,
+  "island": "ithacaPalace",
+  "playStyles": [
+    "dialogue",
+    "minigame"
+  ],
+  "bgm": {
+    "explore": "ending"
+  },
+  "learning": [
+    "manners"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "penelope",
+          "text": "그 침대를 옮겨 주시겠어요?"
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "살아 있는 올리브나무로 만든 침대요."
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "뿌리가 이어져 옮길 수 없어요."
+        },
+        {
+          "type": "line",
+          "speaker": "penelope",
+          "text": "우리만 아는 비밀! 정말 돌아왔군요."
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "athenaOwl",
+          "text": "가족과 친구를 아끼는 멋진 모험이었어."
+        },
+        {
+          "type": "caption",
+          "text": "원작 이야기: 아이가 쓴 오디세이"
+        },
+        {
+          "type": "caption",
+          "text": "모험을 마쳤어요! 섬들을 다시 둘러보세요."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "bed-secret",
+      "type": "talk",
+      "text": "페넬로페와 비밀 나누기",
+      "target": "penelope"
+    },
+    {
+      "id": "feast-thanks",
+      "type": "quiz",
+      "text": "도와준 분께 감사하기",
+      "target": "feast-thanks"
+    },
+    {
+      "id": "table-manners",
+      "type": "quiz",
+      "text": "잔치의 식사 예절 배우기",
+      "target": "feast-table"
+    },
+    {
+      "id": "family-feast",
+      "type": "minigame",
+      "text": "가족 잔치 즐기기",
+      "target": "feast"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "feast-thanks",
+      "subject": "manners",
+      "placement": "story",
+      "count": 1,
+      "topic": "thanks"
+    },
+    {
+      "id": "feast-table",
+      "subject": "manners",
+      "placement": "story",
+      "count": 2,
+      "topic": "table"
+    }
+  ],
+  "reward": {
+    "coins": 105,
+    "unlocks": [
+      "freeExplore"
+    ]
+  }
+}

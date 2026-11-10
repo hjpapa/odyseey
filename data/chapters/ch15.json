@@ -1,0 +1,114 @@
+{
+  "id": "ch15",
+  "no": 15,
+  "title": "텔레마코스와의 대화",
+  "titleCard": {
+    "childText": "그리고 텔레마코스랑 대화를 했다.",
+    "subtitle": "가족이 함께 세운 계획"
+  },
+  "memory": false,
+  "island": "ithaca",
+  "playStyles": [
+    "dialogue",
+    "minigame"
+  ],
+  "bgm": {
+    "explore": "ithaca"
+  },
+  "learning": [
+    "manners",
+    "clock"
+  ],
+  "scenes": [
+    {
+      "id": "start",
+      "trigger": {
+        "on": "chapterStart"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "telemachus",
+          "text": "낯선 분, 누구신가요?"
+        },
+        {
+          "type": "sfx",
+          "id": "magic"
+        },
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "텔레마코스, 내가 네 아버지란다."
+        },
+        {
+          "type": "line",
+          "speaker": "telemachus",
+          "text": "아버지! 정말 보고 싶었어요!"
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "trigger": {
+        "on": "chapterEnd"
+      },
+      "steps": [
+        {
+          "type": "line",
+          "speaker": "odysseus",
+          "text": "내일 아침 아홉 시에 만나자."
+        },
+        {
+          "type": "line",
+          "speaker": "telemachus",
+          "text": "네, 아버지. 약속을 지킬게요."
+        }
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "id": "family-greeting",
+      "type": "quiz",
+      "text": "가족에게 마음 전하기",
+      "target": "family-manners"
+    },
+    {
+      "id": "plan-clock",
+      "type": "quiz",
+      "text": "만날 시각 맞추기",
+      "target": "meeting-clock"
+    },
+    {
+      "id": "hide-weapons",
+      "type": "minigame",
+      "text": "함께 준비물 정리하기",
+      "target": "hideWeapons"
+    },
+    {
+      "id": "plan-ready",
+      "type": "talk",
+      "text": "아들과 계획 확인하기",
+      "target": "telemachus"
+    }
+  ],
+  "quizSlots": [
+    {
+      "id": "family-manners",
+      "subject": "manners",
+      "placement": "npc",
+      "count": 1,
+      "topic": "honorific"
+    },
+    {
+      "id": "meeting-clock",
+      "subject": "clock",
+      "placement": "story",
+      "count": 2,
+      "clockType": "set"
+    }
+  ],
+  "reward": {
+    "coins": 95
+  }
+}

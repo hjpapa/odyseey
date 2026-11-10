@@ -8,7 +8,9 @@
     "emoji": "🌊",
     "sentence": "I see the sea.",
     "sentenceKo": "나는 바다를 봐요.",
-    "chapterHint": ["ch02"]
+    "chapterHint": [
+      "ch02"
+    ]
   },
   {
     "id": "en-sheep",
@@ -17,7 +19,9 @@
     "grade": 1,
     "topic": "animals",
     "emoji": "🐑",
-    "chapterHint": ["ch03"]
+    "chapterHint": [
+      "ch03"
+    ]
   },
   {
     "id": "en-pig",
@@ -26,6 +30,2833 @@
     "grade": 1,
     "topic": "animals",
     "emoji": "🐷",
-    "chapterHint": ["ch07"]
+    "chapterHint": [
+      "ch07"
+    ]
+  },
+  {
+    "id": "en-ant",
+    "word": "ant",
+    "meaningKo": "개미",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐜"
+  },
+  {
+    "id": "en-bat",
+    "word": "bat",
+    "meaningKo": "박쥐",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🦇"
+  },
+  {
+    "id": "en-bee",
+    "word": "bee",
+    "meaningKo": "벌",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐝"
+  },
+  {
+    "id": "en-bug",
+    "word": "bug",
+    "meaningKo": "벌레",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐛"
+  },
+  {
+    "id": "en-cat",
+    "word": "cat",
+    "meaningKo": "고양이",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐱"
+  },
+  {
+    "id": "en-cow",
+    "word": "cow",
+    "meaningKo": "소",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐮",
+    "chapterHint": [
+      "ch09"
+    ]
+  },
+  {
+    "id": "en-dog",
+    "word": "dog",
+    "meaningKo": "개",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐶"
+  },
+  {
+    "id": "en-fox",
+    "word": "fox",
+    "meaningKo": "여우",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🦊"
+  },
+  {
+    "id": "en-hen",
+    "word": "hen",
+    "meaningKo": "암탉",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐔"
+  },
+  {
+    "id": "en-owl",
+    "word": "owl",
+    "meaningKo": "부엉이",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🦉"
+  },
+  {
+    "id": "en-rat",
+    "word": "rat",
+    "meaningKo": "쥐",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐀"
+  },
+  {
+    "id": "en-ram",
+    "word": "ram",
+    "meaningKo": "숫양",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐏"
+  },
+  {
+    "id": "en-yak",
+    "word": "yak",
+    "meaningKo": "야크",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐂"
+  },
+  {
+    "id": "en-bird",
+    "word": "bird",
+    "meaningKo": "새",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐦"
+  },
+  {
+    "id": "en-duck",
+    "word": "duck",
+    "meaningKo": "오리",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🦆"
+  },
+  {
+    "id": "en-fish",
+    "word": "fish",
+    "meaningKo": "물고기",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐟"
+  },
+  {
+    "id": "en-frog",
+    "word": "frog",
+    "meaningKo": "개구리",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐸"
+  },
+  {
+    "id": "en-lion",
+    "word": "lion",
+    "meaningKo": "사자",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🦁",
+    "chapterHint": [
+      "ch07"
+    ]
+  },
+  {
+    "id": "en-hare",
+    "word": "hare",
+    "meaningKo": "산토끼",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🐇"
+  },
+  {
+    "id": "en-seal",
+    "word": "seal",
+    "meaningKo": "물범",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🦭"
+  },
+  {
+    "id": "en-swan",
+    "word": "swan",
+    "meaningKo": "백조",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🦢"
+  },
+  {
+    "id": "en-worm",
+    "word": "worm",
+    "meaningKo": "지렁이",
+    "grade": 1,
+    "topic": "animals",
+    "emoji": "🪱"
+  },
+  {
+    "id": "en-red",
+    "word": "red",
+    "meaningKo": "빨간색",
+    "grade": 1,
+    "topic": "colors",
+    "emoji": "🔴"
+  },
+  {
+    "id": "en-blue",
+    "word": "blue",
+    "meaningKo": "파란색",
+    "grade": 1,
+    "topic": "colors",
+    "emoji": "🔵"
+  },
+  {
+    "id": "en-pink",
+    "word": "pink",
+    "meaningKo": "분홍색",
+    "grade": 1,
+    "topic": "colors",
+    "emoji": "🩷"
+  },
+  {
+    "id": "en-gold",
+    "word": "gold",
+    "meaningKo": "금색",
+    "grade": 1,
+    "topic": "colors",
+    "emoji": "🟡"
+  },
+  {
+    "id": "en-gray",
+    "word": "gray",
+    "meaningKo": "회색",
+    "grade": 1,
+    "topic": "colors",
+    "emoji": "🩶"
+  },
+  {
+    "id": "en-one",
+    "word": "one",
+    "meaningKo": "하나",
+    "grade": 1,
+    "topic": "numbers",
+    "emoji": "1️⃣"
+  },
+  {
+    "id": "en-two",
+    "word": "two",
+    "meaningKo": "둘",
+    "grade": 1,
+    "topic": "numbers",
+    "emoji": "2️⃣"
+  },
+  {
+    "id": "en-four",
+    "word": "four",
+    "meaningKo": "넷",
+    "grade": 1,
+    "topic": "numbers",
+    "emoji": "4️⃣"
+  },
+  {
+    "id": "en-five",
+    "word": "five",
+    "meaningKo": "다섯",
+    "grade": 1,
+    "topic": "numbers",
+    "emoji": "5️⃣"
+  },
+  {
+    "id": "en-six",
+    "word": "six",
+    "meaningKo": "여섯",
+    "grade": 1,
+    "topic": "numbers",
+    "emoji": "6️⃣"
+  },
+  {
+    "id": "en-nine",
+    "word": "nine",
+    "meaningKo": "아홉",
+    "grade": 1,
+    "topic": "numbers",
+    "emoji": "9️⃣"
+  },
+  {
+    "id": "en-ten",
+    "word": "ten",
+    "meaningKo": "열",
+    "grade": 1,
+    "topic": "numbers",
+    "emoji": "🔟"
+  },
+  {
+    "id": "en-mom",
+    "word": "mom",
+    "meaningKo": "엄마",
+    "grade": 1,
+    "topic": "family",
+    "emoji": "👩"
+  },
+  {
+    "id": "en-dad",
+    "word": "dad",
+    "meaningKo": "아빠",
+    "grade": 1,
+    "topic": "family",
+    "emoji": "👨"
+  },
+  {
+    "id": "en-baby",
+    "word": "baby",
+    "meaningKo": "아기",
+    "grade": 1,
+    "topic": "family",
+    "emoji": "👶"
+  },
+  {
+    "id": "en-king",
+    "word": "king",
+    "meaningKo": "왕",
+    "grade": 1,
+    "topic": "family",
+    "emoji": "🤴",
+    "chapterHint": [
+      "ch12"
+    ]
+  },
+  {
+    "id": "en-aunt",
+    "word": "aunt",
+    "meaningKo": "이모",
+    "grade": 1,
+    "topic": "family",
+    "emoji": "👩"
+  },
+  {
+    "id": "en-son",
+    "word": "son",
+    "meaningKo": "아들",
+    "grade": 1,
+    "topic": "family",
+    "emoji": "👦"
+  },
+  {
+    "id": "en-arm",
+    "word": "arm",
+    "meaningKo": "팔",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "💪"
+  },
+  {
+    "id": "en-ear",
+    "word": "ear",
+    "meaningKo": "귀",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "👂"
+  },
+  {
+    "id": "en-eye",
+    "word": "eye",
+    "meaningKo": "눈",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "👁️",
+    "chapterHint": [
+      "ch03"
+    ]
+  },
+  {
+    "id": "en-leg",
+    "word": "leg",
+    "meaningKo": "다리",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "🦵"
+  },
+  {
+    "id": "en-toe",
+    "word": "toe",
+    "meaningKo": "발가락",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "🦶"
+  },
+  {
+    "id": "en-hand",
+    "word": "hand",
+    "meaningKo": "손",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "✋"
+  },
+  {
+    "id": "en-foot",
+    "word": "foot",
+    "meaningKo": "발",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "🦶"
+  },
+  {
+    "id": "en-hair",
+    "word": "hair",
+    "meaningKo": "머리카락",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "💇"
+  },
+  {
+    "id": "en-head",
+    "word": "head",
+    "meaningKo": "머리",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "🙂"
+  },
+  {
+    "id": "en-nose",
+    "word": "nose",
+    "meaningKo": "코",
+    "grade": 1,
+    "topic": "body",
+    "emoji": "👃"
+  },
+  {
+    "id": "en-egg",
+    "word": "egg",
+    "meaningKo": "달걀",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🥚"
+  },
+  {
+    "id": "en-ham",
+    "word": "ham",
+    "meaningKo": "햄",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🍖"
+  },
+  {
+    "id": "en-jam",
+    "word": "jam",
+    "meaningKo": "잼",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🫙"
+  },
+  {
+    "id": "en-nut",
+    "word": "nut",
+    "meaningKo": "견과",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🥜"
+  },
+  {
+    "id": "en-pea",
+    "word": "pea",
+    "meaningKo": "완두콩",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🫛"
+  },
+  {
+    "id": "en-pie",
+    "word": "pie",
+    "meaningKo": "파이",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🥧"
+  },
+  {
+    "id": "en-bun",
+    "word": "bun",
+    "meaningKo": "작은 빵",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🥖"
+  },
+  {
+    "id": "en-cake",
+    "word": "cake",
+    "meaningKo": "케이크",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🍰"
+  },
+  {
+    "id": "en-milk",
+    "word": "milk",
+    "meaningKo": "우유",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🥛"
+  },
+  {
+    "id": "en-rice",
+    "word": "rice",
+    "meaningKo": "밥",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🍚"
+  },
+  {
+    "id": "en-pear",
+    "word": "pear",
+    "meaningKo": "배",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🍐"
+  },
+  {
+    "id": "en-kiwi",
+    "word": "kiwi",
+    "meaningKo": "키위",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🥝"
+  },
+  {
+    "id": "en-corn",
+    "word": "corn",
+    "meaningKo": "옥수수",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🌽"
+  },
+  {
+    "id": "en-meat",
+    "word": "meat",
+    "meaningKo": "고기",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🥩"
+  },
+  {
+    "id": "en-soup",
+    "word": "soup",
+    "meaningKo": "수프",
+    "grade": 1,
+    "topic": "food",
+    "emoji": "🥣"
+  },
+  {
+    "id": "en-sun",
+    "word": "sun",
+    "meaningKo": "해",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "☀️",
+    "chapterHint": [
+      "ch09"
+    ]
+  },
+  {
+    "id": "en-sky",
+    "word": "sky",
+    "meaningKo": "하늘",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "🌌"
+  },
+  {
+    "id": "en-ice",
+    "word": "ice",
+    "meaningKo": "얼음",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "🧊"
+  },
+  {
+    "id": "en-mud",
+    "word": "mud",
+    "meaningKo": "진흙",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "🟤"
+  },
+  {
+    "id": "en-leaf",
+    "word": "leaf",
+    "meaningKo": "나뭇잎",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "🍃"
+  },
+  {
+    "id": "en-rain",
+    "word": "rain",
+    "meaningKo": "비",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "🌧️"
+  },
+  {
+    "id": "en-snow",
+    "word": "snow",
+    "meaningKo": "눈",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "❄️"
+  },
+  {
+    "id": "en-star",
+    "word": "star",
+    "meaningKo": "별",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "⭐",
+    "chapterHint": [
+      "ch08"
+    ]
+  },
+  {
+    "id": "en-tree",
+    "word": "tree",
+    "meaningKo": "나무",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "🌳"
+  },
+  {
+    "id": "en-moon",
+    "word": "moon",
+    "meaningKo": "달",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "🌙"
+  },
+  {
+    "id": "en-rock",
+    "word": "rock",
+    "meaningKo": "바위",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "🪨"
+  },
+  {
+    "id": "en-wind",
+    "word": "wind",
+    "meaningKo": "바람",
+    "grade": 1,
+    "topic": "nature",
+    "emoji": "💨",
+    "chapterHint": [
+      "ch02"
+    ]
+  },
+  {
+    "id": "en-bay",
+    "word": "bay",
+    "meaningKo": "작은 만",
+    "grade": 1,
+    "topic": "sea",
+    "emoji": "🏝️"
+  },
+  {
+    "id": "en-boat",
+    "word": "boat",
+    "meaningKo": "배",
+    "grade": 1,
+    "topic": "sea",
+    "emoji": "🚤",
+    "chapterHint": [
+      "ch02"
+    ]
+  },
+  {
+    "id": "en-ship",
+    "word": "ship",
+    "meaningKo": "큰 배",
+    "grade": 1,
+    "topic": "sea",
+    "emoji": "🚢",
+    "chapterHint": [
+      "ch02"
+    ]
+  },
+  {
+    "id": "en-wave",
+    "word": "wave",
+    "meaningKo": "파도",
+    "grade": 1,
+    "topic": "sea",
+    "emoji": "🌊",
+    "chapterHint": [
+      "ch02"
+    ]
+  },
+  {
+    "id": "en-sail",
+    "word": "sail",
+    "meaningKo": "돛",
+    "grade": 1,
+    "topic": "sea",
+    "emoji": "⛵"
+  },
+  {
+    "id": "en-sand",
+    "word": "sand",
+    "meaningKo": "모래",
+    "grade": 1,
+    "topic": "sea",
+    "emoji": "🏖️"
+  },
+  {
+    "id": "en-crab",
+    "word": "crab",
+    "meaningKo": "게",
+    "grade": 1,
+    "topic": "sea",
+    "emoji": "🦀"
+  },
+  {
+    "id": "en-bed",
+    "word": "bed",
+    "meaningKo": "침대",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🛏️"
+  },
+  {
+    "id": "en-box",
+    "word": "box",
+    "meaningKo": "상자",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "📦"
+  },
+  {
+    "id": "en-cup",
+    "word": "cup",
+    "meaningKo": "컵",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "☕"
+  },
+  {
+    "id": "en-fan",
+    "word": "fan",
+    "meaningKo": "부채",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🪭"
+  },
+  {
+    "id": "en-hat",
+    "word": "hat",
+    "meaningKo": "모자",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🎩"
+  },
+  {
+    "id": "en-key",
+    "word": "key",
+    "meaningKo": "열쇠",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🔑"
+  },
+  {
+    "id": "en-map",
+    "word": "map",
+    "meaningKo": "지도",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🗺️"
+  },
+  {
+    "id": "en-pen",
+    "word": "pen",
+    "meaningKo": "펜",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🖊️"
+  },
+  {
+    "id": "en-pot",
+    "word": "pot",
+    "meaningKo": "냄비",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🍲"
+  },
+  {
+    "id": "en-bag",
+    "word": "bag",
+    "meaningKo": "가방",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🎒"
+  },
+  {
+    "id": "en-book",
+    "word": "book",
+    "meaningKo": "책",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "📖"
+  },
+  {
+    "id": "en-desk",
+    "word": "desk",
+    "meaningKo": "책상",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🪑"
+  },
+  {
+    "id": "en-door",
+    "word": "door",
+    "meaningKo": "문",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🚪"
+  },
+  {
+    "id": "en-home",
+    "word": "home",
+    "meaningKo": "집",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🏠",
+    "chapterHint": [
+      "ch13"
+    ]
+  },
+  {
+    "id": "en-lamp",
+    "word": "lamp",
+    "meaningKo": "등",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "💡"
+  },
+  {
+    "id": "en-sock",
+    "word": "sock",
+    "meaningKo": "양말",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🧦"
+  },
+  {
+    "id": "en-bell",
+    "word": "bell",
+    "meaningKo": "종",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🔔"
+  },
+  {
+    "id": "en-bow",
+    "word": "bow",
+    "meaningKo": "활",
+    "grade": 1,
+    "topic": "house",
+    "emoji": "🏹",
+    "chapterHint": [
+      "ch16"
+    ]
+  },
+  {
+    "id": "en-run",
+    "word": "run",
+    "meaningKo": "달리다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "🏃"
+  },
+  {
+    "id": "en-sit",
+    "word": "sit",
+    "meaningKo": "앉다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "🧘"
+  },
+  {
+    "id": "en-eat",
+    "word": "eat",
+    "meaningKo": "먹다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "😋"
+  },
+  {
+    "id": "en-hop",
+    "word": "hop",
+    "meaningKo": "깡충 뛰다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "🐇"
+  },
+  {
+    "id": "en-hug",
+    "word": "hug",
+    "meaningKo": "안다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "🫂"
+  },
+  {
+    "id": "en-dig",
+    "word": "dig",
+    "meaningKo": "파다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "⛏️"
+  },
+  {
+    "id": "en-cut",
+    "word": "cut",
+    "meaningKo": "자르다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "✂️"
+  },
+  {
+    "id": "en-clap",
+    "word": "clap",
+    "meaningKo": "손뼉 치다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "👏"
+  },
+  {
+    "id": "en-jump",
+    "word": "jump",
+    "meaningKo": "뛰다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "🦘"
+  },
+  {
+    "id": "en-swim",
+    "word": "swim",
+    "meaningKo": "수영하다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "🏊"
+  },
+  {
+    "id": "en-walk",
+    "word": "walk",
+    "meaningKo": "걷다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "🚶"
+  },
+  {
+    "id": "en-read",
+    "word": "read",
+    "meaningKo": "읽다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "📖"
+  },
+  {
+    "id": "en-draw",
+    "word": "draw",
+    "meaningKo": "그리다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "🎨"
+  },
+  {
+    "id": "en-sing",
+    "word": "sing",
+    "meaningKo": "노래하다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "🎤"
+  },
+  {
+    "id": "en-kick",
+    "word": "kick",
+    "meaningKo": "차다",
+    "grade": 1,
+    "topic": "actions",
+    "emoji": "⚽"
+  },
+  {
+    "id": "en-bear",
+    "word": "bear",
+    "meaningKo": "곰",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐻"
+  },
+  {
+    "id": "en-deer",
+    "word": "deer",
+    "meaningKo": "사슴",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🦌"
+  },
+  {
+    "id": "en-goat",
+    "word": "goat",
+    "meaningKo": "염소",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐐"
+  },
+  {
+    "id": "en-wolf",
+    "word": "wolf",
+    "meaningKo": "늑대",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐺",
+    "chapterHint": [
+      "ch07"
+    ]
+  },
+  {
+    "id": "en-zebra",
+    "word": "zebra",
+    "meaningKo": "얼룩말",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🦓"
+  },
+  {
+    "id": "en-horse",
+    "word": "horse",
+    "meaningKo": "말",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐴"
+  },
+  {
+    "id": "en-mouse",
+    "word": "mouse",
+    "meaningKo": "생쥐",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐭"
+  },
+  {
+    "id": "en-tiger",
+    "word": "tiger",
+    "meaningKo": "호랑이",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐯"
+  },
+  {
+    "id": "en-panda",
+    "word": "panda",
+    "meaningKo": "판다",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐼"
+  },
+  {
+    "id": "en-rabbit",
+    "word": "rabbit",
+    "meaningKo": "토끼",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐰"
+  },
+  {
+    "id": "en-snake",
+    "word": "snake",
+    "meaningKo": "뱀",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐍"
+  },
+  {
+    "id": "en-turtle",
+    "word": "turtle",
+    "meaningKo": "거북",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐢"
+  },
+  {
+    "id": "en-monkey",
+    "word": "monkey",
+    "meaningKo": "원숭이",
+    "grade": 2,
+    "topic": "animals",
+    "emoji": "🐒"
+  },
+  {
+    "id": "en-black",
+    "word": "black",
+    "meaningKo": "검은색",
+    "grade": 2,
+    "topic": "colors",
+    "emoji": "⚫"
+  },
+  {
+    "id": "en-white",
+    "word": "white",
+    "meaningKo": "흰색",
+    "grade": 2,
+    "topic": "colors",
+    "emoji": "⚪"
+  },
+  {
+    "id": "en-brown",
+    "word": "brown",
+    "meaningKo": "갈색",
+    "grade": 2,
+    "topic": "colors",
+    "emoji": "🟤"
+  },
+  {
+    "id": "en-green",
+    "word": "green",
+    "meaningKo": "초록색",
+    "grade": 2,
+    "topic": "colors",
+    "emoji": "🟢"
+  },
+  {
+    "id": "en-purple",
+    "word": "purple",
+    "meaningKo": "보라색",
+    "grade": 2,
+    "topic": "colors",
+    "emoji": "🟣"
+  },
+  {
+    "id": "en-orange",
+    "word": "orange",
+    "meaningKo": "주황색",
+    "grade": 2,
+    "topic": "colors",
+    "emoji": "🟠"
+  },
+  {
+    "id": "en-yellow",
+    "word": "yellow",
+    "meaningKo": "노란색",
+    "grade": 2,
+    "topic": "colors",
+    "emoji": "🟡"
+  },
+  {
+    "id": "en-zero",
+    "word": "zero",
+    "meaningKo": "영",
+    "grade": 2,
+    "topic": "numbers",
+    "emoji": "0️⃣"
+  },
+  {
+    "id": "en-three",
+    "word": "three",
+    "meaningKo": "셋",
+    "grade": 2,
+    "topic": "numbers",
+    "emoji": "3️⃣"
+  },
+  {
+    "id": "en-seven",
+    "word": "seven",
+    "meaningKo": "일곱",
+    "grade": 2,
+    "topic": "numbers",
+    "emoji": "7️⃣"
+  },
+  {
+    "id": "en-eight",
+    "word": "eight",
+    "meaningKo": "여덟",
+    "grade": 2,
+    "topic": "numbers",
+    "emoji": "8️⃣"
+  },
+  {
+    "id": "en-eleven",
+    "word": "eleven",
+    "meaningKo": "열하나",
+    "grade": 2,
+    "topic": "numbers",
+    "emoji": "🔢"
+  },
+  {
+    "id": "en-twelve",
+    "word": "twelve",
+    "meaningKo": "열둘",
+    "grade": 2,
+    "topic": "numbers",
+    "emoji": "🕛"
+  },
+  {
+    "id": "en-mother",
+    "word": "mother",
+    "meaningKo": "어머니",
+    "grade": 2,
+    "topic": "family",
+    "emoji": "👩"
+  },
+  {
+    "id": "en-father",
+    "word": "father",
+    "meaningKo": "아버지",
+    "grade": 2,
+    "topic": "family",
+    "emoji": "👨"
+  },
+  {
+    "id": "en-sister",
+    "word": "sister",
+    "meaningKo": "여자 형제",
+    "grade": 2,
+    "topic": "family",
+    "emoji": "👧"
+  },
+  {
+    "id": "en-brother",
+    "word": "brother",
+    "meaningKo": "남자 형제",
+    "grade": 2,
+    "topic": "family",
+    "emoji": "👦"
+  },
+  {
+    "id": "en-uncle",
+    "word": "uncle",
+    "meaningKo": "삼촌",
+    "grade": 2,
+    "topic": "family",
+    "emoji": "👨"
+  },
+  {
+    "id": "en-queen",
+    "word": "queen",
+    "meaningKo": "여왕",
+    "grade": 2,
+    "topic": "family",
+    "emoji": "👸",
+    "chapterHint": [
+      "ch12"
+    ]
+  },
+  {
+    "id": "en-cousin",
+    "word": "cousin",
+    "meaningKo": "사촌",
+    "grade": 2,
+    "topic": "family",
+    "emoji": "🧒"
+  },
+  {
+    "id": "en-face",
+    "word": "face",
+    "meaningKo": "얼굴",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "🙂"
+  },
+  {
+    "id": "en-mouth",
+    "word": "mouth",
+    "meaningKo": "입",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "👄"
+  },
+  {
+    "id": "en-tooth",
+    "word": "tooth",
+    "meaningKo": "이",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "🦷"
+  },
+  {
+    "id": "en-teeth",
+    "word": "teeth",
+    "meaningKo": "이들",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "🦷"
+  },
+  {
+    "id": "en-tongue",
+    "word": "tongue",
+    "meaningKo": "혀",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "👅"
+  },
+  {
+    "id": "en-finger",
+    "word": "finger",
+    "meaningKo": "손가락",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "☝️"
+  },
+  {
+    "id": "en-knee",
+    "word": "knee",
+    "meaningKo": "무릎",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "🦵"
+  },
+  {
+    "id": "en-elbow",
+    "word": "elbow",
+    "meaningKo": "팔꿈치",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "💪"
+  },
+  {
+    "id": "en-back",
+    "word": "back",
+    "meaningKo": "등",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "🧍"
+  },
+  {
+    "id": "en-neck",
+    "word": "neck",
+    "meaningKo": "목",
+    "grade": 2,
+    "topic": "body",
+    "emoji": "🧣"
+  },
+  {
+    "id": "en-apple",
+    "word": "apple",
+    "meaningKo": "사과",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍎"
+  },
+  {
+    "id": "en-banana",
+    "word": "banana",
+    "meaningKo": "바나나",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍌"
+  },
+  {
+    "id": "en-grape",
+    "word": "grape",
+    "meaningKo": "포도",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍇"
+  },
+  {
+    "id": "en-peach",
+    "word": "peach",
+    "meaningKo": "복숭아",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍑"
+  },
+  {
+    "id": "en-lemon",
+    "word": "lemon",
+    "meaningKo": "레몬",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍋"
+  },
+  {
+    "id": "en-melon",
+    "word": "melon",
+    "meaningKo": "멜론",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍈"
+  },
+  {
+    "id": "en-bread",
+    "word": "bread",
+    "meaningKo": "빵",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍞"
+  },
+  {
+    "id": "en-cheese",
+    "word": "cheese",
+    "meaningKo": "치즈",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🧀"
+  },
+  {
+    "id": "en-cookie",
+    "word": "cookie",
+    "meaningKo": "쿠키",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍪"
+  },
+  {
+    "id": "en-carrot",
+    "word": "carrot",
+    "meaningKo": "당근",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🥕"
+  },
+  {
+    "id": "en-tomato",
+    "word": "tomato",
+    "meaningKo": "토마토",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍅"
+  },
+  {
+    "id": "en-potato",
+    "word": "potato",
+    "meaningKo": "감자",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🥔"
+  },
+  {
+    "id": "en-onion",
+    "word": "onion",
+    "meaningKo": "양파",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🧅"
+  },
+  {
+    "id": "en-juice",
+    "word": "juice",
+    "meaningKo": "주스",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🧃"
+  },
+  {
+    "id": "en-water",
+    "word": "water",
+    "meaningKo": "물",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "💧"
+  },
+  {
+    "id": "en-noodles",
+    "word": "noodles",
+    "meaningKo": "국수",
+    "grade": 2,
+    "topic": "food",
+    "emoji": "🍜"
+  },
+  {
+    "id": "en-flower",
+    "word": "flower",
+    "meaningKo": "꽃",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "🌸",
+    "chapterHint": [
+      "ch07"
+    ]
+  },
+  {
+    "id": "en-grass",
+    "word": "grass",
+    "meaningKo": "풀",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "🌱"
+  },
+  {
+    "id": "en-river",
+    "word": "river",
+    "meaningKo": "강",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "🏞️"
+  },
+  {
+    "id": "en-cloud",
+    "word": "cloud",
+    "meaningKo": "구름",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "☁️"
+  },
+  {
+    "id": "en-forest",
+    "word": "forest",
+    "meaningKo": "숲",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "🌲"
+  },
+  {
+    "id": "en-hill",
+    "word": "hill",
+    "meaningKo": "언덕",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "⛰️"
+  },
+  {
+    "id": "en-cave",
+    "word": "cave",
+    "meaningKo": "동굴",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "🕳️",
+    "chapterHint": [
+      "ch03"
+    ]
+  },
+  {
+    "id": "en-stone",
+    "word": "stone",
+    "meaningKo": "돌",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "🪨"
+  },
+  {
+    "id": "en-seed",
+    "word": "seed",
+    "meaningKo": "씨앗",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "🌰"
+  },
+  {
+    "id": "en-earth",
+    "word": "earth",
+    "meaningKo": "지구",
+    "grade": 2,
+    "topic": "nature",
+    "emoji": "🌍"
+  },
+  {
+    "id": "en-island",
+    "word": "island",
+    "meaningKo": "섬",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "🏝️",
+    "chapterHint": [
+      "ch13"
+    ]
+  },
+  {
+    "id": "en-beach",
+    "word": "beach",
+    "meaningKo": "해변",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "🏖️"
+  },
+  {
+    "id": "en-shell",
+    "word": "shell",
+    "meaningKo": "조개껍데기",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "🐚"
+  },
+  {
+    "id": "en-shark",
+    "word": "shark",
+    "meaningKo": "상어",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "🦈"
+  },
+  {
+    "id": "en-whale",
+    "word": "whale",
+    "meaningKo": "고래",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "🐋"
+  },
+  {
+    "id": "en-coral",
+    "word": "coral",
+    "meaningKo": "산호",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "🪸"
+  },
+  {
+    "id": "en-ocean",
+    "word": "ocean",
+    "meaningKo": "대양",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "🌊"
+  },
+  {
+    "id": "en-anchor",
+    "word": "anchor",
+    "meaningKo": "닻",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "⚓"
+  },
+  {
+    "id": "en-rope",
+    "word": "rope",
+    "meaningKo": "밧줄",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "🪢"
+  },
+  {
+    "id": "en-port",
+    "word": "port",
+    "meaningKo": "항구",
+    "grade": 2,
+    "topic": "sea",
+    "emoji": "🚢"
+  },
+  {
+    "id": "en-chair",
+    "word": "chair",
+    "meaningKo": "의자",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🪑"
+  },
+  {
+    "id": "en-table",
+    "word": "table",
+    "meaningKo": "탁자",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🍽️"
+  },
+  {
+    "id": "en-clock",
+    "word": "clock",
+    "meaningKo": "시계",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🕰️"
+  },
+  {
+    "id": "en-sofa",
+    "word": "sofa",
+    "meaningKo": "소파",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🛋️"
+  },
+  {
+    "id": "en-spoon",
+    "word": "spoon",
+    "meaningKo": "숟가락",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🥄"
+  },
+  {
+    "id": "en-fork",
+    "word": "fork",
+    "meaningKo": "포크",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🍴"
+  },
+  {
+    "id": "en-plate",
+    "word": "plate",
+    "meaningKo": "접시",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🍽️"
+  },
+  {
+    "id": "en-bowl",
+    "word": "bowl",
+    "meaningKo": "그릇",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🥣"
+  },
+  {
+    "id": "en-towel",
+    "word": "towel",
+    "meaningKo": "수건",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🧻"
+  },
+  {
+    "id": "en-soap",
+    "word": "soap",
+    "meaningKo": "비누",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🧼"
+  },
+  {
+    "id": "en-brush",
+    "word": "brush",
+    "meaningKo": "솔",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "🪥"
+  },
+  {
+    "id": "en-shirt",
+    "word": "shirt",
+    "meaningKo": "셔츠",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "👕"
+  },
+  {
+    "id": "en-shoes",
+    "word": "shoes",
+    "meaningKo": "신발",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "👟"
+  },
+  {
+    "id": "en-dress",
+    "word": "dress",
+    "meaningKo": "원피스",
+    "grade": 2,
+    "topic": "house",
+    "emoji": "👗"
+  },
+  {
+    "id": "en-sleep",
+    "word": "sleep",
+    "meaningKo": "자다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "😴"
+  },
+  {
+    "id": "en-drink",
+    "word": "drink",
+    "meaningKo": "마시다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "🥤"
+  },
+  {
+    "id": "en-write",
+    "word": "write",
+    "meaningKo": "쓰다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "✍️"
+  },
+  {
+    "id": "en-paint",
+    "word": "paint",
+    "meaningKo": "색칠하다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "🖌️"
+  },
+  {
+    "id": "en-dance",
+    "word": "dance",
+    "meaningKo": "춤추다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "💃"
+  },
+  {
+    "id": "en-smile",
+    "word": "smile",
+    "meaningKo": "미소 짓다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "😊"
+  },
+  {
+    "id": "en-laugh",
+    "word": "laugh",
+    "meaningKo": "웃다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "😄"
+  },
+  {
+    "id": "en-listen",
+    "word": "listen",
+    "meaningKo": "듣다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "👂"
+  },
+  {
+    "id": "en-watch",
+    "word": "watch",
+    "meaningKo": "보다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "👀"
+  },
+  {
+    "id": "en-catch",
+    "word": "catch",
+    "meaningKo": "잡다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "🤲"
+  },
+  {
+    "id": "en-throw",
+    "word": "throw",
+    "meaningKo": "던지다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "🤾"
+  },
+  {
+    "id": "en-climb",
+    "word": "climb",
+    "meaningKo": "오르다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "🧗"
+  },
+  {
+    "id": "en-wash",
+    "word": "wash",
+    "meaningKo": "씻다",
+    "grade": 2,
+    "topic": "actions",
+    "emoji": "🧼"
+  },
+  {
+    "id": "en-dolphin",
+    "word": "dolphin",
+    "meaningKo": "돌고래",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🐬",
+    "sentence": "I see the dolphin.",
+    "sentenceKo": "나는 돌고래를 봐요."
+  },
+  {
+    "id": "en-giraffe",
+    "word": "giraffe",
+    "meaningKo": "기린",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🦒",
+    "sentence": "I see the giraffe.",
+    "sentenceKo": "나는 기린을 봐요."
+  },
+  {
+    "id": "en-elephant",
+    "word": "elephant",
+    "meaningKo": "코끼리",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🐘",
+    "sentence": "I see the elephant.",
+    "sentenceKo": "나는 코끼리를 봐요."
+  },
+  {
+    "id": "en-butterfly",
+    "word": "butterfly",
+    "meaningKo": "나비",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🦋",
+    "sentence": "I see the butterfly.",
+    "sentenceKo": "나는 나비를 봐요."
+  },
+  {
+    "id": "en-penguin",
+    "word": "penguin",
+    "meaningKo": "펭귄",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🐧",
+    "sentence": "I see the penguin.",
+    "sentenceKo": "나는 펭귄을 봐요."
+  },
+  {
+    "id": "en-octopus",
+    "word": "octopus",
+    "meaningKo": "문어",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🐙",
+    "sentence": "I see the octopus.",
+    "sentenceKo": "나는 문어를 봐요."
+  },
+  {
+    "id": "en-squirrel",
+    "word": "squirrel",
+    "meaningKo": "다람쥐",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🐿️",
+    "sentence": "I see the squirrel.",
+    "sentenceKo": "나는 다람쥐를 봐요."
+  },
+  {
+    "id": "en-chicken",
+    "word": "chicken",
+    "meaningKo": "닭",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🐔",
+    "sentence": "I see the chicken.",
+    "sentenceKo": "나는 닭을 봐요."
+  },
+  {
+    "id": "en-rooster",
+    "word": "rooster",
+    "meaningKo": "수탉",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🐓",
+    "sentence": "I see the rooster.",
+    "sentenceKo": "나는 수탉을 봐요."
+  },
+  {
+    "id": "en-kangaroo",
+    "word": "kangaroo",
+    "meaningKo": "캥거루",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🦘",
+    "sentence": "I see the kangaroo.",
+    "sentenceKo": "나는 캥거루를 봐요."
+  },
+  {
+    "id": "en-crocodile",
+    "word": "crocodile",
+    "meaningKo": "악어",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🐊",
+    "sentence": "I see the crocodile.",
+    "sentenceKo": "나는 악어를 봐요."
+  },
+  {
+    "id": "en-ladybug",
+    "word": "ladybug",
+    "meaningKo": "무당벌레",
+    "grade": 3,
+    "topic": "animals",
+    "emoji": "🐞",
+    "sentence": "I see the ladybug.",
+    "sentenceKo": "나는 무당벌레를 봐요."
+  },
+  {
+    "id": "en-violet",
+    "word": "violet",
+    "meaningKo": "제비꽃색",
+    "grade": 3,
+    "topic": "colors",
+    "emoji": "🟣",
+    "sentence": "The flower is violet.",
+    "sentenceKo": "그 꽃은 제비꽃색이에요."
+  },
+  {
+    "id": "en-silver",
+    "word": "silver",
+    "meaningKo": "은색",
+    "grade": 3,
+    "topic": "colors",
+    "emoji": "🩶",
+    "sentence": "The spoon is silver.",
+    "sentenceKo": "그 숟가락은 은색이에요."
+  },
+  {
+    "id": "en-golden",
+    "word": "golden",
+    "meaningKo": "황금빛",
+    "grade": 3,
+    "topic": "colors",
+    "emoji": "🟡",
+    "sentence": "The cow is golden.",
+    "sentenceKo": "그 소는 황금빛이에요."
+  },
+  {
+    "id": "en-scarlet",
+    "word": "scarlet",
+    "meaningKo": "진홍색",
+    "grade": 3,
+    "topic": "colors",
+    "emoji": "🔴",
+    "sentence": "The cape is scarlet.",
+    "sentenceKo": "그 망토는 진홍색이에요."
+  },
+  {
+    "id": "en-indigo",
+    "word": "indigo",
+    "meaningKo": "남색",
+    "grade": 3,
+    "topic": "colors",
+    "emoji": "🔵",
+    "sentence": "The bag is indigo.",
+    "sentenceKo": "그 가방은 남색이에요."
+  },
+  {
+    "id": "en-thirteen",
+    "word": "thirteen",
+    "meaningKo": "열셋",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to thirteen.",
+    "sentenceKo": "열셋까지 세어 봐요."
+  },
+  {
+    "id": "en-fourteen",
+    "word": "fourteen",
+    "meaningKo": "열넷",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to fourteen.",
+    "sentenceKo": "열넷까지 세어 봐요."
+  },
+  {
+    "id": "en-fifteen",
+    "word": "fifteen",
+    "meaningKo": "열다섯",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to fifteen.",
+    "sentenceKo": "열다섯까지 세어 봐요."
+  },
+  {
+    "id": "en-sixteen",
+    "word": "sixteen",
+    "meaningKo": "열여섯",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to sixteen.",
+    "sentenceKo": "열여섯까지 세어 봐요."
+  },
+  {
+    "id": "en-seventeen",
+    "word": "seventeen",
+    "meaningKo": "열일곱",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to seventeen.",
+    "sentenceKo": "열일곱까지 세어 봐요."
+  },
+  {
+    "id": "en-eighteen",
+    "word": "eighteen",
+    "meaningKo": "열여덟",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to eighteen.",
+    "sentenceKo": "열여덟까지 세어 봐요."
+  },
+  {
+    "id": "en-nineteen",
+    "word": "nineteen",
+    "meaningKo": "열아홉",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to nineteen.",
+    "sentenceKo": "열아홉까지 세어 봐요."
+  },
+  {
+    "id": "en-twenty",
+    "word": "twenty",
+    "meaningKo": "스물",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to twenty.",
+    "sentenceKo": "스물까지 세어 봐요."
+  },
+  {
+    "id": "en-thirty",
+    "word": "thirty",
+    "meaningKo": "서른",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to thirty.",
+    "sentenceKo": "서른까지 세어 봐요."
+  },
+  {
+    "id": "en-forty",
+    "word": "forty",
+    "meaningKo": "마흔",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to forty.",
+    "sentenceKo": "마흔까지 세어 봐요."
+  },
+  {
+    "id": "en-fifty",
+    "word": "fifty",
+    "meaningKo": "쉰",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "🔢",
+    "sentence": "Count to fifty.",
+    "sentenceKo": "쉰까지 세어 봐요."
+  },
+  {
+    "id": "en-hundred",
+    "word": "hundred",
+    "meaningKo": "백",
+    "grade": 3,
+    "topic": "numbers",
+    "emoji": "💯",
+    "sentence": "One hundred stars shine.",
+    "sentenceKo": "별 백 개가 빛나요."
+  },
+  {
+    "id": "en-grandmother",
+    "word": "grandmother",
+    "meaningKo": "할머니",
+    "grade": 3,
+    "topic": "family",
+    "emoji": "👵",
+    "sentence": "My grandmother smiles.",
+    "sentenceKo": "우리 할머니가 웃어요."
+  },
+  {
+    "id": "en-grandfather",
+    "word": "grandfather",
+    "meaningKo": "할아버지",
+    "grade": 3,
+    "topic": "family",
+    "emoji": "👴",
+    "sentence": "My grandfather reads.",
+    "sentenceKo": "우리 할아버지가 책을 읽어요."
+  },
+  {
+    "id": "en-parents",
+    "word": "parents",
+    "meaningKo": "부모님",
+    "grade": 3,
+    "topic": "family",
+    "emoji": "👨‍👩‍👦",
+    "sentence": "My parents are kind.",
+    "sentenceKo": "우리 부모님은 다정해요."
+  },
+  {
+    "id": "en-daughter",
+    "word": "daughter",
+    "meaningKo": "딸",
+    "grade": 3,
+    "topic": "family",
+    "emoji": "👧",
+    "sentence": "Their daughter can swim.",
+    "sentenceKo": "그들의 딸은 수영할 수 있어요."
+  },
+  {
+    "id": "en-family",
+    "word": "family",
+    "meaningKo": "가족",
+    "grade": 3,
+    "topic": "family",
+    "emoji": "👨‍👩‍👧",
+    "sentence": "I love my family.",
+    "sentenceKo": "나는 우리 가족을 사랑해요."
+  },
+  {
+    "id": "en-twins",
+    "word": "twins",
+    "meaningKo": "쌍둥이",
+    "grade": 3,
+    "topic": "family",
+    "emoji": "👯",
+    "sentence": "The twins play together.",
+    "sentenceKo": "쌍둥이가 함께 놀아요."
+  },
+  {
+    "id": "en-shoulder",
+    "word": "shoulder",
+    "meaningKo": "어깨",
+    "grade": 3,
+    "topic": "body",
+    "emoji": "🤷",
+    "sentence": "Touch your shoulder.",
+    "sentenceKo": "어깨를 만져 보세요."
+  },
+  {
+    "id": "en-stomach",
+    "word": "stomach",
+    "meaningKo": "배",
+    "grade": 3,
+    "topic": "body",
+    "emoji": "🧍",
+    "sentence": "My stomach is full.",
+    "sentenceKo": "나는 배가 불러요."
+  },
+  {
+    "id": "en-eyebrow",
+    "word": "eyebrow",
+    "meaningKo": "눈썹",
+    "grade": 3,
+    "topic": "body",
+    "emoji": "🤨",
+    "sentence": "My eyebrow is brown.",
+    "sentenceKo": "내 눈썹은 갈색이에요."
+  },
+  {
+    "id": "en-ankle",
+    "word": "ankle",
+    "meaningKo": "발목",
+    "grade": 3,
+    "topic": "body",
+    "emoji": "🦶",
+    "sentence": "This is my ankle.",
+    "sentenceKo": "이것은 내 발목이에요."
+  },
+  {
+    "id": "en-thumb",
+    "word": "thumb",
+    "meaningKo": "엄지손가락",
+    "grade": 3,
+    "topic": "body",
+    "emoji": "👍",
+    "sentence": "Show me your thumb.",
+    "sentenceKo": "엄지손가락을 보여 주세요."
+  },
+  {
+    "id": "en-strawberry",
+    "word": "strawberry",
+    "meaningKo": "딸기",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🍓",
+    "sentence": "I see the strawberry.",
+    "sentenceKo": "나는 딸기를 봐요."
+  },
+  {
+    "id": "en-watermelon",
+    "word": "watermelon",
+    "meaningKo": "수박",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🍉",
+    "sentence": "I see the watermelon.",
+    "sentenceKo": "나는 수박을 봐요."
+  },
+  {
+    "id": "en-pineapple",
+    "word": "pineapple",
+    "meaningKo": "파인애플",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🍍",
+    "sentence": "I see the pineapple.",
+    "sentenceKo": "나는 파인애플을 봐요."
+  },
+  {
+    "id": "en-cucumber",
+    "word": "cucumber",
+    "meaningKo": "오이",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🥒",
+    "sentence": "I see the cucumber.",
+    "sentenceKo": "나는 오이를 봐요."
+  },
+  {
+    "id": "en-broccoli",
+    "word": "broccoli",
+    "meaningKo": "브로콜리",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🥦",
+    "sentence": "I see the broccoli.",
+    "sentenceKo": "나는 브로콜리를 봐요."
+  },
+  {
+    "id": "en-pumpkin",
+    "word": "pumpkin",
+    "meaningKo": "호박",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🎃",
+    "sentence": "I see the pumpkin.",
+    "sentenceKo": "나는 호박을 봐요."
+  },
+  {
+    "id": "en-sandwich",
+    "word": "sandwich",
+    "meaningKo": "샌드위치",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🥪",
+    "sentence": "I see the sandwich.",
+    "sentenceKo": "나는 샌드위치를 봐요."
+  },
+  {
+    "id": "en-pancake",
+    "word": "pancake",
+    "meaningKo": "팬케이크",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🥞",
+    "sentence": "I see the pancake.",
+    "sentenceKo": "나는 팬케이크를 봐요."
+  },
+  {
+    "id": "en-chocolate",
+    "word": "chocolate",
+    "meaningKo": "초콜릿",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🍫",
+    "sentence": "I see the chocolate.",
+    "sentenceKo": "나는 초콜릿을 봐요."
+  },
+  {
+    "id": "en-ice-cream",
+    "word": "ice cream",
+    "meaningKo": "아이스크림",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🍨",
+    "sentence": "I see the ice cream.",
+    "sentenceKo": "나는 아이스크림을 봐요."
+  },
+  {
+    "id": "en-cherry",
+    "word": "cherry",
+    "meaningKo": "체리",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🍒",
+    "sentence": "I see the cherry.",
+    "sentenceKo": "나는 체리를 봐요."
+  },
+  {
+    "id": "en-yogurt",
+    "word": "yogurt",
+    "meaningKo": "요구르트",
+    "grade": 3,
+    "topic": "food",
+    "emoji": "🥛",
+    "sentence": "I see the yogurt.",
+    "sentenceKo": "나는 요구르트를 봐요."
+  },
+  {
+    "id": "en-mountain",
+    "word": "mountain",
+    "meaningKo": "산",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "⛰️",
+    "sentence": "I see the mountain.",
+    "sentenceKo": "나는 산을 봐요."
+  },
+  {
+    "id": "en-rainbow",
+    "word": "rainbow",
+    "meaningKo": "무지개",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "🌈",
+    "sentence": "I see the rainbow.",
+    "sentenceKo": "나는 무지개를 봐요."
+  },
+  {
+    "id": "en-sunrise",
+    "word": "sunrise",
+    "meaningKo": "해돋이",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "🌅",
+    "sentence": "I see the sunrise.",
+    "sentenceKo": "나는 해돋이를 봐요."
+  },
+  {
+    "id": "en-sunset",
+    "word": "sunset",
+    "meaningKo": "해넘이",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "🌇",
+    "sentence": "I see the sunset.",
+    "sentenceKo": "나는 해넘이를 봐요."
+  },
+  {
+    "id": "en-sunshine",
+    "word": "sunshine",
+    "meaningKo": "햇살",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "☀️",
+    "sentence": "I see the sunshine.",
+    "sentenceKo": "나는 햇살을 봐요."
+  },
+  {
+    "id": "en-thunder",
+    "word": "thunder",
+    "meaningKo": "천둥",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "⛈️",
+    "sentence": "I hear the thunder.",
+    "sentenceKo": "나는 천둥 소리를 들어요."
+  },
+  {
+    "id": "en-lightning",
+    "word": "lightning",
+    "meaningKo": "번개",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "🌩️",
+    "sentence": "I see the lightning.",
+    "sentenceKo": "나는 번개를 봐요."
+  },
+  {
+    "id": "en-waterfall",
+    "word": "waterfall",
+    "meaningKo": "폭포",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "🏞️",
+    "sentence": "I see the waterfall.",
+    "sentenceKo": "나는 폭포를 봐요."
+  },
+  {
+    "id": "en-rainstorm",
+    "word": "rainstorm",
+    "meaningKo": "폭풍우",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "⛈️",
+    "sentence": "I see the rainstorm.",
+    "sentenceKo": "나는 폭풍우를 봐요."
+  },
+  {
+    "id": "en-snowflake",
+    "word": "snowflake",
+    "meaningKo": "눈송이",
+    "grade": 3,
+    "topic": "nature",
+    "emoji": "❄️",
+    "sentence": "I see the snowflake.",
+    "sentenceKo": "나는 눈송이를 봐요."
+  },
+  {
+    "id": "en-sailboat",
+    "word": "sailboat",
+    "meaningKo": "돛단배",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "⛵",
+    "sentence": "I see the sailboat.",
+    "sentenceKo": "나는 돛단배를 봐요."
+  },
+  {
+    "id": "en-seagull",
+    "word": "seagull",
+    "meaningKo": "갈매기",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "🐦",
+    "sentence": "I see the seagull.",
+    "sentenceKo": "나는 갈매기를 봐요."
+  },
+  {
+    "id": "en-starfish",
+    "word": "starfish",
+    "meaningKo": "불가사리",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "⭐",
+    "sentence": "I see the starfish.",
+    "sentenceKo": "나는 불가사리를 봐요."
+  },
+  {
+    "id": "en-jellyfish",
+    "word": "jellyfish",
+    "meaningKo": "해파리",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "🪼",
+    "sentence": "I see the jellyfish.",
+    "sentenceKo": "나는 해파리를 봐요."
+  },
+  {
+    "id": "en-seaweed",
+    "word": "seaweed",
+    "meaningKo": "해초",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "🌿",
+    "sentence": "I see the seaweed.",
+    "sentenceKo": "나는 해초를 봐요."
+  },
+  {
+    "id": "en-lighthouse",
+    "word": "lighthouse",
+    "meaningKo": "등대",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "🗼",
+    "sentence": "I see the lighthouse.",
+    "sentenceKo": "나는 등대를 봐요."
+  },
+  {
+    "id": "en-treasure",
+    "word": "treasure",
+    "meaningKo": "보물",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "💎",
+    "sentence": "I see the treasure.",
+    "sentenceKo": "나는 보물을 봐요."
+  },
+  {
+    "id": "en-lifeboat",
+    "word": "lifeboat",
+    "meaningKo": "구명정",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "🛶",
+    "sentence": "I see the lifeboat.",
+    "sentenceKo": "나는 구명정을 봐요."
+  },
+  {
+    "id": "en-compass",
+    "word": "compass",
+    "meaningKo": "나침반",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "🧭",
+    "sentence": "I see the compass.",
+    "sentenceKo": "나는 나침반을 봐요."
+  },
+  {
+    "id": "en-submarine",
+    "word": "submarine",
+    "meaningKo": "잠수함",
+    "grade": 3,
+    "topic": "sea",
+    "emoji": "🚤",
+    "sentence": "I see the submarine.",
+    "sentenceKo": "나는 잠수함을 봐요."
+  },
+  {
+    "id": "en-window",
+    "word": "window",
+    "meaningKo": "창문",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🪟",
+    "sentence": "I see the window.",
+    "sentenceKo": "나는 창문을 봐요."
+  },
+  {
+    "id": "en-kitchen",
+    "word": "kitchen",
+    "meaningKo": "부엌",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🍳",
+    "sentence": "I see the kitchen.",
+    "sentenceKo": "나는 부엌을 봐요."
+  },
+  {
+    "id": "en-bedroom",
+    "word": "bedroom",
+    "meaningKo": "침실",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🛏️",
+    "sentence": "I see the bedroom.",
+    "sentenceKo": "나는 침실을 봐요."
+  },
+  {
+    "id": "en-bathroom",
+    "word": "bathroom",
+    "meaningKo": "욕실",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🛁",
+    "sentence": "I see the bathroom.",
+    "sentenceKo": "나는 욕실을 봐요."
+  },
+  {
+    "id": "en-blanket",
+    "word": "blanket",
+    "meaningKo": "담요",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🛏️",
+    "sentence": "I see the blanket.",
+    "sentenceKo": "나는 담요를 봐요."
+  },
+  {
+    "id": "en-mirror",
+    "word": "mirror",
+    "meaningKo": "거울",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🪞",
+    "sentence": "I see the mirror.",
+    "sentenceKo": "나는 거울을 봐요."
+  },
+  {
+    "id": "en-curtain",
+    "word": "curtain",
+    "meaningKo": "커튼",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🪟",
+    "sentence": "I see the curtain.",
+    "sentenceKo": "나는 커튼을 봐요."
+  },
+  {
+    "id": "en-teapot",
+    "word": "teapot",
+    "meaningKo": "찻주전자",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🫖",
+    "sentence": "I see the teapot.",
+    "sentenceKo": "나는 찻주전자를 봐요."
+  },
+  {
+    "id": "en-toothbrush",
+    "word": "toothbrush",
+    "meaningKo": "칫솔",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🪥",
+    "sentence": "I see the toothbrush.",
+    "sentenceKo": "나는 칫솔을 봐요."
+  },
+  {
+    "id": "en-umbrella",
+    "word": "umbrella",
+    "meaningKo": "우산",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "☂️",
+    "sentence": "I see the umbrella.",
+    "sentenceKo": "나는 우산을 봐요."
+  },
+  {
+    "id": "en-backpack",
+    "word": "backpack",
+    "meaningKo": "배낭",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "🎒",
+    "sentence": "I see the backpack.",
+    "sentenceKo": "나는 배낭을 봐요."
+  },
+  {
+    "id": "en-notebook",
+    "word": "notebook",
+    "meaningKo": "공책",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "📓",
+    "sentence": "I see the notebook.",
+    "sentenceKo": "나는 공책을 봐요."
+  },
+  {
+    "id": "en-scissors",
+    "word": "scissors",
+    "meaningKo": "가위",
+    "grade": 3,
+    "topic": "house",
+    "emoji": "✂️",
+    "sentence": "I see the scissors.",
+    "sentenceKo": "나는 가위를 봐요."
+  },
+  {
+    "id": "en-follow",
+    "word": "follow",
+    "meaningKo": "따라가다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🚶",
+    "sentence": "Follow the path.",
+    "sentenceKo": "길을 따라가세요."
+  },
+  {
+    "id": "en-rescue",
+    "word": "rescue",
+    "meaningKo": "구하다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🛟",
+    "sentence": "We rescue our friends.",
+    "sentenceKo": "우리는 친구들을 구해요."
+  },
+  {
+    "id": "en-protect",
+    "word": "protect",
+    "meaningKo": "보호하다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🛡️",
+    "sentence": "Protect the little bird.",
+    "sentenceKo": "작은 새를 보호해 주세요."
+  },
+  {
+    "id": "en-explore",
+    "word": "explore",
+    "meaningKo": "탐험하다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🧭",
+    "sentence": "We explore the island.",
+    "sentenceKo": "우리는 섬을 탐험해요."
+  },
+  {
+    "id": "en-remember",
+    "word": "remember",
+    "meaningKo": "기억하다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "💭",
+    "sentence": "Remember our promise.",
+    "sentenceKo": "우리의 약속을 기억하세요."
+  },
+  {
+    "id": "en-promise",
+    "word": "promise",
+    "meaningKo": "약속하다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🤝",
+    "sentence": "I promise to help.",
+    "sentenceKo": "나는 돕겠다고 약속해요."
+  },
+  {
+    "id": "en-return",
+    "word": "return",
+    "meaningKo": "돌아오다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🏠",
+    "sentence": "We return home.",
+    "sentenceKo": "우리는 집으로 돌아와요."
+  },
+  {
+    "id": "en-collect",
+    "word": "collect",
+    "meaningKo": "모으다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🧺",
+    "sentence": "Collect the little shells.",
+    "sentenceKo": "작은 조개껍데기를 모으세요."
+  },
+  {
+    "id": "en-whisper",
+    "word": "whisper",
+    "meaningKo": "속삭이다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🤫",
+    "sentence": "Please whisper here.",
+    "sentenceKo": "여기서는 작게 속삭여 주세요."
+  },
+  {
+    "id": "en-practice",
+    "word": "practice",
+    "meaningKo": "연습하다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🎯",
+    "sentence": "We practice every day.",
+    "sentenceKo": "우리는 매일 연습해요."
+  },
+  {
+    "id": "en-balance",
+    "word": "balance",
+    "meaningKo": "균형 잡다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "⚖️",
+    "sentence": "Balance on one foot.",
+    "sentenceKo": "한 발로 균형을 잡으세요."
+  },
+  {
+    "id": "en-stretch",
+    "word": "stretch",
+    "meaningKo": "쭉 펴다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🙆",
+    "sentence": "Stretch your arms.",
+    "sentenceKo": "팔을 쭉 펴세요."
+  },
+  {
+    "id": "en-share",
+    "word": "share",
+    "meaningKo": "나누다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🤲",
+    "sentence": "Share your toys.",
+    "sentenceKo": "장난감을 함께 쓰세요."
+  },
+  {
+    "id": "en-prepare",
+    "word": "prepare",
+    "meaningKo": "준비하다",
+    "grade": 3,
+    "topic": "actions",
+    "emoji": "🎒",
+    "sentence": "Prepare for the trip.",
+    "sentenceKo": "여행을 준비하세요."
   }
 ]

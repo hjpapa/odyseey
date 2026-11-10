@@ -2,7 +2,7 @@
  * 소품 만들기 — Codex A4 의 진짜 모델이 있으면 그것을, 없으면 여기의 '임시 소품'을 쓴다.
  * (임시 소품은 A4 가 들어오면 자연스럽게 안 쓰이게 된다)
  */
-import { CylinderGeometry, Group, Mesh, MeshBasicMaterial, type Object3D } from 'three';
+import { Box3, CylinderGeometry, Group, Mesh, MeshBasicMaterial, type Object3D, Vector3 } from 'three';
 import type { ModelOptions, PropId } from '../types/contracts';
 import { getModel, hasRealModel } from '../core/models';
 import { block, toonMaterial } from '../core/placeholders';
@@ -226,10 +226,31 @@ const INTERIM: Partial<Record<PropId, () => Group>> = {
 
 /** 부딪히는 소품의 충돌 반지름 (모델과 상관없이 일정한 게임 감각) */
 export const SOLID_RADIUS: Partial<Record<PropId, number>> = {
-  palmTree: 0.45, oliveTree: 0.6, pineTree: 0.55, rock: 0.95, boulder: 1.7, chest: 0.6, owlShrine: 0.7,
-  campfire: 0.75, caveEntrance: 3.2, crate: 0.6, barrel: 0.5, column: 0.55, hut: 2.4, signpost: 0.2,
+  palmTree: 0.45, oliveTree: 0.6, pineTree: 0.55, rock: 0.75, boulder: 1.7, chest: 0.6, owlShrine: 0.7,
+  campfire: 0.75, caveEntrance: 3.2, crate: 0.55, barrel: 0.5, column: 0.55, hut: 2.4, signpost: 0.2,
   checkpointFlag: 0.15, temple: 4, house: 2.6, palace: 6, cliff: 3, brokenColumn: 0.55, amphora: 0.35, sundial: 0.7, clockTower: 1.6,
 };
+
+/** 앞뒤로 긴 소품(뗏목·배)의 긴 쪽을 +Z(진행 방향)로 맞춘다. 막 만든(회전 0) 모델에 쓴다 */
+export function alignLengthToZ(obj: Object3D): void {
+  const size = new Box3().setFromObject(obj).getSize(new Vector3());
+  if (size.x > size.z * 1.05) obj.rotation.y += Math.PI / 2;
+}
+
+/** 메시를 높이로 나눈다 — 뗏목의 통나무(낮은 것)와 돛대·돛(높은 것) */
+export function splitByHeight(obj: Object3D, line: number): { low: Mesh[]; tall: Mesh[] } {
+  obj.updateMatrixWorld(true);
+  const base = new Box3().setFromObject(obj).min.y;
+  const low: Mesh[] = [];
+  const tall: Mesh[] = [];
+  const c = new Vector3();
+  obj.traverse((o) => {
+    if (!(o instanceof Mesh)) return;
+    new Box3().setFromObject(o).getCenter(c);
+    (c.y - base > line ? tall : low).push(o);
+  });
+  return { low, tall };
+}
 
 export function makeProp(id: PropId, opts?: ModelOptions): Group {
   if (hasRealModel(id)) return getModel(id, opts);
