@@ -1,0 +1,89 @@
+{
+  "id": "sirens",
+  "name": "세이렌의 바위섬",
+  "kind": "island",
+  "chapters": ["ch11"],
+  "hubPos": [-50, -475],
+  "terrain": { "radius": 55, "maxHeight": 8, "seed": 1934, "roughness": 0.62, "beachWidth": 8, "palette": "rock" },
+  "spawn": [-5, -44],
+  "zones": [
+    { "id": "siren-landing", "name": "난파선 해변", "center": [-5, -39], "radius": 7 },
+    { "id": "siren-stone-path", "name": "돌기둥 길", "center": [-7, -24], "radius": 6 },
+    { "id": "rhythmShield", "name": "메아리 마당", "center": [-7, -7], "radius": 4 },
+    { "id": "siren-stage", "name": "노래의 돌무대", "center": [15, 19], "radius": 9 }
+  ],
+  "checkpoints": [
+    { "id": "cp-stone-path", "pos": [-5, -23] }
+  ],
+  "gates": [
+    { "id": "gate-words", "pos": [-7, -15.5], "rotY": 3.1416, "chapter": "ch11", "quizSlot": "gate-words" }
+  ],
+  "shrines": [
+    { "id": "shrine-east-ruin", "pos": [19, -16] }
+  ],
+  "chests": [
+    { "id": "chest-shipwreck", "pos": [-25, -24], "coins": 7 },
+    { "id": "chest-echo-yard", "pos": [-9, -3], "coins": 9 }
+  ],
+  "npcs": [
+    { "id": "crewman", "model": "crewman", "pos": [-2, -37], "rotY": -2.74 }
+  ],
+  "enemies": [],
+  "collectibles": [],
+  "props": [
+    { "model": "rowboat", "pos": [-12, -40], "rotY": 2.36, "scale": 1.15 },
+    { "model": "ship", "pos": [-24, -29], "rotY": -0.94, "scale": 1.16 },
+    { "model": "net", "pos": [-21, -29], "rotY": 0.78 },
+    { "model": "crate", "pos": [-19, -26], "rotY": 1.53 },
+    { "model": "barrel", "pos": [-20.6, -25.2], "rotY": 0.72 },
+    { "model": "rock", "pos": [-10, -34], "rotY": 1.45 },
+    { "model": "rock", "pos": [1, -40], "rotY": 2.52 },
+    { "model": "cliff", "pos": [-32, -25], "rotY": 0.26, "scale": 1.18 },
+    { "model": "boulder", "pos": [-29, -21], "rotY": 1.13, "scale": 1.08 },
+    { "model": "boulder", "pos": [-26, -16], "rotY": 2.46, "scale": 0.9 },
+    { "model": "brokenColumn", "pos": [-11, -31], "rotY": 0.76 },
+    { "model": "column", "pos": [0, -30], "rotY": 2.68, "scale": 1.05 },
+    { "model": "signpost", "pos": [-9, -26], "rotY": 3.1416 },
+    { "model": "torch", "pos": [-10, -18], "rotY": 0.12 },
+    { "model": "torch", "pos": [-4, -18], "rotY": 0.49 },
+    { "model": "brokenColumn", "pos": [15, -13], "rotY": 0.59, "scale": 1.18 },
+    { "model": "column", "pos": [20, -20], "rotY": 0.14 },
+    { "model": "column", "pos": [23, -16], "rotY": 2.15 },
+    { "model": "amphora", "pos": [22, -13], "rotY": 1.28 },
+    { "model": "cliff", "pos": [31, -12], "rotY": 0.8 },
+    { "model": "cliff", "pos": [39, 9], "rotY": 1.41, "scale": 1.3 },
+    { "model": "cliff", "pos": [32, 23], "rotY": 0.74, "scale": 1.25 },
+    { "model": "cliff", "pos": [-24, 18], "rotY": 2.68, "scale": 1.12 },
+    { "model": "rock", "pos": [-13, 14], "rotY": 0.92 },
+    { "model": "rock", "pos": [1, 8], "rotY": 0.36 },
+    { "model": "signpost", "pos": [5, 7], "rotY": -2.63 },
+    { "model": "column", "pos": [8, 10], "rotY": 2.86, "scale": 1.1 },
+    { "model": "column", "pos": [22, 10], "rotY": 2.58, "scale": 1.1 },
+    { "model": "torch", "pos": [7, 13], "rotY": -0.4 },
+    { "model": "torch", "pos": [23, 13], "rotY": 0.3 },
+    { "model": "brokenColumn", "pos": [4, 24], "rotY": 2.24, "scale": 1.2 },
+    { "model": "column", "pos": [8, 29], "rotY": 1.27, "scale": 1.16 },
+    { "model": "column", "pos": [15, 31], "rotY": 0.57, "scale": 1.3 },
+    { "model": "column", "pos": [22, 29], "rotY": 0.6, "scale": 1.16 },
+    { "model": "brokenColumn", "pos": [26, 24], "rotY": 2.8, "scale": 1.2 },
+    { "model": "boulder", "pos": [9, 35], "rotY": 1.17, "scale": 1.12 },
+    { "model": "boulder", "pos": [23, 34], "rotY": 2.31 },
+    { "model": "boulder", "pos": [-3, -14.5], "rotY": -0.49 },
+    { "model": "boulder", "pos": [-0.65, -12.65], "rotY": -0.84 },
+    { "model": "boulder", "pos": [0.91, -10.1], "rotY": -1.2 },
+    { "model": "boulder", "pos": [1.5, -7.17], "rotY": -1.55 },
+    { "model": "boulder", "pos": [1.03, -4.22], "rotY": -1.9 },
+    { "model": "boulder", "pos": [-0.43, -1.61], "rotY": -2.26 },
+    { "model": "boulder", "pos": [-2.7, 0.33], "rotY": -2.61 },
+    { "model": "boulder", "pos": [-5.51, 1.37], "rotY": -2.96 },
+    { "model": "boulder", "pos": [-8.49, 1.37], "rotY": -3.32 },
+    { "model": "boulder", "pos": [-11.3, 0.33], "rotY": -3.67 },
+    { "model": "boulder", "pos": [-13.57, -1.61], "rotY": -4.03 },
+    { "model": "boulder", "pos": [-15.03, -4.22], "rotY": -4.38 },
+    { "model": "boulder", "pos": [-15.5, -7.17], "rotY": -4.73 },
+    { "model": "boulder", "pos": [-14.91, -10.1], "rotY": -5.09 },
+    { "model": "boulder", "pos": [-13.35, -12.65], "rotY": -5.44 },
+    { "model": "boulder", "pos": [-11, -14.5], "rotY": -5.79 }
+  ],
+  "boss": { "id": "sirenQueen", "arenaCenter": [15, 19], "arenaRadius": 11 }
+}

@@ -1,0 +1,81 @@
+{
+  "id": "aeolia",
+  "name": "아이올로스의 섬",
+  "kind": "island",
+  "chapters": ["ch05"],
+  "hubPos": [205, 480],
+  "terrain": { "radius": 58, "maxHeight": 9, "seed": 1928, "roughness": 0.34, "beachWidth": 8, "palette": "grass" },
+  "spawn": [0, -37],
+  "zones": [
+    { "id": "aeolia-court", "name": "아이올로스의 뜰", "center": [0, -23], "radius": 8 },
+    { "id": "aeolia-watch", "name": "불침번 시계터", "center": [-5, 18], "radius": 6 },
+    { "id": "windSail", "name": "돛을 올리는 곳", "center": [-6, 31], "radius": 3 },
+    { "id": "aeolia-overlook", "name": "바람 전망대", "center": [17, 6], "radius": 6 }
+  ],
+  "checkpoints": [
+    { "id": "cp-court", "pos": [-4, -26] },
+    { "id": "cp-watch", "pos": [-3, 16] }
+  ],
+  "gates": [
+    { "id": "watch-clock", "pos": [-5.08, 23.55], "rotY": 3.0329, "chapter": "ch05", "quizSlot": "watch-clock" }
+  ],
+  "shrines": [
+    { "id": "shrine-wind", "pos": [-9, -10] }
+  ],
+  "chests": [
+    { "id": "chest-overlook", "pos": [17, 6], "coins": 5 },
+    { "id": "chest-sail", "pos": [-10, 32], "coins": 8 }
+  ],
+  "npcs": [
+    { "id": "aeolus", "model": "aeolus", "pos": [0, -23], "rotY": 3.1416 }
+  ],
+  "enemies": [],
+  "collectibles": [],
+  "props": [
+    { "model": "signpost", "pos": [4, -31], "rotY": 0.25 },
+    { "model": "oliveTree", "pos": [-6, -33], "rotY": 0.4 },
+    { "model": "pineTree", "pos": [10, -33], "rotY": 1 },
+    { "model": "campfire", "pos": [6, -34] },
+    { "model": "temple", "pos": [-9, -18], "rotY": 2.6, "scale": 1.2 },
+    { "model": "windBag", "pos": [-2, -22], "rotY": 3.1416, "scale": 1.5 },
+    { "model": "amphora", "pos": [3, -22], "rotY": 0.35 },
+    { "model": "column", "pos": [4, -17], "rotY": 0.4 },
+    { "model": "column", "pos": [-4, -17], "rotY": 0.4 },
+    { "model": "oliveTree", "pos": [10, -17], "rotY": 0.8 },
+    { "model": "oliveTree", "pos": [-12, -5], "rotY": 2.2 },
+    { "model": "pineTree", "pos": [13, -10], "rotY": 1.4 },
+    { "model": "signpost", "pos": [3, 1], "rotY": 2.8 },
+    { "model": "amphora", "pos": [14, 4], "rotY": 0.7 },
+    { "model": "brokenColumn", "pos": [20, 3], "rotY": 1.1 },
+    { "model": "brokenColumn", "pos": [21, 8], "rotY": 0.6 },
+    { "model": "pineTree", "pos": [15, 11], "rotY": 0.9 },
+    { "model": "rock", "pos": [-17, 7], "rotY": 0.4, "scale": 1.3 },
+    { "model": "clockTower", "pos": [0.5, 19], "rotY": 3.1416, "scale": 1.25 },
+    { "model": "torch", "pos": [-8, 20] },
+    { "model": "ship", "pos": [-6, 36], "rotY": 0 },
+    { "model": "dock", "pos": [-6, 29], "rotY": 0 },
+    { "model": "crate", "pos": [-2.5, 32], "rotY": 0.5 },
+    { "model": "barrel", "pos": [-9.6, 34] },
+    { "model": "net", "pos": [-3, 34], "rotY": 0.7, "scale": 1.2 },
+    { "model": "windBag", "pos": [-2.3, 35], "rotY": 3.1416, "scale": 1.15 },
+    { "model": "pineTree", "pos": [-19, 26], "rotY": 1.4 },
+    { "model": "pineTree", "pos": [17, 29], "rotY": 1.2 },
+    { "model": "rock", "pos": [22, 32], "rotY": 0.9, "scale": 1.25 },
+    { "model": "boulder", "pos": [-9.09, 24.08], "rotY": -2.7697 },
+    { "model": "boulder", "pos": [-11.65, 25.65], "rotY": -2.4149 },
+    { "model": "boulder", "pos": [-13.5, 28.01], "rotY": -2.0601 },
+    { "model": "boulder", "pos": [-14.42, 30.86], "rotY": -1.7053 },
+    { "model": "boulder", "pos": [-14.29, 33.86], "rotY": -1.3505 },
+    { "model": "boulder", "pos": [-13.13, 36.62], "rotY": -0.9957 },
+    { "model": "boulder", "pos": [-11.08, 38.81], "rotY": -0.6409 },
+    { "model": "boulder", "pos": [-8.4, 40.15], "rotY": -0.2861 },
+    { "model": "boulder", "pos": [-5.42, 40.48], "rotY": 0.0687 },
+    { "model": "boulder", "pos": [-2.51, 39.75], "rotY": 0.4235 },
+    { "model": "boulder", "pos": [-0.03, 38.05], "rotY": 0.7783 },
+    { "model": "boulder", "pos": [1.7, 35.6], "rotY": 1.1331 },
+    { "model": "boulder", "pos": [2.47, 32.7], "rotY": 1.4879 },
+    { "model": "boulder", "pos": [2.19, 29.72], "rotY": 1.8427 },
+    { "model": "boulder", "pos": [0.88, 27.01], "rotY": 2.1975 },
+    { "model": "boulder", "pos": [-1.28, 24.93], "rotY": 2.5523 }
+  ]
+}

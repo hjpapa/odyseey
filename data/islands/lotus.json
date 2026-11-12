@@ -1,0 +1,92 @@
+{
+  "id": "lotus",
+  "name": "연꽃 섬",
+  "kind": "island",
+  "chapters": ["ch04"],
+  "hubPos": [10, 515],
+  "terrain": { "radius": 53, "maxHeight": 5, "seed": 1927, "roughness": 0.2, "beachWidth": 7, "palette": "flower" },
+  "spawn": [0, -33],
+  "zones": [
+    { "id": "lotus-shore", "name": "꽃잎 해변", "center": [0, -31], "radius": 6 },
+    { "id": "lotus-garden", "name": "연꽃 정원", "center": [4, -7], "radius": 6 },
+    { "id": "lotus-court", "name": "연꽃 왕의 뜰", "center": [1, 15], "radius": 11 },
+    { "id": "lotus-crew-rest", "name": "동료들이 쉬는 곳", "center": [0, 28], "radius": 8 }
+  ],
+  "checkpoints": [
+    { "id": "cp-flower-trail", "pos": [-3, -23] },
+    { "id": "cp-garden", "pos": [-7, 6] }
+  ],
+  "gates": [
+    { "id": "gate-family", "pos": [2.71, -15.4], "rotY": -2.9889, "chapter": "ch04", "quizSlot": "gate-family" }
+  ],
+  "shrines": [
+    { "id": "shrine-flower", "pos": [-9, -25] }
+  ],
+  "chests": [
+    { "id": "chest-flower-hill", "pos": [13, -25], "coins": 5 },
+    { "id": "chest-garden", "pos": [8, -7], "coins": 8 }
+  ],
+  "npcs": [],
+  "enemies": [
+    { "id": "lotus-guards", "model": "lotusEater", "pos": [4, -7], "count": 3, "spread": 4 }
+  ],
+  "collectibles": [
+    { "id": "crew-1", "item": "crew", "pos": [-5, 27] },
+    { "id": "crew-2", "item": "crew", "pos": [0, 30] },
+    { "id": "crew-3", "item": "crew", "pos": [5, 27] }
+  ],
+  "props": [
+    { "model": "rowboat", "pos": [-7, -40], "rotY": 2.8 },
+    { "model": "palmTree", "pos": [-10, -34], "rotY": 0.4 },
+    { "model": "palmTree", "pos": [12, -32], "rotY": 1.4 },
+    { "model": "signpost", "pos": [4, -28], "rotY": 0.25 },
+    { "model": "flowerPatch", "pos": [-5, -29], "rotY": 0.4, "scale": 1.6 },
+    { "model": "lotus", "pos": [4, -26], "rotY": 0, "scale": 2 },
+    { "model": "flowerPatch", "pos": [8, -24], "rotY": 0.4, "scale": 1.8 },
+    { "model": "lotus", "pos": [15, -26], "rotY": 0.7, "scale": 2.8 },
+    { "model": "oliveTree", "pos": [15, -22], "rotY": 1 },
+    { "model": "flowerPatch", "pos": [-7, -20], "rotY": 0, "scale": 2 },
+    { "model": "lotus", "pos": [-2, -20], "rotY": 0.5, "scale": 2.4 },
+    { "model": "lotus", "pos": [6, -19], "rotY": 0.3, "scale": 2.2 },
+    { "model": "lotus", "pos": [0.5, -4], "rotY": 0, "scale": 2.8 },
+    { "model": "lotus", "pos": [6, -3], "rotY": 0, "scale": 2.8 },
+    { "model": "lotus", "pos": [7, -11], "rotY": 0.6, "scale": 2.4 },
+    { "model": "amphora", "pos": [4, -2], "rotY": 0.8 },
+    { "model": "oliveTree", "pos": [-11, -10], "rotY": 1.3 },
+    { "model": "flowerPatch", "pos": [-11, -5], "rotY": 0.8, "scale": 2.6 },
+    { "model": "lotus", "pos": [-8, 0], "rotY": 0.4, "scale": 2.5 },
+    { "model": "lotus", "pos": [-5, 3], "rotY": 0.3, "scale": 2.4 },
+    { "model": "flowerPatch", "pos": [11, 4], "rotY": 0.3, "scale": 2 },
+    { "model": "oliveTree", "pos": [16, 7], "rotY": 1.7 },
+    { "model": "column", "pos": [-12, 13], "rotY": 0 },
+    { "model": "column", "pos": [14, 13], "rotY": 0 },
+    { "model": "brokenColumn", "pos": [-10, 24], "rotY": 0 },
+    { "model": "brokenColumn", "pos": [12, 24], "rotY": 0.6 },
+    { "model": "lotus", "pos": [-5, 29], "rotY": 0.6, "scale": 2.6 },
+    { "model": "lotus", "pos": [5, 29], "rotY": 0.8, "scale": 2.5 },
+    { "model": "lotus", "pos": [-1, 33], "rotY": 0, "scale": 2.6 },
+    { "model": "flowerPatch", "pos": [9, 30], "rotY": 0.6, "scale": 2.2 },
+    { "model": "palmTree", "pos": [-13, 28], "rotY": 1 },
+    { "model": "palmTree", "pos": [15, 30], "rotY": 0.8 },
+    { "model": "oliveTree", "pos": [-24, 14], "rotY": 0.6 },
+    { "model": "flowerPatch", "pos": [-23, 19], "rotY": 1.4, "scale": 2.5 },
+    { "model": "lotus", "pos": [23, 12], "rotY": 1.1, "scale": 2.7 },
+    { "model": "boulder", "pos": [-1.03, -13.85], "rotY": -2.5083 },
+    { "model": "boulder", "pos": [-3.1, -11.68], "rotY": -2.1535 },
+    { "model": "boulder", "pos": [-4.28, -8.92], "rotY": -1.7987 },
+    { "model": "boulder", "pos": [-4.43, -5.92], "rotY": -1.4439 },
+    { "model": "boulder", "pos": [-3.53, -3.06], "rotY": -1.0891 },
+    { "model": "boulder", "pos": [-1.7, -0.69], "rotY": -0.7343 },
+    { "model": "boulder", "pos": [0.85, 0.9], "rotY": -0.3795 },
+    { "model": "boulder", "pos": [3.79, 1.5], "rotY": -0.0248 },
+    { "model": "boulder", "pos": [6.75, 1.04], "rotY": 0.33 },
+    { "model": "boulder", "pos": [9.38, -0.42], "rotY": 0.6848 },
+    { "model": "boulder", "pos": [11.33, -2.69], "rotY": 1.0396 },
+    { "model": "boulder", "pos": [12.37, -5.51], "rotY": 1.3944 },
+    { "model": "boulder", "pos": [12.37, -8.51], "rotY": 1.7492 },
+    { "model": "boulder", "pos": [11.32, -11.32], "rotY": 2.104 },
+    { "model": "boulder", "pos": [9.36, -13.59], "rotY": 2.4588 },
+    { "model": "boulder", "pos": [6.74, -15.05], "rotY": 2.8136 }
+  ],
+  "boss": { "id": "lotusKing", "arenaCenter": [1, 15], "arenaRadius": 11 }
+}

@@ -12,6 +12,7 @@ import {
 import type { InputFrame } from '../core/input';
 import { getModel } from '../core/models';
 import { IslandWorld, type Collider } from '../world/island';
+import { gateColliders } from '../world/gates';
 import { makeProp } from '../world/props';
 import { FollowCamera } from '../play/camera';
 import { Effects } from '../play/effects';
@@ -159,10 +160,11 @@ export class IslandStage extends ChapterStage {
       obj.position.set(g.pos[0], y, g.pos[1]);
       obj.rotation.y = g.rotY;
       this.scene.add(obj);
-      const ax = Math.cos(g.rotY);
-      const az = -Math.sin(g.rotY);
-      for (const s of [-2.25, 2.25]) this.world.addCollider(g.pos[0] + ax * s, g.pos[1] + az * s, 0.6, 'gatePillar');
-      const barrier = [-1.2, 0, 1.2].map((s) => this.world.addCollider(g.pos[0] + ax * s, g.pos[1] + az * s, 0.85, 'gateBarrier'));
+      const barrier: Collider[] = [];
+      for (const c of gateColliders(g.pos, g.rotY)) {
+        const col = this.world.addCollider(c.x, c.z, c.r, c.barrier ? 'gateBarrier' : 'gatePillar');
+        if (c.barrier) barrier.push(col);
+      }
       const state = { obj, open: false, barrier };
       this.gateObjs.set(g.id, state);
       this.interactables.push({
