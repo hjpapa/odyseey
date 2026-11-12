@@ -10,6 +10,9 @@ export class Hud {
   private toasts = h('div', { class: 'toasts' });
   private extra = h('div', { class: 'hud-extra' });
   private hurt = h('div', { class: 'vignette-hurt' });
+  private bossName = h('div', { class: 'name' });
+  private bossFill = h('div', { class: 'fill' });
+  private bossBar = h('div', { class: 'boss-bar', role: 'status' }, this.bossName, h('div', { class: 'track' }, this.bossFill));
   private pauseBtn = h('button', { class: 'icon-btn', type: 'button', 'aria-label': '잠깐 멈추기', text: '⏸' });
   private promptText = '';
   onPause: () => void = () => {};
@@ -69,6 +72,18 @@ export class Hud {
     }
     this.prompt.replaceChildren(text, h('kbd', { text: key }));
     if (!this.prompt.isConnected) this.el.append(this.prompt);
+  }
+
+  /** 보스 체력바 (null 이면 숨김) */
+  setBoss(name: string | null, hp = 0, max = 1) {
+    if (!name) {
+      this.bossBar.remove();
+      return;
+    }
+    this.bossName.textContent = `⚔️ ${name}`;
+    this.bossFill.style.width = `${Math.max(0, Math.min(1, hp / max)) * 100}%`;
+    this.bossBar.setAttribute('aria-label', `${name} 체력 ${hp}/${max}`);
+    if (!this.bossBar.isConnected) this.el.append(this.bossBar);
   }
 
   setExtra(node: Node | null) {

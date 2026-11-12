@@ -1,20 +1,23 @@
 /**
- * 바다 코스 장면 — 2장 '폭풍 파도 러너'.
- * 3줄 바다를 뗏목으로 달린다: 바위는 옆으로 피하고, 큰 파도는 점프, 번개는 예고된 줄을 피한다.
- * 영어 글자 방울을 순서대로 모으면 단어 완성! 뗏목이 부서지면 이노의 스카프로 한 번 살아난다.
+ * 바다 코스 장면 — 두 가지 모드.
+ * - 러너 (2장 '폭풍 파도 러너'): 폭풍 속을 달린다. 바위는 옆으로, 큰 파도는 점프, 번개는 예고된 줄을 피하고
+ *   영어 글자 방울을 순서대로 모은다. 뗏목이 부서지면 이노의 스카프로 한 번 살아난다.
+ * - 항해 (10장 해협처럼 waveRunner 목표가 없는 코스): 섬 데이터의 바위·소용돌이를 줄을 바꿔 피한다.
+ *   바다 위 지혜의 문 앞에서 멈춰 퀴즈를 풀고, 보스(스킬라) 무대에서 멈춰 싸운다.
  */
 import {
-  AdditiveBlending, BufferAttribute, BufferGeometry, Group, Mesh, MeshBasicMaterial, MeshToonMaterial, Points, PointsMaterial,
-  Scene, SphereGeometry, BoxGeometry, Vector3,
+  AdditiveBlending, BoxGeometry, BufferAttribute, BufferGeometry, Group, Mesh, MeshBasicMaterial, MeshToonMaterial,
+  type Object3D, Points, PointsMaterial, Scene, SphereGeometry, Vector3,
 } from 'three';
 import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import type { ChapterData, EnglishWord, IslandLayout, Objective } from '../types/contracts';
+import type { ChapterData, EnglishWord, IslandLayout, Objective, PropId } from '../types/contracts';
 import type { InputFrame } from '../core/input';
 import { createRng, type Rng } from '../core/rng';
 import { getModel } from '../core/models';
 import { block } from '../core/placeholders';
 import { createEnvironment, type Environment } from '../world/environment';
 import { alignLengthToZ, makeProp, splitByHeight } from '../world/props';
+import { buildGate } from '../world/gates';
 import { Effects, label } from '../play/effects';
 import { HumanoidRig } from '../play/rig';
 import { englishWords } from '../learning/data';
@@ -22,13 +25,11 @@ import { h, sleep } from '../ui/dom';
 import { ChapterStage } from './chapterStage';
 import type { Services } from './services';
 
-const LANES = [-4, 0, 4];
 const MAX_HP = 3;
-const SPEED = 14;
 const JUMP = 9;
 const GRAV = 26;
 
-type Kind = 'rock' | 'wave' | 'letter' | 'bolt';
+type Kind = 'rock' | 'pool' | 'wave' | 'letter' | 'bolt';
 interface Thing {
   kind: Kind;
   lane: number;
@@ -43,6 +44,35 @@ interface Thing {
   done?: boolean;
 }
 
+interface SeaGate {
+  z: number;
+  slot: string;
+  obj: Group;
+  open: boolean;
+  asking: boolean;
+}
+
+/** 바다 위 보스 (스킬라): 머리가 예고된 줄을 내리친다 → 줄을 바꿔 피하고, 지치면 약점 퀴즈 */
+interface SeaBoss {
+  name: string;
+  model: Group;
+  heads: Object3D[];
+  glow: Mesh;
+  hp: number;
+  max: number;
+  t: number;
+  phase: 'idle' | 'warn';
+  lane: number;
+  strikes: number;
+  busy: boolean;
+  active: boolean;
+  lunge: number;
+  head: number;
+}
+
+/** 항해 모드에서 부딪히는 소품 */
+const HAZARD_PROPS: Partial<Record<PropId, Kind>> = { rock: 'rock', boulder: 'rock', whirlpool: 'pool' };
+
 const FALLBACK_WORDS: Pick<EnglishWord, 'word' | 'meaningKo' | 'emoji'>[] = [
   { word: 'sea', meaningKo: '바다', emoji: '🌊' },
   { word: 'boat', meaningKo: '배', emoji: '⛵' },
@@ -55,6 +85,9 @@ const FALLBACK_WORDS: Pick<EnglishWord, 'word' | 'meaningKo' | 'emoji'>[] = [
 
 export class SeaStage extends ChapterStage {
   readonly scene = new Scene();
+  private mode: 'runner' | 'sail';
+  private lanes: number[];
+  private speed: number;
   private env: Environment;
   private fx: Effects;
   private raft = new Group();
@@ -70,6 +103,9 @@ export class SeaStage extends ChapterStage {
   private hp = MAX_HP;
   private invuln = 0;
   private running = false;
+  private started = false;
+  /** 문·보스 앞에서 멈춤 (줄 바꾸기는 됨) */
+  private halted = false;
   private scarfUsed = false;
   private lastCheckpoint = 0;
   private checkpoints: number[];
@@ -77,27 +113,34 @@ export class SeaStage extends ChapterStage {
   private things: Thing[] = [];
   private nextSpawn = 40;
   private nextLetterAt = 30;
-  private words: Pick<EnglishWord, 'word' | 'meaningKo' | 'emoji'>[];
+  private words: Pick<EnglishWord, 'word' | 'meaningKo' | 'emoji'>[] = [];
   private wordIdx = 0;
   private letterIdx = 0;
   private wordCard = h('div', { class: 'word-card' });
   private bar = h('div');
-  private poseidon: Group;
-  private rain: Points;
+  private poseidon: Group | null = null;
+  private rain: Points | null = null;
   private shake = 0;
   private finishing = false;
+  private gates: SeaGate[] = [];
+  private boss: SeaBoss | null = null;
+  private bossDone = false;
 
   constructor(chapter: ChapterData, layout: IslandLayout, svc: Services) {
     super(chapter, layout, svc);
+    this.mode = chapter.objectives.some((o) => o.type === 'minigame' && o.target === 'waveRunner') ? 'runner' : 'sail';
+    const half = (layout.course?.width ?? 12) / 2;
+    this.lanes = this.mode === 'runner' ? [-4, 0, 4] : [-half * 0.66, 0, half * 0.66];
+    this.speed = this.mode === 'runner' ? 14 : 10;
     this.length = layout.course?.length ?? 900;
     this.checkpoints = layout.checkpoints.map((c) => c.pos[1]).sort((a, b) => a - b);
     this.rng = createRng(layout.terrain.seed);
-    this.env = createEnvironment(this.scene, 'storm');
+    this.env = createEnvironment(this.scene, this.mode === 'runner' ? 'storm' : chapter.memory ? 'memory' : 'day');
     this.fx = new Effects(this.scene);
 
     const raftModel = makeProp('raft');
     alignLengthToZ(raftModel);
-    // 폭풍에 돛이 부러졌다 — 앞이 잘 보이도록 높은 부분(돛대·돛)은 숨긴다
+    // 돛대·돛(높은 부분)은 숨긴다 — 앞이 잘 보이게 (2장: 폭풍에 부러짐)
     splitByHeight(raftModel, 0.9).tall.forEach((m) => (m.visible = false));
     this.raft.add(raftModel);
     this.hero = getModel('odysseus', { avatar: svc.save.data?.avatar });
@@ -106,42 +149,55 @@ export class SeaStage extends ChapterStage {
     this.rig = new HumanoidRig(this.hero);
     this.scene.add(this.raft);
 
-    this.poseidon = getModel('poseidon');
-    this.poseidon.scale.setScalar(3);
-    this.scene.add(this.poseidon);
-
-    this.buildShore();
-    this.rain = this.buildRain();
-    this.scene.add(this.rain);
-
-    // 2장 이야기 단어(sea, wave, boat …)를 먼저, 그다음 학년에 맞는 바다 단어
-    const grade = svc.save.data?.grade ?? 1;
-    const fits = (w: EnglishWord) => /^[a-z]{2,6}$/.test(w.word) && w.grade <= grade;
-    const story = englishWords.filter((w) => fits(w) && w.chapterHint?.includes('ch02'));
-    const sea = englishWords.filter((w) => fits(w) && w.topic === 'sea' && !story.includes(w));
-    const seen = new Set<string>();
-    this.words = [...this.rng.shuffle(story), ...this.rng.shuffle(sea), ...FALLBACK_WORDS].filter((w) => !seen.has(w.word) && seen.add(w.word));
+    if (this.mode === 'runner') {
+      this.poseidon = getModel('poseidon');
+      this.poseidon.scale.setScalar(3);
+      this.scene.add(this.poseidon);
+      this.buildShore();
+      this.rain = this.buildRain();
+      this.scene.add(this.rain);
+      // 2장 이야기 단어(sea, wave, boat …)를 먼저, 그다음 학년에 맞는 바다 단어
+      const grade = svc.save.data?.grade ?? 1;
+      const fits = (w: EnglishWord) => /^[a-z]{2,6}$/.test(w.word) && w.grade <= grade;
+      const story = englishWords.filter((w) => fits(w) && w.chapterHint?.includes('ch02'));
+      const sea = englishWords.filter((w) => fits(w) && w.topic === 'sea' && !story.includes(w));
+      const seen = new Set<string>();
+      this.words = [...this.rng.shuffle(story), ...this.rng.shuffle(sea), ...FALLBACK_WORDS].filter((w) => !seen.has(w.word) && seen.add(w.word));
+    } else {
+      this.buildCourse();
+    }
 
     this.svc.ui.hud.setHearts(this.hp, MAX_HP);
     this.svc.ui.hud.setCoins(svc.save.data?.coins ?? 0);
     const barWrap = h('div', { class: 'progress-bar' }, this.bar);
-    this.svc.ui.hud.setExtra(h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center' } }, this.wordCard, barWrap));
-    this.renderWord();
+    this.svc.ui.hud.setExtra(
+      h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center' } }, this.mode === 'runner' ? this.wordCard : null, barWrap),
+    );
+    if (this.mode === 'runner') this.renderWord();
     svc.ui.touch.set('runner');
     this.place();
   }
 
   override begin() {
     super.begin();
-    const hint = this.svc.input.touchMode ? '◀ ▶ 로 줄을 바꾸고, ⤴️ 로 파도를 넘어요!' : '← → (A/D) 로 줄 바꾸기 · Space 로 파도 넘기';
+    const touch = this.svc.input.touchMode;
+    const hint = this.mode === 'runner'
+      ? touch ? '◀ ▶ 로 줄을 바꾸고, ⤴️ 로 파도를 넘어요!' : '← → (A/D) 로 줄 바꾸기 · Space 로 파도 넘기'
+      : touch ? '◀ ▶ 로 줄을 바꿔 바위와 소용돌이를 피해요!' : '← → (A/D) 로 줄을 바꿔 바위와 소용돌이를 피해요';
     this.svc.ui.hud.toast(hint, 4500);
   }
 
   protected setupObjective(o: Objective | null) {
-    if (o?.type === 'minigame' && o.target === 'waveRunner') void this.countdown();
+    if (this.mode === 'runner') {
+      if (o?.type === 'minigame' && o.target === 'waveRunner') void this.countdown();
+    } else if (o && !this.started) {
+      // 항해 모드는 첫 목표가 켜지면 출발
+      void this.countdown();
+    }
   }
 
   private async countdown() {
+    this.started = true;
     this.svc.audio.playBgm(this.chapter.bgm.explore);
     for (const n of ['3', '2', '1', '출발! ⛵']) {
       this.svc.ui.hud.toast(n, 700);
@@ -163,13 +219,17 @@ export class SeaStage extends ChapterStage {
         this.vy = JUMP;
         this.svc.audio.sfx('jump');
       }
-      this.z += SPEED * dt;
-      this.spawnAhead();
+      if (!this.halted) this.z += this.speed * dt;
+      if (this.mode === 'runner') this.spawnAhead();
+      else {
+        this.checkGates();
+        this.checkBoss();
+      }
       this.checkZones();
     }
     this.invuln = Math.max(0, this.invuln - dt);
     // 줄 바꾸기·점프
-    this.x += (LANES[this.lane] - this.x) * Math.min(1, dt * 10);
+    this.x += (this.lanes[this.lane] - this.x) * Math.min(1, dt * 10);
     if (this.y > 0 || this.vy > 0) {
       this.vy -= GRAV * dt;
       this.y = Math.max(0, this.y + this.vy * dt);
@@ -177,44 +237,46 @@ export class SeaStage extends ChapterStage {
     }
     if (active) this.collide();
     this.updateThings(dt, active);
+    if (this.boss) this.updateBoss(dt, active);
     this.place();
 
     this.rig.update(dt, { speed: 0, grounded: this.y <= 0.01, swing: null, combo: 0 });
     this.hero.visible = this.invuln <= 0 || Math.floor(this.invuln * 12) % 2 === 0;
     this.bar.style.width = `${Math.min(100, (this.z / this.length) * 100)}%`;
 
-    // 포세이돈은 앞쪽 바다에서 지켜본다
-    const pz = Math.min(this.z + 140, this.length * 0.85);
-    this.poseidon.position.set(34, -8 + Math.sin(this.time * 0.6) * 1.5, pz);
-    this.poseidon.rotation.y = -Math.PI / 2 - 0.4;
-    this.poseidon.visible = this.z < this.length * 0.8;
-
-    // 비
-    const arr = (this.rain.geometry.attributes.position as BufferAttribute).array as Float32Array;
-    for (let i = 0; i < arr.length; i += 3) {
-      arr[i + 1] -= dt * 28;
-      if (arr[i + 1] < -1) {
-        arr[i] = (Math.random() - 0.5) * 60;
-        arr[i + 1] = 20 + Math.random() * 10;
-        arr[i + 2] = (Math.random() - 0.3) * 70;
+    if (this.poseidon) {
+      // 포세이돈은 앞쪽 바다에서 지켜본다
+      const pz = Math.min(this.z + 140, this.length * 0.85);
+      this.poseidon.position.set(34, -8 + Math.sin(this.time * 0.6) * 1.5, pz);
+      this.poseidon.rotation.y = -Math.PI / 2 - 0.4;
+      this.poseidon.visible = this.z < this.length * 0.8;
+    }
+    if (this.rain) {
+      const arr = (this.rain.geometry.attributes.position as BufferAttribute).array as Float32Array;
+      for (let i = 0; i < arr.length; i += 3) {
+        arr[i + 1] -= dt * 28;
+        if (arr[i + 1] < -1) {
+          arr[i] = (Math.random() - 0.5) * 60;
+          arr[i + 1] = 20 + Math.random() * 10;
+          arr[i + 2] = (Math.random() - 0.3) * 70;
+        }
+      }
+      (this.rain.geometry.attributes.position as BufferAttribute).needsUpdate = true;
+      this.rain.position.set(this.x, 0, this.z);
+      if (Math.random() < dt * 0.12) {
+        this.svc.ui.screens.flash();
+        this.svc.audio.sfx('thunder', { volume: 0.6 });
       }
     }
-    (this.rain.geometry.attributes.position as BufferAttribute).needsUpdate = true;
-    this.rain.position.set(this.x, 0, this.z);
 
-    if (Math.random() < dt * 0.12) {
-      this.svc.ui.screens.flash();
-      this.svc.audio.sfx('thunder', { volume: 0.6 });
-    }
-
-    // 카메라
+    // 카메라 — 세로 화면에서도 세 줄이 모두 보이도록 더 뒤·위에서
     this.shake = Math.max(0, this.shake - dt * 2);
     const sx = (Math.random() - 0.5) * this.shake;
     const sy = (Math.random() - 0.5) * this.shake;
-    // 세로 화면에서도 세 줄이 모두 보이도록 더 뒤·위에서
     const tall = this.camera.aspect < 0.8;
-    const back = tall ? 15 : 9.5;
-    const up = tall ? 8.5 : 5;
+    const wide = this.mode === 'sail' ? 1.25 : 1;
+    const back = (tall ? 15 : 9.5) * wide;
+    const up = (tall ? 8.5 : 5) * wide;
     this.camera.position.set(this.x * 0.4 + sx, this.raft.position.y + up + sy, this.z - back);
     this.camera.lookAt(this.x * 0.5, 0.5, this.z + (tall ? 12 : 10));
 
@@ -222,17 +284,20 @@ export class SeaStage extends ChapterStage {
     this.env.update(this.time);
     this.fx.update(dt);
 
-    if (active && this.z >= this.length - 12) void this.finishRun();
+    if (active && this.z >= this.length - 12) {
+      if (this.mode === 'runner') void this.finishRun();
+      else this.running = false;
+    }
   }
 
   private place() {
     const wave = this.env.waterHeight(this.x, this.z, this.time);
     this.raft.position.set(this.x, wave + 0.1 + this.y, this.z);
-    this.raft.rotation.z = Math.sin(this.time * 1.7) * 0.08 + (LANES[this.lane] - this.x) * -0.05;
+    this.raft.rotation.z = Math.sin(this.time * 1.7) * 0.08 + (this.lanes[this.lane] - this.x) * -0.05;
     this.raft.rotation.x = Math.cos(this.time * 1.3) * 0.06;
   }
 
-  // ─── 장애물·글자 ──────────────────────────────────────────
+  // ─── 러너: 장애물·글자 ────────────────────────────────────
 
   private spawnAhead() {
     const horizon = this.z + 90;
@@ -290,7 +355,7 @@ export class SeaStage extends ChapterStage {
   }
 
   private addThing(t: Thing) {
-    t.obj.position.set(t.lane >= 0 ? LANES[t.lane] : 0, 0, t.z);
+    t.obj.position.set(t.lane >= 0 ? this.lanes[t.lane] : 0, 0, t.z);
     this.scene.add(t.obj);
     this.things.push(t);
   }
@@ -301,7 +366,10 @@ export class SeaStage extends ChapterStage {
       if (t.kind === 'letter') t.obj.position.y = wave + 1.4 + Math.sin(this.time * 3 + t.z) * 0.2;
       else if (t.kind === 'wave') t.obj.position.y = wave + 0.5;
       else if (t.kind === 'rock') t.obj.position.y = wave - 0.6;
-      else if (t.kind === 'bolt' && active && !t.done) {
+      else if (t.kind === 'pool') {
+        t.obj.position.y = wave + 0.05;
+        t.obj.rotation.y += dt * 2.5;
+      } else if (t.kind === 'bolt' && active && !t.done) {
         if (!t.armed) {
           if (this.z < t.z - 12) continue;
           t.armed = true;
@@ -310,14 +378,14 @@ export class SeaStage extends ChapterStage {
         }
         t.t! -= dt;
         t.z = this.z + 3;
-        t.obj.position.set(LANES[t.lane], wave + 0.2, t.z);
+        t.obj.position.set(this.lanes[t.lane], wave + 0.2, t.z);
         const m = (t.obj as Mesh).material as MeshBasicMaterial;
         m.opacity = 0.25 + 0.35 * Math.abs(Math.sin(this.time * 12));
         if (t.t! <= 0) {
           t.done = true;
           this.svc.ui.screens.flash();
           this.svc.audio.sfx('thunder');
-          this.fx.burst(new Vector3(LANES[t.lane], 2, this.z + 2), '#fff6a8', 30, 6, 6);
+          this.fx.burst(new Vector3(this.lanes[t.lane], 2, this.z + 2), '#fff6a8', 30, 6, 6);
           if (this.lane === t.lane && this.y < 2) this.hurt();
           t.obj.removeFromParent();
         }
@@ -337,9 +405,10 @@ export class SeaStage extends ChapterStage {
   private collide() {
     for (const t of this.things) {
       if (t.done || Math.abs(t.z - this.z) > 1.3) continue;
-      if (t.kind === 'rock' && t.lane === this.lane && this.y < 1.2) {
+      if ((t.kind === 'rock' || t.kind === 'pool') && t.lane === this.lane && this.y < 1.2) {
         t.done = true;
-        this.fx.burst(t.obj.position.clone().setY(1), '#9aa3ad', 14, 4, 3);
+        this.fx.burst(t.obj.position.clone().setY(1), t.kind === 'pool' ? '#7fd3ff' : '#9aa3ad', 14, 4, 3);
+        if (t.kind === 'pool') this.svc.audio.sfx('whirlpool');
         this.hurt();
       } else if (t.kind === 'wave' && this.y < 0.9) {
         t.done = true;
@@ -380,6 +449,188 @@ export class SeaStage extends ChapterStage {
     this.wordCard.replaceChildren(h('span', { class: 'emoji', text: w.emoji }), h('span', { text: w.meaningKo }), letters);
   }
 
+  // ─── 항해: 코스·바다 위 문·보스 ───────────────────────────
+
+  /** 섬 데이터의 소품을 놓는다 — 줄 위의 바위·소용돌이는 장애물, 나머지(절벽 등)는 풍경 */
+  private buildCourse() {
+    for (const p of this.layout.props) {
+      if (this.hazardLane(p.model, p.pos[0]) >= 0) continue;
+      const obj = makeProp(p.model);
+      obj.position.set(p.pos[0], -0.8, p.pos[1]);
+      obj.rotation.y = p.rotY ?? 0;
+      obj.scale.setScalar(p.scale ?? 1);
+      this.scene.add(obj);
+    }
+    this.addCourseHazards(0);
+    const width = (this.layout.course?.width ?? 12) + 1;
+    for (const g of this.layout.gates.filter((x) => x.chapter === this.chapter.id)) {
+      const obj = buildGate(width);
+      obj.position.set(0, -0.6, g.pos[1]);
+      obj.rotation.y = g.rotY;
+      this.scene.add(obj);
+      this.gates.push({ z: g.pos[1], slot: g.quizSlot, obj, open: false, asking: false });
+    }
+  }
+
+  /** 그 소품이 어느 줄의 장애물인지 (-1 이면 풍경) */
+  private hazardLane(model: PropId, x: number): number {
+    if (!HAZARD_PROPS[model]) return -1;
+    let best = 0;
+    for (let i = 1; i < this.lanes.length; i++) if (Math.abs(x - this.lanes[i]) < Math.abs(x - this.lanes[best])) best = i;
+    return Math.abs(x - this.lanes[best]) <= 1.8 ? best : -1;
+  }
+
+  private addCourseHazards(fromZ: number) {
+    for (const p of this.layout.props) {
+      const lane = this.hazardLane(p.model, p.pos[0]);
+      if (lane < 0 || p.pos[1] < fromZ) continue;
+      const obj = makeProp(p.model);
+      obj.scale.setScalar((p.scale ?? 1) * 1.2);
+      this.addThing({ kind: HAZARD_PROPS[p.model]!, lane, z: p.pos[1], obj });
+    }
+  }
+
+  private checkGates() {
+    for (const g of this.gates) {
+      if (g.open || g.asking || this.z < g.z - 7) continue;
+      this.z = g.z - 7;
+      void this.openGate(g);
+    }
+  }
+
+  private async openGate(g: SeaGate) {
+    g.asking = true;
+    this.halted = true;
+    this.svc.ui.hud.toast('🦉 바다 위 지혜의 문! 문제를 풀면 열려요');
+    await this.askSlot(g.slot);
+    if (this.signal.aborted) return;
+    g.obj.traverse((o) => {
+      if (o.name === 'barrier') o.visible = false;
+    });
+    this.svc.audio.sfx('gate_unlock');
+    this.fx.burst(new Vector3(0, 2, g.z), '#7fd3ff', 30, 6, 4);
+    this.svc.ui.hud.toast('🚪 지혜의 문이 열렸어요!');
+    g.open = true;
+    g.asking = false;
+    this.halted = false;
+    this.runner.emit({ type: 'quiz', slot: g.slot });
+  }
+
+  private checkBoss() {
+    const b = this.layout.boss;
+    if (!b || this.bossDone || this.chapter.boss !== b.id) return;
+    const triggerZ = b.arenaCenter[1] - b.arenaRadius - 10;
+    if (this.z < triggerZ) return;
+    if (!this.boss) this.boss = this.makeBoss(b.arenaCenter[1] + b.arenaRadius);
+    if (this.boss.active) return;
+    this.boss.active = true;
+    this.halted = true;
+    this.z = triggerZ;
+    this.svc.ui.hud.setBoss(this.boss.name, this.boss.hp, this.boss.max);
+    this.svc.audio.playBgm(this.chapter.bgm.boss ?? 'boss');
+    this.svc.audio.sfx('boss_roar');
+    this.shake = 0.6;
+    this.svc.ui.hud.toast(`⚔️ ${this.boss.name}! 빨간 줄을 보면 옆 줄로 피해요`, 3200);
+  }
+
+  private makeBoss(z: number): SeaBoss {
+    const model = getModel(this.layout.boss!.id);
+    model.position.set(0, -1.5, z);
+    model.rotation.y = Math.PI;
+    this.scene.add(model);
+    const heads: Object3D[] = [];
+    for (let i = 0; i < 6; i++) {
+      const head = model.getObjectByName(`head${i}`);
+      if (head) heads.push(head);
+    }
+    const laneWidth = Math.abs(this.lanes[1] - this.lanes[0]) * 0.9;
+    const glow = new Mesh(new BoxGeometry(laneWidth, 0.12, 9), new MeshBasicMaterial({ color: '#ff3b30', transparent: true, opacity: 0.4, depthWrite: false }));
+    glow.visible = false;
+    this.scene.add(glow);
+    return { name: '머리 여섯 스킬라', model, heads, glow, hp: 8, max: 8, t: 0, phase: 'idle', lane: 1, strikes: 0, busy: false, active: false, lunge: 0, head: 0 };
+  }
+
+  private updateBoss(dt: number, active: boolean) {
+    const s = this.boss!;
+    s.model.position.y = -1.5 + Math.sin(this.time * 1.3) * 0.3;
+    s.heads.forEach((head, i) => (head.rotation.x = Math.sin(this.time * 2 + i) * 0.15));
+    if (s.lunge > 0) {
+      s.lunge = Math.max(0, s.lunge - dt);
+      const head = s.heads[s.head];
+      if (head) head.rotation.x = 0.9 * (s.lunge / 0.4);
+    }
+    if (!s.active || s.busy || !active) return;
+    s.t += dt;
+    if (s.phase === 'idle' && s.t > 1.0) {
+      // 대개는 뗏목이 있는 줄을 노린다
+      s.lane = Math.random() < 0.7 ? this.lane : Math.floor(Math.random() * 3);
+      s.phase = 'warn';
+      s.t = 0;
+      s.glow.visible = true;
+      s.glow.position.set(this.lanes[s.lane], this.env.waterHeight(this.lanes[s.lane], this.z, this.time) + 0.15, this.z + 2);
+      this.svc.audio.sfx('magic', { volume: 0.5 });
+    } else if (s.phase === 'warn') {
+      (s.glow.material as MeshBasicMaterial).opacity = 0.25 + 0.35 * Math.abs(Math.sin(this.time * 10));
+      if (s.t > 1.2) {
+        s.glow.visible = false;
+        s.lunge = 0.4;
+        s.head = s.strikes % Math.max(1, s.heads.length);
+        this.fx.burst(new Vector3(this.lanes[s.lane], 1, this.z + 2), '#7fd3ff', 24, 5, 4);
+        this.svc.audio.sfx('splash');
+        this.shake = Math.max(this.shake, 0.4);
+        if (this.lane === s.lane && this.y < 2) this.hurt();
+        s.strikes++;
+        s.phase = 'idle';
+        s.t = 0;
+        if (s.strikes % 3 === 0) void this.bossWeak();
+      }
+    }
+  }
+
+  private async bossWeak() {
+    const s = this.boss;
+    if (!s || s.busy) return;
+    s.busy = true;
+    s.glow.visible = false;
+    this.svc.ui.hud.toast('⚡ 스킬라가 지쳤어요! 문제를 맞혀 공격해요!');
+    const slot = this.chapter.quizSlots.find((q) => q.placement === 'boss');
+    const firstTry = await this.ask(slot, 'boss');
+    if (this.signal.aborted) return;
+    s.hp = Math.max(0, s.hp - (firstTry ? 4 : 2));
+    this.svc.ui.hud.setBoss(s.name, s.hp, s.max);
+    this.svc.audio.sfx('boss_hit');
+    this.fx.burst(s.model.position.clone().setY(4), '#ffe066', 30, 6, 4);
+    this.shake = 0.6;
+    s.busy = false;
+    s.phase = 'idle';
+    s.t = 0;
+    if (s.hp <= 0) void this.bossDefeated();
+  }
+
+  private async bossDefeated() {
+    const s = this.boss!;
+    s.active = false;
+    this.bossDone = true;
+    this.svc.audio.sfx('boss_defeat');
+    this.fx.burst(s.model.position.clone().setY(3), '#ffe066', 60, 8, 6);
+    this.svc.ui.hud.setBoss(null);
+    this.svc.addCoins(5);
+    this.svc.audio.playBgm(this.chapter.bgm.explore);
+    this.runner.emit({ type: 'boss', id: this.layout.boss!.id });
+    // 바닷속으로 가라앉는다
+    const t0 = performance.now();
+    while (performance.now() - t0 < 1200) {
+      if (this.signal.aborted) return;
+      s.model.position.y = -1.5 - ((performance.now() - t0) / 1200) * 8;
+      await sleep(16);
+    }
+    s.model.removeFromParent();
+    s.glow.removeFromParent();
+    this.halted = false;
+  }
+
+  // ─── 공통: 다침·부서짐·구역 ───────────────────────────────
+
   private hurt() {
     if (this.invuln > 0) return;
     this.hp--;
@@ -393,7 +644,8 @@ export class SeaStage extends ChapterStage {
 
   private async broken() {
     this.running = false;
-    if (!this.scarfUsed) {
+    const canScarf = this.mode === 'runner' && !this.scarfUsed && this.layout.zones.some((z) => z.id === 'ino-scarf');
+    if (canScarf) {
       this.scarfUsed = true;
       this.runner.emit({ type: 'zone', zone: 'ino-scarf' });
       await this.runner.idle();
@@ -402,6 +654,14 @@ export class SeaStage extends ChapterStage {
       await this.svc.ui.screens.fade(true, 350);
       this.z = this.lastCheckpoint;
       this.clearAhead();
+      if (this.boss?.active) {
+        // 보스는 체력을 그대로 둔 채 쉬었다가, 다시 다가가면 이어서 싸운다
+        this.boss.active = false;
+        this.boss.glow.visible = false;
+        this.boss.phase = 'idle';
+        this.svc.ui.hud.setBoss(null);
+      }
+      this.halted = false;
       await this.svc.ui.screens.fade(false, 350);
       this.svc.ui.hud.toast('🚩 체크포인트에서 다시! 할 수 있어요 💪', 2400);
     }
@@ -420,6 +680,7 @@ export class SeaStage extends ChapterStage {
     this.things = [];
     this.nextSpawn = this.z + 30;
     this.nextLetterAt = this.z + 20;
+    if (this.mode === 'sail') this.addCourseHazards(this.z + 5);
   }
 
   private checkZones() {
@@ -484,5 +745,6 @@ export class SeaStage extends ChapterStage {
     for (const t of this.things) t.tag?.element.remove();
     this.fx.dispose();
     this.svc.ui.hud.setExtra(null);
+    this.svc.ui.hud.setBoss(null);
   }
 }
