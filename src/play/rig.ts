@@ -16,6 +16,8 @@ export interface RigPose {
   windup?: number;
   wave?: boolean;
   talk?: boolean;
+  /** 지친 자세 (보스 약점) — 고개 숙이고 팔 늘어뜨림 */
+  tired?: boolean;
 }
 
 const ease = (t: number) => 1 - (1 - t) * (1 - t);
@@ -78,8 +80,14 @@ export class HumanoidRig {
     if (legR) legR.rotation.x = rx;
     if (armL) armL.rotation.set(alx, 0, alz);
     if (armR) armR.rotation.set(arx, 0, arz);
+    if (pose.tired) {
+      if (armL) armL.rotation.set(0.35, 0, 0.15);
+      if (armR) armR.rotation.set(0.35, 0, -0.15);
+    }
     if (head) {
-      head.rotation.x = pose.talk ? Math.sin(this.time * 9) * 0.08 : Math.sin(this.time * 1.6) * 0.03;
+      head.rotation.x = pose.tired
+        ? 0.45 + Math.sin(this.time * 2) * 0.05
+        : pose.talk ? Math.sin(this.time * 9) * 0.08 : Math.sin(this.time * 1.6) * 0.03;
     }
     if (torso) torso.rotation.y = pose.swing !== null && pose.combo === 0 ? -0.2 : 0;
     return { bodyYaw };

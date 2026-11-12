@@ -691,3 +691,74 @@ export interface ChapterData {
   boss?: BossId;
   reward: { coins: number; unlocks?: string[] };
 }
+
+// ════════════════════════════════════════════════════════════════
+// 10. 보스 패턴  (src/enemies/bosses/<id>.ts — 폴리페모스는 Claude 견본, 나머지는 Codex)
+// ════════════════════════════════════════════════════════════════
+
+/** 예고 뒤에 떨어지는 공격의 모양새 */
+export type HazardEffect = 'rock' | 'lightning' | 'splash' | 'magic' | 'stomp';
+
+/**
+ * 보스 패턴이 엔진에 시킬 수 있는 일. 좌표는 섬 좌표(미터), 시간은 초.
+ * 패턴은 three.js 객체를 직접 만지지 않고 이것만 쓴다.
+ */
+export interface BossContext {
+  /** 보스전이 시작된 뒤 흐른 시간 */
+  readonly time: number;
+  readonly hp: number;
+  readonly maxHp: number;
+  /** 보스 무대 (IslandLayout.boss) */
+  readonly arena: { x: number; z: number; radius: number };
+  /** 보스 현재 위치 */
+  readonly boss: { x: number; z: number };
+  /** 플레이어 현재 위치 */
+  readonly player: { x: number; z: number };
+  /** 보스를 (x,z) 쪽으로 speed m/s 로 옮긴다 — 무대 밖으로는 못 나간다. y: 땅 위로 띄우기 (하늘의 보스) */
+  moveTo(x: number, z: number, speed: number, y?: number): void;
+  /** 보스가 (x,z) 를 바라본다 */
+  face(x: number, z: number): void;
+  /** 자세: idle 서 있기 / walk 걷기 / windup 팔 들기(예고) / strike 내려치기 / tired 지침 */
+  pose(p: 'idle' | 'walk' | 'windup' | 'strike' | 'tired'): void;
+  /**
+   * 땅에 빨간 원으로 예고하고 delay 초 뒤 그 자리를 친다 (원 안에 있으면 하트 1).
+   * 아이용: delay 는 0.9초 이상, radius 는 1.2~3.5m
+   */
+  telegraph(x: number, z: number, radius: number, delay: number, effect: HazardEffect): void;
+  /** 졸개 부르기 (살아 있는 졸개는 최대 4) */
+  summon(model: ModelId, count: number): void;
+  /** 보스가 지쳐 약점이 드러남 → 엔진이 그 장의 boss 퀴즈를 낸다 (퀴즈 중에는 update 가 멈춘다) */
+  weak(): void;
+  /** 보스 머리 위 말풍선 (20자 이내) */
+  say(text: string): void;
+  sfx(id: SfxId): void;
+  /** 화면 흔들기 0~1 */
+  shake(strength: number): void;
+  /** 장면 트리거 { on: 'bossPhase', phase } 를 부른다 (예: 'angry') */
+  phase(name: string): void;
+}
+
+/**
+ * 보스 하나의 정의. 규칙:
+ * - 칼(melee=true)로는 체력을 1까지만 줄일 수 있다 — 마지막 한 방은 늘 약점 퀴즈
+ * - 약점 퀴즈를 한 번에 맞히면 quizDamage, 다시 풀어 맞히면 그 절반(올림)
+ * - 체력이 1인데 3초 동안 weak() 가 없으면 엔진이 대신 부른다 (멈춤 방지)
+ */
+export interface BossDef {
+  id: BossId;
+  /** HUD 체력바 이름, 예: '외눈 거인 폴리페모스' (괄호 병기 가능) */
+  name: string;
+  model: ModelId;
+  /** 체력 (보통 10~14) */
+  maxHp: number;
+  /** 칼로 때릴 수 있나 (하늘의 헬리오스처럼 손이 안 닿으면 false → 약점 퀴즈로만 피해) */
+  melee: boolean;
+  quizDamage: number;
+  /** 등장할 때 한 번 */
+  start?(ctx: BossContext): void;
+  /** 매 프레임 (약점 퀴즈 중에는 불리지 않음) */
+  update(ctx: BossContext, dt: number): void;
+}
+
+/** 보스전마다 새 패턴을 만든다 (패턴 안의 타이머·상태가 섞이지 않게) — src/enemies/bosses/<id>.ts 의 default export */
+export type BossFactory = () => BossDef;

@@ -393,6 +393,27 @@ body {
   animation: toastIn 0.25s ease;
 }
 .toast.out { animation: toastOut 0.3s ease forwards; }
+.boss-bar {
+  position: absolute;
+  top: calc(max(10px, env(safe-area-inset-top)) + 62px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(420px, 70vw);
+  text-align: center;
+}
+.boss-bar .name { margin-bottom: 4px; font-size: 18px; color: #fff; text-shadow: 0 2px 0 #7a1f1f, 0 0 6px rgba(0, 0, 0, 0.5); }
+.boss-bar .track { height: 14px; border-radius: 999px; background: rgba(0, 0, 0, 0.35); overflow: hidden; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2); }
+.boss-bar .fill { height: 100%; width: 100%; background: linear-gradient(#ff6b6b, #d63031); transition: width 0.25s ease; }
+.boss-bubble {
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-title);
+  font-size: 17px;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+}
 .hud-extra { position: absolute; top: calc(max(10px, env(safe-area-inset-top)) + 64px); left: 0; right: 0; display: flex; justify-content: center; }
 
 /* 단어 카드 (2장 러너) */

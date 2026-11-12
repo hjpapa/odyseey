@@ -3,7 +3,7 @@
  * 섬(IslandStage)과 바다 코스(SeaStage)가 이것을 물려받는다.
  */
 import { PerspectiveCamera, type Scene } from 'three';
-import type { ChapterData, IslandLayout, Objective, SceneStep, SpeakerId } from '../types/contracts';
+import type { ChapterData, IslandLayout, Objective, QuizPlacement, QuizSlot, SceneStep, SpeakerId } from '../types/contracts';
 import type { InputFrame } from '../core/input';
 import { SPEAKERS } from '../story/speakers';
 import { ChapterRunner, type RunnerHost } from '../story/runner';
@@ -106,7 +106,7 @@ export abstract class ChapterStage implements Stage, RunnerHost {
             if (s.id === 'thunder') this.svc.ui.screens.flash();
             break;
           case 'wait':
-            await sleep(s.ms);
+            await sleep(this.svc.ui.dialogue.fast ? 10 : s.ms);
             break;
         }
       }
@@ -116,13 +116,22 @@ export abstract class ChapterStage implements Stage, RunnerHost {
   }
 
   async askSlot(slotId: string) {
-    const slot = this.chapter.quizSlots.find((q) => q.id === slotId);
-    if (!slot) return;
+    await this.ask(this.chapter.quizSlots.find((q) => q.id === slotId));
+  }
+
+  /**
+   * 퀴즈 하나를 묻고 결과를 돌려준다. slot 이 없으면 그 장의 첫 학습 과목으로 즉석 출제.
+   * @returns 모든 문제를 첫 시도에 맞혔는지
+   */
+  async ask(slot: QuizSlot | undefined, reason: QuizPlacement = slot?.placement ?? 'story'): Promise<boolean> {
     this.block();
     try {
-      const r = await this.svc.learning.ask({ reason: slot.placement, slot });
+      const r = slot
+        ? await this.svc.learning.ask({ reason, slot })
+        : await this.svc.learning.ask({ reason, subject: this.chapter.learning[0] });
       this.asked += r.questionIds.length;
       this.firstTry += r.firstTry;
+      return r.firstTry === r.questionIds.length;
     } finally {
       this.unblock();
     }

@@ -2,23 +2,26 @@
  * 섬 장면 — 플레이어·NPC·적·줍기·지혜의 문·부엉이 신전·보물상자·체크포인트·길잡이 빛.
  */
 import {
-  Box3, BoxGeometry, ConeGeometry, CylinderGeometry, Group, Mesh, MeshBasicMaterial, MeshToonMaterial,
+  ConeGeometry, CylinderGeometry, Group, Mesh, MeshBasicMaterial, MeshToonMaterial,
   type Object3D, type Scene, Vector3,
 } from 'three';
 import {
-  DEFAULT_AVATAR, MINIGAME_IDS, PROP_IDS,
-  type ChapterData, type IslandLayout, type MinigameId, type ModelId, type Objective, type PropId,
+  BOSS_IDS, DEFAULT_AVATAR, MINIGAME_IDS, PROP_IDS,
+  type BossId, type ChapterData, type IslandLayout, type MinigameId, type ModelId, type Objective, type PropId, type XZ,
 } from '../types/contracts';
 import type { InputFrame } from '../core/input';
 import { getModel } from '../core/models';
 import { IslandWorld, type Collider } from '../world/island';
-import { gateColliders } from '../world/gates';
+import { buildGate, gateColliders, glowRing } from '../world/gates';
 import { makeProp } from '../world/props';
 import { FollowCamera } from '../play/camera';
 import { Effects } from '../play/effects';
-import { Player } from '../play/player';
+import { Player, type Hittable } from '../play/player';
 import { Enemy, type EnemySpec } from '../play/enemy';
 import { Npc } from '../play/npc';
+import { Hazards, IMPACT_STYLE } from '../play/hazards';
+import { BossFight, type BossArena, type BossHost } from '../play/bossFight';
+import { bossFactory } from '../enemies/bosses';
 import { ISLAND_MINIGAMES, MINIGAME_LABEL } from '../story/minigames';
 import { ChapterStage } from './chapterStage';
 import type { Services } from './services';
@@ -77,6 +80,14 @@ export class IslandStage extends ChapterStage {
   private respawning = false;
   private beacon: Group;
   private beaconArrow: Mesh;
+  /** 예고 공격 (보스·버티기) */
+  readonly hazards: Hazards;
+  private boss: BossFight | null = null;
+  private bossId: BossId | null = null;
+  private bossArena: BossArena | null = null;
+  private bossCollider: Collider | null = null;
+  private survive: { left: number; total: number; text: string; spawn: number; shown: number } | null = null;
+  private shake = 0;
 
   constructor(chapter: ChapterData, layout: IslandLayout, svc: Services) {
     super(chapter, layout, svc);
@@ -84,6 +95,14 @@ export class IslandStage extends ChapterStage {
     this.scene = this.world.scene;
     this.fx = new Effects(this.scene);
     this.cam = new FollowCamera(this.camera);
+    this.hazards = new Hazards(this.scene, (x, z) => this.world.ground(x, z), (h) => {
+      const style = IMPACT_STYLE[h.effect];
+      const y = this.world.ground(h.x, h.z);
+      this.fx.burst(new Vector3(h.x, y + 0.5, h.z), style.color, 16, 4, 3);
+      this.svc.audio.sfx(style.sfx, { volume: 0.7 });
+      this.shake = Math.max(this.shake, style.shake);
+      if (Math.hypot(this.player.pos.x - h.x, this.player.pos.z - h.z) <= h.r + 0.2) this.player.damage(1, new Vector3(h.x, y, h.z));
+    });
 
     const save = svc.save.data;
     this.player = new Player(save?.avatar ?? DEFAULT_AVATAR, svc.audio);
@@ -281,27 +300,30 @@ export class IslandStage extends ChapterStage {
 
   private buildEnemies() {
     for (const e of this.layout.enemies) {
-      const base = ENEMY_SPECS[e.model] ?? { model: e.model, hp: 3, speed: 3, damage: 1, aggro: 10, windup: 0.8 };
-      const spec: EnemySpec = { ...base, ...(GROUP_SPECS[e.id] ?? {}), model: e.model };
-      const spawn = () => {
-        for (let i = 0; i < e.count; i++) {
-          const a = (i / e.count) * Math.PI * 2;
-          const x = e.pos[0] + Math.cos(a) * e.spread * 0.6;
-          const z = e.pos[1] + Math.sin(a) * e.spread * 0.6;
-          const enemy = new Enemy(e.id, { ...spec, variant: i % 4 }, new Vector3(x, this.world.ground(x, z), z), this.svc.audio);
-          enemy.onDefeated = (en) => {
-            this.svc.addCoins(1);
-            this.fx.floatText(en.pos.clone().setY(en.pos.y + 2), '+1 🫒');
-            this.runner.emit({ type: 'defeat', group: e.id });
-          };
-          this.scene.add(enemy.root);
-          this.enemies.push(enemy);
-          this.fx.burst(new Vector3(x, this.world.ground(x, z) + 1, z), spec.shadow ? '#8f7bff' : '#ffffff', 14, 3, 3);
-        }
+      // 이 장의 '물리치기' 목표가 부르는 무리만, 그 목표가 켜질 때 나타난다.
+      // (같은 섬을 쓰는 다른 장 — 예: 이타카 13·15장, 궁전 17장 잔치 — 에는 나오지 않는다)
+      if (!this.chapter.objectives.some((o) => o.type === 'defeat' && o.target === e.id)) continue;
+      this.pendingGroups.set(e.id, () => this.spawnEnemies(e.id, e.model, e.pos, e.count, e.spread));
+    }
+  }
+
+  private spawnEnemies(group: string, model: ModelId, at: XZ, count: number, spread: number) {
+    const base = ENEMY_SPECS[model] ?? { model, hp: 3, speed: 3, damage: 1, aggro: 10, windup: 0.8 };
+    const spec: EnemySpec = { ...base, ...(GROUP_SPECS[group] ?? {}), model };
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      const x = at[0] + Math.cos(a) * spread * 0.6;
+      const z = at[1] + Math.sin(a) * spread * 0.6;
+      if (!this.world.terrain.isLand(x, z)) continue;
+      const enemy = new Enemy(group, { ...spec, variant: i % 4 }, new Vector3(x, this.world.ground(x, z), z), this.svc.audio);
+      enemy.onDefeated = (en) => {
+        this.svc.addCoins(1);
+        this.fx.floatText(en.pos.clone().setY(en.pos.y + 2), '+1 🫒');
+        this.runner.emit({ type: 'defeat', group });
       };
-      const waits = this.chapter.objectives.some((o) => o.type === 'defeat' && o.target === e.id);
-      if (waits) this.pendingGroups.set(e.id, spawn);
-      else spawn();
+      this.scene.add(enemy.root);
+      this.enemies.push(enemy);
+      this.fx.burst(new Vector3(x, this.world.ground(x, z) + 1, z), spec.shadow ? '#8f7bff' : '#ffffff', 14, 3, 3);
     }
   }
 
@@ -321,6 +343,12 @@ export class IslandStage extends ChapterStage {
         spawn();
         this.svc.audio.sfx('magic');
       }
+    }
+    if (o.type === 'boss' && o.target && (BOSS_IDS as readonly string[]).includes(o.target)) this.prepareBoss(o.target as BossId);
+    if (o.type === 'survive') {
+      const total = o.timeLimitSec ?? 30;
+      this.survive = { left: total, total, text: o.text, spawn: 1, shown: -1 };
+      this.svc.ui.hud.toast('🛡️ 떨어지는 바위를 피해 버텨요! 빨간 원을 보면 비켜요');
     }
     if (o.type === 'minigame' && o.target && (MINIGAME_IDS as readonly string[]).includes(o.target)) {
       const id = o.target as MinigameId;
@@ -400,8 +428,93 @@ export class IslandStage extends ChapterStage {
         const g = this.layout.gates.find((x) => x.quizSlot === o.target && x.chapter === this.chapter.id);
         return g ? new Vector3(g.pos[0], this.world.ground(g.pos[0], g.pos[1]), g.pos[1]) : null;
       }
+      case 'boss': {
+        const a = this.bossArena;
+        return a && !this.boss ? new Vector3(a.x, this.world.ground(a.x, a.z), a.z) : null;
+      }
       default:
         return null;
+    }
+  }
+
+  // ─── 보스전 ───────────────────────────────────────────────
+
+  /** 보스 목표가 켜지면 무대를 정해 두고, 플레이어가 무대에 들어서면 시작 */
+  private prepareBoss(id: BossId) {
+    const b = this.layout.boss;
+    this.bossId = id;
+    this.bossArena = b && b.id === id
+      ? { x: b.arenaCenter[0], z: b.arenaCenter[1], radius: b.arenaRadius }
+      : { x: this.player.pos.x, z: this.player.pos.z, radius: 10 };
+  }
+
+  private startBoss() {
+    const id = this.bossId;
+    const arena = this.bossArena;
+    if (!id || !arena) return;
+    const bossSlots = this.chapter.quizSlots.filter((s) => s.placement === 'boss');
+    let quizIdx = 0;
+    const host: BossHost = {
+      scene: this.scene,
+      hazards: this.hazards,
+      ground: (x, z) => this.world.ground(x, z),
+      playerPos: () => this.player.pos,
+      sfx: (s) => this.svc.audio.sfx(s),
+      shake: (s) => (this.shake = Math.max(this.shake, s)),
+      burst: (at, color, n) => this.fx.burst(at, color, n, 6, 4),
+      toast: (t) => this.svc.ui.hud.toast(t),
+      summon: (model, count, near) => {
+        const alive = this.enemies.filter((e) => e.alive && e.group === 'boss-minions').length;
+        const n = Math.min(count, 4 - alive);
+        if (n > 0) this.spawnEnemies('boss-minions', model, [near.x + 2.5, near.z + 2.5], n, 3);
+      },
+      // 장의 boss 퀴즈 자리를 차례로 (16장은 다섯 과목을 돌아가며)
+      askWeak: () => this.ask(bossSlots.length ? bossSlots[quizIdx++ % bossSlots.length] : undefined, 'boss'),
+      bar: (name, hp, max) => this.svc.ui.hud.setBoss(name, hp, max),
+      phase: (name) => this.runner.emit({ type: 'bossPhase', phase: name }),
+      defeated: () => {
+        if (this.bossCollider) this.bossCollider.active = false;
+        this.svc.addCoins(5);
+        this.fx.floatText(this.player.pos.clone().setY(this.player.pos.y + 2.4), '+5 🫒');
+        this.svc.audio.playBgm(this.chapter.bgm.explore);
+        this.bossId = null;
+        this.runner.emit({ type: 'boss', id });
+      },
+    };
+    this.boss = new BossFight(bossFactory(id), arena, host);
+    this.scene.add(this.boss.root);
+    this.bossCollider = this.world.addCollider(this.boss.pos.x, this.boss.pos.z, this.boss.radius * 0.7, 'boss');
+    this.svc.audio.playBgm(this.chapter.bgm.boss ?? 'boss');
+    this.svc.ui.hud.toast(`⚔️ ${this.boss.def.name}!`);
+    this.boss.start();
+  }
+
+  /** '버티기' 목표 — 시간이 다 될 때까지 떨어지는 바위를 피한다 */
+  private updateSurvive(dt: number) {
+    const s = this.survive;
+    if (!s) return;
+    s.left -= dt;
+    s.spawn -= dt;
+    const sec = Math.max(0, Math.ceil(s.left));
+    if (sec !== s.shown) {
+      s.shown = sec;
+      this.svc.ui.hud.setObjective(`${s.text} ⏱ ${sec}초`);
+    }
+    if (s.spawn <= 0 && s.left > 1.5) {
+      const k = 1 - s.left / s.total;
+      s.spawn = 1.5 - 0.6 * k;
+      const n = k > 0.5 && Math.random() < 0.5 ? 2 : 1;
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const d = i === 0 ? Math.random() * 1.5 : 2 + Math.random() * 3;
+        this.hazards.add(this.player.pos.x + Math.cos(a) * d, this.player.pos.z + Math.sin(a) * d, 1.6, 1.3, 'rock');
+      }
+    }
+    if (s.left <= 0) {
+      this.survive = null;
+      this.hazards.clear();
+      this.svc.ui.hud.toast('🛡️ 잘 버텼어요!');
+      this.runner.emit({ type: 'survived' });
     }
   }
 
@@ -411,10 +524,29 @@ export class IslandStage extends ChapterStage {
     this.time += dt;
     const frozen = this.isBlocked || this.respawning;
     this.player.frozen = frozen;
-    this.player.update(dt, input, this.cam, this.world, this.enemies, this.fx);
+    const targets: Hittable[] = this.boss?.alive ? [...this.enemies, this.boss] : this.enemies;
+    this.player.update(dt, input, this.cam, this.world, targets, this.fx);
     for (const e of this.enemies) e.update(dt, this.player, this.world, this.enemies, this.fx, frozen);
     this.enemies = this.enemies.filter((e) => e.alive || e.root.parent);
     for (const npc of this.npcs.values()) npc.update(dt, this.player.pos);
+
+    // 보스전·예고 공격·버티기
+    if (this.bossId && !this.boss && !frozen && this.bossArena) {
+      const a = this.bossArena;
+      if (Math.hypot(this.player.pos.x - a.x, this.player.pos.z - a.z) < a.radius + 2) this.startBoss();
+    }
+    if (this.boss) {
+      this.boss.update(dt, frozen);
+      if (this.boss.alive && this.bossCollider) {
+        this.bossCollider.x = this.boss.pos.x;
+        this.bossCollider.z = this.boss.pos.z;
+      }
+      if (!this.boss.alive && !this.boss.root.parent) this.boss = null;
+    }
+    if (!frozen) {
+      this.hazards.update(dt);
+      this.updateSurvive(dt);
+    }
 
     // 줍기
     for (const p of this.pickups) {
@@ -496,6 +628,11 @@ export class IslandStage extends ChapterStage {
       const moving = Math.abs(input.moveX) + Math.abs(input.moveY) > 0.1 && !frozen;
       this.cam.update(dt, this.focus(), frozen ? null : input, moving ? this.player.heading : null, (x, z) => this.world.ground(x, z));
     }
+    if (this.shake > 0) {
+      this.camera.position.x += (Math.random() - 0.5) * this.shake * 0.8;
+      this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.8;
+      this.shake = Math.max(0, this.shake - dt * 1.6);
+    }
     this.fx.update(dt);
   }
 
@@ -532,6 +669,7 @@ export class IslandStage extends ChapterStage {
   private async respawn() {
     this.respawning = true;
     this.block();
+    this.hazards.clear();
     await this.svc.ui.screens.fade(true, 350);
     this.player.place(this.checkpoint.x, this.checkpoint.y, this.checkpoint.z);
     this.player.heal();
@@ -547,45 +685,13 @@ export class IslandStage extends ChapterStage {
   override dispose() {
     super.dispose();
     for (const npc of this.npcs.values()) npc.dispose();
+    this.boss?.dispose();
+    this.hazards.clear();
+    this.svc.ui.hud.setBoss(null);
     this.fx.dispose();
     this.scene.traverse((o) => {
       const el = (o as { element?: HTMLElement }).element;
       if (el instanceof HTMLElement) el.remove();
     });
   }
-}
-
-/** 지혜의 문 폭 — 기둥 충돌체(±2.25)와 섬 데이터의 바위 울타리가 이 폭을 기준으로 맞춰져 있다 */
-const GATE_WIDTH = 5.6;
-
-/**
- * 지혜의 문: 어떤 모델이든 정해진 폭으로 맞추고, 닫힘을 보여 주는 'barrier' 막이 없으면 엔진이 붙인다.
- * (barrier 는 문이 열릴 때 사라진다)
- */
-function buildGate(): Group {
-  const model = makeProp('wisdomGate');
-  const width = new Box3().setFromObject(model).getSize(new Vector3()).x;
-  if (width > 0.5 && Math.abs(width - GATE_WIDTH) > 0.3) model.scale.setScalar(GATE_WIDTH / width);
-  const gate = new Group();
-  gate.add(model);
-  if (!model.getObjectByName('barrier')) {
-    const pane = new Mesh(
-      new BoxGeometry(3.4, 3.4, 0.12),
-      new MeshBasicMaterial({ color: '#7fd3ff', transparent: true, opacity: 0.45, depthWrite: false }),
-    );
-    pane.name = 'barrier';
-    pane.position.y = 1.75;
-    gate.add(pane);
-  }
-  return gate;
-}
-
-/** 바닥에 까는 빛나는 고리 */
-function glowRing(radius: number, color: string): Mesh {
-  const ring = new Mesh(
-    new CylinderGeometry(radius, radius, 0.05, 24),
-    new MeshBasicMaterial({ color, transparent: true, opacity: 0.5, depthWrite: false }),
-  );
-  ring.name = 'glow';
-  return ring;
 }

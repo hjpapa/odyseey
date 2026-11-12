@@ -312,6 +312,23 @@ export class Game {
     this.svc.ui.dialogue.fast = on;
   }
 
+  /**
+   * 게임 시간을 직접 진행 (브라우저 창이 가려져 requestAnimationFrame 이 멈춘 상태에서도 시험할 수 있게).
+   * 프레임 사이에 비동기 작업(대사·퀴즈)이 돌 수 있도록 매 프레임 잠깐 양보한다.
+   */
+  async debugStep(seconds: number, dt = 1 / 30) {
+    const frames = Math.max(1, Math.round(seconds / dt));
+    for (let i = 0; i < frames; i++) {
+      const input = this.svc.input.frame();
+      if (this.stage && !this.paused) this.stage.update(dt, input);
+      await new Promise((r) => setTimeout(r, 0));
+    }
+    if (this.stage) {
+      this.renderer.render(this.stage.scene, this.stage.camera);
+      this.labels.render(this.stage.scene, this.stage.camera);
+    }
+  }
+
   async debugPlay(id: ChapterId) {
     if (!this.svc.save.data) this.svc.save.create(2);
     this.closeTitle?.();

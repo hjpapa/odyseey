@@ -1,17 +1,20 @@
 # Codex 작업 지시서 (붙여넣기용)
 
-P0(뼈대·계약·테스트)가 main 에 올라가 있으면 바로 시작할 수 있습니다.
-각 작업은 **서로 다른 폴더만** 건드리므로 동시에 여러 개를 돌려도 충돌하지 않습니다.
+각 작업은 정해진 폴더만 건드리고, 완료 여부는 수용 테스트(`npm run test:accept -- <폴더>`)가 판정합니다.
 
-| 작업 | 시작 시점 | 수정 폴더 | 추천 모델 | 완료 판정 |
+| 작업 | 상태 | 수정 폴더 | 추천 모델 | 완료 판정 |
 |---|---|---|---|---|
-| A1 학습 데이터 | **지금** | `data/learning/` | Medium → 마지막에 High 검수 1회 | `npm run test:accept -- tests/learning` |
-| A2 문제 생성기 | **지금** | `src/learning/generators/` | Astra High | `npm run test:accept -- tests/generators` |
-| A3 효과음·배경음 | **지금** | `src/audio/` | Astra High | `npm run test:accept -- tests/audio` + 개발 페이지에서 귀로 확인 |
-| A4 블록 모델 | **지금** | `src/models/` | Astra High | `npm run test:accept -- tests/models` + 갤러리에서 눈으로 확인 |
-| B1 챕터 데이터 (3~17장) | **지금** | `data/chapters/` | Medium | `npm run test:accept -- tests/chapters` |
-| B2 섬 레이아웃 (12곳) | **B1 이 main 에 들어간 뒤** | `data/islands/` | Medium | `npm run test:accept -- tests/islands` |
-| 보스 패턴 | P2 (폴리페모스 템플릿 이후) | `src/enemies/bosses/<이름>.ts` | Astra High | P2 때 안내 |
+| A1 학습 데이터 | ✅ 완료 (PR #1) | `data/learning/` | Medium → 마지막에 High 검수 1회 | `npm run test:accept -- tests/learning` |
+| A2 문제 생성기 | ✅ 완료 (PR #1) | `src/learning/generators/` | Astra High | `npm run test:accept -- tests/generators` |
+| A3 효과음·배경음 | ✅ 완료 (PR #1) | `src/audio/` | Astra High | `npm run test:accept -- tests/audio` |
+| A4 블록 모델 | ✅ 완료 (PR #1·#2) | `src/models/` | Astra High | `npm run test:accept -- tests/models` |
+| B1 챕터 데이터 (3~17장) | ✅ 완료 (PR #1) | `data/chapters/` | Medium | `npm run test:accept -- tests/chapters` |
+| B2 섬 레이아웃 (12곳) | ✅ 완료 (PR #4) | `data/islands/` | Medium | `npm run test:accept -- tests/islands` |
+| **C1 보스 패턴 7종** | **▶ 지금** | `src/enemies/bosses/` | High (논리·밸런스) | `npm run test:accept -- tests/bosses` |
+| **C2 미니게임 8종** | **▶ C1 다음** | `src/story/minigames/` | High (조작감·화면) | `npm run test:accept -- tests/minigames` |
+
+> **P2 엔진 완료 (2026-11-12)**: 보스전·버티기·바다 항해가 들어가 1~17장 모두 끝까지 진행됩니다.
+> 아직 전용 패턴이 없는 보스 7종은 '기본 보스 패턴'으로, 미니게임 8종은 '준비 중' 안내로 넘어갑니다 — C1·C2 가 이것을 채웁니다.
 
 > **P1 완료 (2026-11-07)**: 1·2장은 Claude 가 만들어 두었습니다 — `data/chapters/ch01.json`, `ch02.json`,
 > `data/islands/ogygia.json`, `stormSea.json`. Codex 는 이 네 파일을 **수정하지 말고 형식·말투의 견본**으로 쓰세요.
@@ -22,16 +25,13 @@ P0(뼈대·계약·테스트)가 main 에 올라가 있으면 바로 시작할 �
 
 ---
 
-## Codex 실행 방법
+## Codex 실행 방법 (로컬, 한 폴더에서 차례로)
 
-- **권장: Codex 클라우드** — 저장소 `hjpapa/odyseey` 연결 → 작업마다 새 태스크 → 결과를 PR 로 받기.
-  환경 설정: Node 24, 설치 스크립트 `npm ci`.
-- **로컬 Codex CLI 를 쓸 때**: Claude 가 같은 폴더에서 작업 중이므로 반드시 별도 작업 폴더(worktree)에서 실행하세요.
-  ```bash
-  git worktree add ../odyseey-a1 -b codex/learning-data
-  ```
-  그 폴더에서 `npm ci` 후 Codex 실행 → 끝나면 push 하고 PR.
-- PR 이 올라가면 GitHub Actions(CI)가 타입 검사·테스트·빌드를 돌리고, Vercel 이 프리뷰 URL 을 댓글로 달아 줍니다.
+- Codex 와 Claude 는 **같은 폴더 `C:\code\code15(odyseey)` 에서 번갈아** 작업합니다 (동시에 하지 않음).
+- Codex 차례: main 에서 `git switch -c codex/<작업명>` → 작업 → **커밋까지만** (push·PR 은 Claude 가 확인 후).
+- 끝나면 Claude 에게 "<작업명> 끝났어" — Claude 가 테스트·브라우저로 확인하고 PR 을 올린 뒤 병합 여부를 묻습니다.
+- 눈으로 확인: `npm run dev` 후 `http://localhost:5173/?play=ch03&fast=1` (그 장을 바로 시작, 대사 빨리 넘기기).
+  브라우저 창이 가려져 있으면 게임이 멈춰 있으니 창을 띄워 두고 확인하세요.
 
 ## 공통 규칙 (모든 지시문 맨 앞에 붙이기)
 
@@ -43,7 +43,7 @@ P0(뼈대·계약·테스트)가 main 에 올라가 있으면 바로 시작할 �
 - src/types/contracts.ts, tests/ 아래 기존 파일, package.json 은 수정 금지.
   계약을 바꿔야 할 것 같으면 PR 설명에 '계약 변경 제안'으로만 적어.
 - 지정한 폴더 밖의 파일은 수정하지 마. (테스트를 더 쓰고 싶으면 tests/<작업폴더>/ 에 새 파일로 추가)
-- 브랜치 codex/<작업명> 에서 작업하고 PR 올려.
+- main 에서 브랜치 codex/<작업명> 을 만들어 작업하고, 마지막에 커밋한다 (push·PR 은 하지 않는다).
 - 끝내기 전에 반드시 통과: npm run typecheck && npm test && npm run build
   그리고 이 작업의 수용 테스트: npm run test:accept -- <지정 폴더>
 - 대상은 초등 1~3학년. 무섭거나 잔인한 표현 금지 (적은 '별가루로 사라진다', 잡아먹기 → 붙잡혀 감).
@@ -198,4 +198,77 @@ P0(뼈대·계약·테스트)가 main 에 올라가 있으면 바로 시작할 �
   · 지혜의 문 뒤 구역은 boulder 소품을 둥글게 둘러 막는다 (간격 3m, 문 양옆 기둥까지 빈틈없이 — ogygia.json 의 비밀 숲 참고)
   · 좌표는 섬 반지름 - beachWidth×0.3 안쪽, 중요한 자리(시작점·문·NPC·zone 중심)는 자동으로 평평해진다
   · 바다 코스(kind seaCourse)는 x 가 ±width/2, z 가 0~length
+```
+
+## C1. 보스 패턴 7종 — 통째로 맡김 / 추천: High
+
+```
+작업명: boss-patterns   (main 에서 git switch -c codex/boss-patterns)
+수정 폴더: src/enemies/bosses/ 만 (새 파일 7개 + index.ts 의 BOSSES 에 등록)
+
+먼저 읽을 것:
+- src/types/contracts.ts 10장 (BossContext · BossDef · BossFactory) — 규칙 그대로
+- 견본 src/enemies/bosses/polyphemus.ts, 그리고 generic.ts · index.ts
+- docs/STORY.md 해당 장의 '게임' 항목, data/chapters/<장>.json 의 boss 퀴즈 자리
+- tests/bosses/bosses.test.ts (모든 보스가 지켜야 할 규칙), tests/bosses/bosses.accept.test.ts
+
+만들 것 (각 파일 default export BossFactory):
+- lotusKing (4장 연꽃 대장): 꽃가루 'magic' 예고 공격 + lotusEater 졸개 부르기, 느릿느릿 졸린 공격
+- laestrygonianKing (6장 거인 왕): 큰 바위 'rock' 여러 개 던지기 + 발 구르기 'stomp'
+- circe (7장 마녀 키르케): 물약 'magic' 원형 공격, pig 졸개(최대 3)
+- helios (9장 태양신 헬리오스): 하늘에 떠 있음 (moveTo 의 y=6, melee:false) — 'lightning' 예고 공격, 칼로는 못 때리고 약점 퀴즈로만
+- sirenQueen (11장 세이렌 여왕): 음표 'magic' 이 줄지어 떨어짐, siren 졸개
+- soldierCaptain (14장 병사 대장): 빠른 돌진(moveTo) 뒤 'stomp', greekSoldier 졸개
+- antinous (16장 구혼자 대장, 최종 보스): 단계가 있음 (체력 절반 아래 phase('angry')), suitor 졸개.
+  16장은 boss 퀴즈 자리가 과목별 5개라 약점이 5번쯤 드러나게 (maxHp 14~18, quizDamage 3~4)
+
+규칙:
+- 공격은 반드시 ctx.telegraph 로 예고 (delay 0.9초 이상, radius 1.2~3.5m), 맞으면 하트 1
+- 30~40초마다 ctx.weak() — 3분 안에 이길 수 있게 (테스트가 검사)
+- three.js·DOM 을 직접 만지지 말고 BossContext 만 쓴다
+- 말풍선(say)은 20자 이내, 아이 눈높이, 무섭지 않게. 이름은 원작 이름 (아이 표기 병기 가능)
+
+완료 조건:
+- npm run typecheck && npm test && npm run build
+- npm run test:accept -- tests/bosses  (지금 실패 1개 → 0개)
+- 눈으로: npm run dev → http://localhost:5173/?play=ch04&fast=1 처럼 각 장의 보스전을 직접 해 보기
+- 마지막에 커밋 (push·PR 은 하지 않음)
+```
+
+## C2. 섬 미니게임 8종 — 통째로 맡김 / 추천: High
+
+```
+작업명: island-minigames   (main 에서 git switch -c codex/island-minigames)
+수정 폴더: src/story/minigames/ 만 (새 파일 8개 + index.ts 의 ISLAND_MINIGAMES 에 등록)
+
+먼저 읽을 것:
+- 견본 src/story/minigames/raftBuild.ts 와 index.ts
+- src/game/islandStage.ts 의 공개 멤버: svc(audio·ui·learning), world, player, fx, scene,
+  cinematic(카메라 고정), block()/unblock(), signal(장면을 나가면 중단), ask(퀴즈 자리, 'story')
+- docs/STORY.md 해당 장 '게임' 항목, data/chapters/<장>.json, data/islands/<섬>.json 의 미니게임 zone
+- tests/minigames/minigames.accept.test.ts
+
+만들 것 (형식: (stage: IslandStage, at: Vector3) => Promise<void>):
+- sheepEscape (3장): 양 무리에 섞여 동굴을 빠져나가기 — 거인이 돌아볼 때 멈추기 (빨강불·초록불)
+- windSail (5장): 바람 화살표 쪽으로 돛 돌리기 (← → / 화면 버튼), 이타카가 보일 때까지
+- rhythmShield (11장): 3줄로 떨어지는 음표를 박자에 맞춰 방패로 막기 — 목소리 없이 악기 소리만
+- ballGame (12장): 나우시카와 공 주고받기 (타이밍 맞춰 누르기)
+- hideWeapons (15장): 궁전 무기 6개를 창고로 옮기기 (집어서 놓기)
+- bowString (16장): 활시위 걸기 — 움직이는 게이지가 가운데일 때 누르기 3번
+- axeArchery (16장): 도끼 12개 구멍이 일직선일 때 쏘기 (흔들리는 조준을 멈추는 타이밍) — 12 세기와 연결
+- feast (17장): 잔치 식사 예절 — 상황 3개에서 올바른 행동 고르기 (stage.ask 로 manners 'table' 문제 가능)
+
+규칙 (raftBuild 와 같게):
+- 시작에 stage.block(), 끝에 stage.unblock() — 어떤 경우에도 반드시 끝난다 (실패하면 다시 하기, 벌 없음)
+- 길어도 1분 안팎, 아이가 세 번 안에 성공할 수 있게
+- 키보드(Space·←·→)와 화면 버튼을 둘 다 지원. 리스너는 { signal: stage.signal } 로 등록
+- 화면 UI 는 svc.ui.root 에 'mini-panel' 클래스로 붙이고 끝나면 지운다. 카메라는 stage.cinematic
+- 소리는 svc.audio.sfx (SFX_IDS 안에서). 목소리 없음
+- src/game · src/play · src/ui · src/types 는 수정 금지 (엔진이 더 필요하면 커밋 메시지에 '엔진 변경 제안'으로 적기)
+
+완료 조건:
+- npm run typecheck && npm test && npm run build
+- npm run test:accept -- tests/minigames  (지금 실패 1개 → 0개)
+- 눈으로: 각 장에서 미니게임을 직접 해 보기 (?play=ch03&fast=1 등, 브라우저 창을 띄워 둔 채로)
+- 마지막에 커밋 (push·PR 은 하지 않음)
 ```
