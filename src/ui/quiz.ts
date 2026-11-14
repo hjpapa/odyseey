@@ -65,6 +65,11 @@ export class QuizUI implements QuizPresenter {
       const answers = h('div', { class: 'quiz-answers' });
       let tries = 0;
       let finished = false;
+      let autoContinue: ReturnType<typeof setTimeout> | undefined;
+      const paused = () => document.hidden || !!this.root.querySelector('.screen.dim');
+      local.signal.addEventListener('abort', () => {
+        if (autoContinue !== undefined) clearTimeout(autoContinue);
+      }, { once: true });
 
       card.append(
         h(
@@ -94,7 +99,9 @@ export class QuizUI implements QuizPresenter {
         resolve({ firstTry, tries });
       };
       const onKey = (fn: (e: KeyboardEvent) => void) => {
-        window.addEventListener('keydown', fn, { capture: true, signal: local.signal });
+        window.addEventListener('keydown', (event) => {
+          if (!paused()) fn(event);
+        }, { capture: true, signal: local.signal });
       };
       const continueButton = (label: string, firstTry: boolean, autoMs?: number) => {
         const b = h('button', { class: 'btn', type: 'button', text: label });
@@ -115,7 +122,15 @@ export class QuizUI implements QuizPresenter {
         });
         next.replaceChildren(b);
         b.focus();
-        if (autoMs) setTimeout(go, autoMs);
+        if (autoMs) {
+          const advanceWhenReady = () => {
+            autoContinue = undefined;
+            if (done || local.signal.aborted) return;
+            if (paused()) autoContinue = setTimeout(advanceWhenReady, 200);
+            else go();
+          };
+          autoContinue = setTimeout(advanceWhenReady, autoMs);
+        }
       };
       /** 정답 */
       const correct = () => {
@@ -305,11 +320,14 @@ export class QuizUI implements QuizPresenter {
     box.append(h('div', { class: 'spell-slots' }, ...slots), h('div', { class: 'spell-tiles' }, ...tiles));
     onKey((e) => {
       if (e.key === 'Backspace') {
+        e.preventDefault();
         const last = filled.map((f, i) => (f === null ? -1 : i)).filter((i) => i >= 0).pop();
         if (last !== undefined) { filled[last] = null; render(); }
         return;
       }
-      if (e.key.length !== 1) return;
+      if (e.key.length !== 1 || !/[a-z]/i.test(e.key)) return;
+      // 글자 키는 철자 입력으로만 쓴다 — 게임 조작(P 멈춤, E·J 등)으로 넘기지 않음
+      e.preventDefault();
       const ti = q.tiles.findIndex((t, i) => t === e.key.toLowerCase() && !filled.includes(i));
       if (ti >= 0) place(ti);
     });

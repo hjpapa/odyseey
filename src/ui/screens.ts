@@ -102,7 +102,14 @@ export class Screens {
         if (e.code === 'Escape' || e.code === 'KeyP') {
           e.preventDefault();
           e.stopPropagation();
-          close();
+          if (!e.repeat) close();
+          return;
+        }
+        const target = e.target as HTMLElement | null;
+        if (['Space', 'Enter', 'NumpadEnter'].includes(e.code) && target?.tagName === 'BUTTON' && el.contains(target)) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!e.repeat) target.click();
         }
       };
       window.addEventListener('keydown', onKey, true);
