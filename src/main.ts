@@ -15,6 +15,8 @@ try {
     if (params.get('fast')) game.debugFast(true);
     const play = params.get('play');
     if (play && /^ch\d\d$/.test(play)) void game.debugPlay(play as Parameters<Game['debugPlay']>[0]);
+    else if (params.get('map')) void game.debugShow('map');
+    else if (params.get('ending')) void game.debugShow('ending');
   }
 } catch (err) {
   console.error(err);

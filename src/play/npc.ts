@@ -4,13 +4,13 @@ import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import type { ModelId } from '../types/contracts';
 import { getModel } from '../core/models';
 import { SPEAKERS } from '../story/speakers';
-import { HumanoidRig } from './rig';
+import { createRig, type CreatureRig, type HumanoidRig } from './rig';
 import { label } from './effects';
 
 export class Npc {
   readonly root = new Group();
   readonly model: Group;
-  private rig: HumanoidRig;
+  private rig: HumanoidRig | CreatureRig;
   private tag: CSS2DObject;
   private baseYaw: number;
   talking = false;
@@ -22,7 +22,7 @@ export class Npc {
     this.root.position.copy(pos);
     this.root.rotation.y = rotY;
     this.baseYaw = rotY;
-    this.rig = new HumanoidRig(this.model);
+    this.rig = createRig(this.model);
     const name = SPEAKERS[modelId as keyof typeof SPEAKERS]?.name ?? id;
     this.tag = label(name);
     this.tag.position.y = ((this.model.userData.height as number) || 2) + 0.5;

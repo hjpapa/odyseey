@@ -7,6 +7,7 @@ import type { IslandLayout, PropId, XZ } from '../types/contracts';
 import { createRng } from '../core/rng';
 import { createEnvironment, type Environment, type Mood } from './environment';
 import { buildTerrain, type Terrain } from './terrain';
+import { block } from '../core/placeholders';
 import { makeProp, SOLID_RADIUS } from './props';
 import { mergeStatic } from './merge';
 
@@ -58,7 +59,66 @@ export class IslandWorld {
       obj.userData.layoutProp = true;
     }
     if (L.kind === 'island') this.scatterDecorations(statics);
+    if (L.kind === 'interior') this.buildHall(statics);
     this.scene.add(mergeStatic(statics));
+  }
+
+  /**
+   * 실내(궁전): 바닥 둘레에 낮은 대리석 벽과 띠 장식을 두르고, 입구(시작 자리 쪽) 한 곳만 비운다.
+   * 벽은 카메라가 넘겨볼 수 있을 만큼 낮게, 충돌은 작은 기둥을 촘촘히 늘어놓아 막는다.
+   */
+  private buildHall(parent: Object3D) {
+    const L = this.layout;
+    const R = L.terrain.radius;
+    const y0 = this.ground(0, 0);
+    const H = 2.3;
+    const T = 0.8;
+    const edge = R - T / 2;
+    // 입구는 시작 자리에서 가장 가까운 벽 (보통 앞쪽 -z)
+    const [sx, sz] = L.spawn;
+    const side: 'n' | 's' | 'e' | 'w' = Math.abs(sx) > Math.abs(sz) ? (sx > 0 ? 'e' : 'w') : sz > 0 ? 'n' : 's';
+    const door = 3.2;
+    const wall = '#efe6d2';
+    const trim = '#3f6fb5';
+    const segment = (x0: number, z0: number, x1: number, z1: number) => {
+      const len = Math.hypot(x1 - x0, z1 - z0);
+      if (len < 0.2) return;
+      const cx = (x0 + x1) / 2;
+      const cz = (z0 + z1) / 2;
+      const alongX = Math.abs(x1 - x0) > Math.abs(z1 - z0);
+      const w = alongX ? len : T;
+      const d = alongX ? T : len;
+      parent.add(block(w, H, d, wall, cx, y0 + H / 2, cz));
+      parent.add(block(w + 0.04, 0.32, d + 0.04, trim, cx, y0 + H - 0.3, cz));
+      parent.add(block(w + 0.2, 0.18, d + 0.2, '#f8f3e8', cx, y0 + H + 0.09, cz));
+      const steps = Math.ceil(len / 1.1);
+      for (let i = 0; i <= steps; i++) {
+        const k = i / steps;
+        this.addCollider(x0 + (x1 - x0) * k, z0 + (z1 - z0) * k, 0.75, 'wall');
+      }
+    };
+    const run = (fixed: number, axis: 'x' | 'z', hasDoor: boolean, doorAt: number) => {
+      const pts: [number, number][] = hasDoor ? [[-R, doorAt - door], [doorAt + door, R]] : [[-R, R]];
+      for (const [a, b] of pts) {
+        if (axis === 'x') segment(a, fixed, b, fixed);
+        else segment(fixed, a, fixed, b);
+      }
+    };
+    run(-edge, 'x', side === 's', sx);
+    run(edge, 'x', side === 'n', sx);
+    run(-edge, 'z', side === 'w', sz);
+    run(edge, 'z', side === 'e', sz);
+
+    // 입구에서 안쪽으로 붉은 양탄자
+    const inward = side === 's' ? [0, 1] : side === 'n' ? [0, -1] : side === 'w' ? [1, 0] : [-1, 0];
+    const doorX = side === 's' || side === 'n' ? sx : side === 'w' ? -edge : edge;
+    const doorZ = side === 'e' || side === 'w' ? sz : side === 's' ? -edge : edge;
+    const carpetLen = Math.min(12, R * 0.45);
+    const cx = doorX + inward[0] * carpetLen / 2;
+    const cz = doorZ + inward[1] * carpetLen / 2;
+    const alongZ = inward[1] !== 0;
+    parent.add(block(alongZ ? 3 : carpetLen, 0.05, alongZ ? carpetLen : 3, '#b8323a', cx, y0 + 0.03, cz));
+    parent.add(block(alongZ ? 2.2 : carpetLen - 0.6, 0.06, alongZ ? carpetLen - 0.6 : 2.2, '#d9474f', cx, y0 + 0.04, cz));
   }
 
   ground(x: number, z: number): number {

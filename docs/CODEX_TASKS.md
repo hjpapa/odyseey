@@ -12,9 +12,11 @@
 | B2 섬 레이아웃 (12곳) | ✅ 완료 (PR #4) | `data/islands/` | Medium | `npm run test:accept -- tests/islands` |
 | C1 보스 패턴 7종 | ✅ 완료 (PR #6) | `src/enemies/bosses/` | High (논리·밸런스) | `npm run test:accept -- tests/bosses` |
 | C2 미니게임 8종 | ✅ 완료 (PR #6) | `src/story/minigames/` | High (조작감·화면) | `npm run test:accept -- tests/minigames` |
+| **C3 꾸미기 상점** | **▶ 지금 (P3 병합 뒤)** | `data/shop.json`, `src/ui/wardrobe.ts` | High (화면·아이 눈높이) | `npm run test:accept -- tests/wardrobe` |
 
 > **C1·C2 완료 (2026-11-14, PR #6)**: 땅 위 보스 8종이 모두 전용 패턴을 쓰고, 미니게임 9종(1장 뗏목 포함)이 모두 실제 놀이로 바뀌었습니다.
-> 수용 테스트 50개 전부 통과 — 이 표의 Codex 작업은 모두 끝났습니다. 다음은 P3 마무리.
+> **P3 (Claude)**: 바다 지도·엔딩·보호자 모드가 들어왔고, 모은 올리브잎을 쓸 곳(C3 꾸미기 상점)의 계약·규칙·연결은 Claude 가 미리 만들어 두었습니다 —
+> Codex 는 물건 목록과 화면만 채우면 타이틀에 '🎽 꾸미기' 버튼이 나타납니다.
 
 > **P1 완료 (2026-11-07)**: 1·2장은 Claude 가 만들어 두었습니다 — `data/chapters/ch01.json`, `ch02.json`,
 > `data/islands/ogygia.json`, `stormSea.json`. Codex 는 이 네 파일을 **수정하지 말고 형식·말투의 견본**으로 쓰세요.
@@ -270,5 +272,44 @@
 - npm run typecheck && npm test && npm run build
 - npm run test:accept -- tests/minigames  (지금 실패 1개 → 0개)
 - 눈으로: 각 장에서 미니게임을 직접 해 보기 (?play=ch03&fast=1 등, 브라우저 창을 띄워 둔 채로)
+- 마지막에 커밋 (push·PR 은 하지 않음)
+```
+
+## C3. 꾸미기 상점 (올리브잎으로 오디세우스 꾸미기) — 통째로 맡김 / 추천: High
+
+```
+작업명: wardrobe   (main 에서 git switch -c codex/wardrobe)
+수정 파일: data/shop.json, src/ui/wardrobe.ts 만 (+ 필요하면 src/style.css 맨 아래에 '/* C3 꾸미기 */' 구역 추가)
+수용 테스트: tests/wardrobe/wardrobe.accept.test.ts  (지금 실패 3개 → 0개)
+
+먼저 읽을 것:
+- src/types/contracts.ts 11장 (ShopItem · WardrobeOptions · OpenWardrobe), HELMET_IDS · AvatarCustomization · DEFAULT_AVATAR
+- src/game/shop.ts (사기·입기 규칙 — 이미 있음, 수정 금지) 와 tests/game/shop.test.ts
+- src/game/game.ts 의 openWardrobe() — 엔진이 이 화면을 어떻게 여는지 (onBuy 가 남은 올리브잎을 돌려줌, onWear 로 타이틀의 오디세우스가 바로 바뀜)
+- src/ui/screens.ts 의 settings() — 카드·버튼 모양, 키보드(Esc 닫기, Space·Enter 누르기) 처리 방식
+- data/shop.json (지금은 처음 모습 4개만 있음)
+
+만들 것:
+1) data/shop.json — 부위마다 4개 이상 (투구는 HELMET_IDS 5종 모두, 망토는 '망토 없음'(value null) 포함).
+   이름 10자 이내 쉬운 말, 이모지 1개. 처음 모습(DEFAULT_AVATAR 값)은 가격 0.
+   값: 1장을 마치면 하나는 살 수 있게 (가장 싼 것 30 이하, 부위마다 60 이하 하나 이상),
+   다 합쳐도 한 번 끝까지 놀면 모이는 양을 넘지 않게 (수용 테스트가 계산해서 확인).
+   색은 아이들이 좋아할 밝은 색 + 신화 느낌 (예: 바다색, 올리브색, 노을색, 아테나 은빛).
+2) src/ui/wardrobe.ts — openWardrobe(root, opts) 구현, WARDROBE_READY 를 true 로.
+   - 화면 아래쪽 카드(타이틀의 오디세우스가 위에 보이게): 부위 탭 4개 → 물건 칸들 → '다 입었어요' 버튼
+   - 물건 칸: 이모지(또는 색 동그라미)·이름·값. 상태 표시: 입는 중 ✓ / 가진 것 / 🫒 값 / 모자라면 흐리게
+   - 누르면: 가진 것이면 바로 입기(onWear) / 안 가진 것이면 '🫒 N 으로 살까요?' 확인 → onBuy → 성공하면 바로 입기
+     모자라면 sfx('wrong') 와 '올리브잎을 더 모아 와요!' 같은 부드러운 말 (벌 없음)
+   - 올리브잎 남은 수를 늘 보여 주고 onBuy 가 돌려준 값으로 고친다
+   - 키보드(← → 칸 옮기기, Tab, Space·Enter, Esc 닫기)와 터치(48px 이상 버튼) 모두. 320px 폭에서도 가로로 넘치지 않게
+   - 리스너는 AbortController 로 묶어 닫을 때 모두 지우고, 화면을 닫으면 Promise 를 끝낸다
+3) 꾸미기 화면 바깥(src/game, src/play, src/models, src/types, tests 기존 파일)은 수정 금지.
+   엔진 쪽이 더 필요하면 커밋 메시지에 '엔진 변경 제안'으로 적기.
+
+완료 조건:
+- npm run typecheck && npm test && npm run build
+- npm run test:accept -- tests/wardrobe  (3개 실패 → 0개)
+- 눈으로: npm run dev → 타이틀 '🎽 꾸미기' → 사기·입기·닫기, 바뀐 모습으로 ?play=ch03&fast=1 시작해서 플레이 화면에도 반영되는지
+  (브라우저 창을 띄워 둔 채로. 개발 콘솔에서 game.svc.save.data.coins = 300 으로 올리브잎을 넣고 시험해도 됨)
 - 마지막에 커밋 (push·PR 은 하지 않음)
 ```

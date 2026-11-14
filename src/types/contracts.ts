@@ -762,3 +762,46 @@ export interface BossDef {
 
 /** 보스전마다 새 패턴을 만든다 (패턴 안의 타이머·상태가 섞이지 않게) — src/enemies/bosses/<id>.ts 의 default export */
 export type BossFactory = () => BossDef;
+
+// ════════════════════════════════════════════════════════════════
+// 11. 꾸미기 상점  (data/shop.json · src/ui/wardrobe.ts — Codex C3, 사고 입는 규칙은 src/game/shop.ts)
+// ════════════════════════════════════════════════════════════════
+
+/** 꾸밀 수 있는 부위 — AvatarCustomization 의 칸과 하나씩 맞는다 */
+export const WARDROBE_SLOTS = ['helmet', 'tunic', 'cape', 'shield'] as const;
+export type WardrobeSlot = (typeof WARDROBE_SLOTS)[number];
+
+/** data/shop.json 의 한 항목 */
+export interface ShopItem {
+  /** 부위-이름, 예: 'helmet-laurel', 'tunic-sky', 'cape-none' */
+  id: string;
+  slot: WardrobeSlot;
+  /**
+   * helmet: HelmetId / tunic·shield: '#rrggbb' / cape: '#rrggbb' 또는 null(망토 없음)
+   * DEFAULT_AVATAR 와 같은 값의 항목은 가격 0 (처음부터 가진 것)
+   */
+  value: string | null;
+  /** 이름 (10자 이내), 예: '월계관' */
+  name: string;
+  /** 목록에 크게 보일 이모지 1개 */
+  emoji: string;
+  /** 올리브잎 값 (0 = 처음부터 가진 것) */
+  price: number;
+}
+
+/** 꾸미기 화면 — src/ui/wardrobe.ts 의 openWardrobe 가 받는 것 */
+export interface WardrobeOptions {
+  items: ShopItem[];
+  coins: number;
+  /** 산 물건 id (가격 0 인 것은 여기 없어도 가진 것) */
+  owned: string[];
+  avatar: AvatarCustomization;
+  /** 사기 — 엔진이 올리브잎을 빼고 owned 에 더한 뒤 남은 올리브잎을 돌려준다. 못 사면 null */
+  onBuy(item: ShopItem): number | null;
+  /** 입기 — 바뀐 모습. 3D 미리보기(타이틀 화면의 오디세우스)는 엔진이 다시 그린다 */
+  onWear(avatar: AvatarCustomization): void;
+  sfx?(id: 'coin' | 'ui_click' | 'wrong' | 'level_up'): void;
+}
+
+/** 화면을 닫으면(다 입었어요) 끝나는 Promise */
+export type OpenWardrobe = (root: HTMLElement, opts: WardrobeOptions) => Promise<void>;

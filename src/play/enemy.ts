@@ -7,7 +7,7 @@ import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import type { AudioApi, ModelId } from '../types/contracts';
 import { getModel } from '../core/models';
 import type { IslandWorld } from '../world/island';
-import { HumanoidRig } from './rig';
+import { createRig, type CreatureRig, type HumanoidRig } from './rig';
 import { makeBody, stepBody, type Body } from './body';
 import type { Effects } from './effects';
 import { label } from './effects';
@@ -36,7 +36,7 @@ export class Enemy implements Hittable {
   alive = true;
   hp: number;
   private model: Group;
-  private rig: HumanoidRig;
+  private rig: HumanoidRig | CreatureRig;
   private state: State = 'idle';
   private timer = 0;
   private heading = Math.random() * Math.PI * 2;
@@ -58,7 +58,7 @@ export class Enemy implements Hittable {
       });
     }
     this.root.add(this.model);
-    this.rig = new HumanoidRig(this.model);
+    this.rig = createRig(this.model);
     this.body = makeBody(home.x, home.y, home.z, this.radius);
     this.wander.copy(home);
     this.alert = label('❗', 'alert-mark');

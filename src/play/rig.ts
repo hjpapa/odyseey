@@ -93,3 +93,54 @@ export class HumanoidRig {
     return { bodyYaw };
   }
 }
+
+/**
+ * 동물 리그 — 네 발(leg0 앞왼·leg1 앞오·leg2 뒤왼·leg3 뒤오)은 대각선끼리 함께 걷고,
+ * 꼬리(tail)는 흔들고, 날개(wingL·wingR)는 파닥인다. 부위가 없으면 그 부분만 건너뛴다.
+ */
+export class CreatureRig {
+  private legs: Object3D[];
+  private wings: { part: Object3D; side: number }[];
+  private tail: Object3D | undefined;
+  private head: Object3D | undefined;
+  private phase = 0;
+  private time = 0;
+  private stride = 0;
+
+  constructor(model: Object3D) {
+    this.legs = [0, 1, 2, 3].map((i) => model.getObjectByName(`leg${i}`)).filter((o): o is Object3D => !!o);
+    this.wings = (['wingL', 'wingR'] as const)
+      .map((n, i) => ({ part: model.getObjectByName(n), side: i === 0 ? 1 : -1 }))
+      .filter((w): w is { part: Object3D; side: number } => !!w.part);
+    this.tail = model.getObjectByName('tail') ?? undefined;
+    this.head = model.getObjectByName('head') ?? undefined;
+  }
+
+  update(dt: number, pose: RigPose): { bodyYaw: number } {
+    this.time += dt;
+    const moving = pose.speed > 0.05;
+    this.phase += dt * (moving ? 9 + 7 * Math.min(1, pose.speed) : 0);
+    // 멈추면 다리가 툭 끊기지 않고 천천히 모인다
+    const target = moving ? 0.45 + 0.25 * Math.min(1, pose.speed) : 0;
+    this.stride += (target - this.stride) * Math.min(1, dt * 10);
+    const s = Math.sin(this.phase) * this.stride;
+    this.legs.forEach((leg, i) => {
+      leg.rotation.x = i === 0 || i === 3 ? s : -s;
+    });
+    if (this.tail) this.tail.rotation.y = Math.sin(this.time * (moving ? 12 : 5)) * (moving ? 0.45 : 0.25);
+    if (this.head) {
+      this.head.rotation.x = pose.tired
+        ? 0.4
+        : moving ? Math.abs(Math.sin(this.phase)) * 0.08 : Math.sin(this.time * 1.3) * 0.05;
+    }
+    const flap = !pose.grounded || moving ? 0.25 + Math.sin(this.time * 16) * 0.55 : Math.sin(this.time * 2) * 0.06;
+    for (const w of this.wings) w.part.rotation.z = w.side * flap;
+    return { bodyYaw: 0 };
+  }
+}
+
+/** 모델 부위를 보고 사람형·동물 리그 중 맞는 것을 고른다 */
+export function createRig(model: Object3D): HumanoidRig | CreatureRig {
+  const creature = !!model.getObjectByName('leg0') || (!!model.getObjectByName('wingL') && !model.getObjectByName('legL'));
+  return creature ? new CreatureRig(model) : new HumanoidRig(model);
+}

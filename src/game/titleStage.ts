@@ -12,7 +12,7 @@ import type { Stage } from './services';
 const CELL = 1.5;
 const SEA_FLOOR = -4;
 
-function buildIsland() {
+export function buildIsland() {
   type Cell = { x: number; z: number; h: number };
   const kinds = { sand: [] as Cell[], grass: [] as Cell[], rock: [] as Cell[] };
   const heights = new Map<string, number>();
@@ -51,7 +51,7 @@ function buildIsland() {
   return { group, heightAt: (x: number, z: number) => heights.get(`${Math.round(x / CELL)},${Math.round(z / CELL)}`) ?? 0 };
 }
 
-function buildClouds(): Group {
+export function buildClouds(): Group {
   const g = new Group();
   for (let c = 0; c < 9; c++) {
     const cloud = new Group();
@@ -102,12 +102,8 @@ export class TitleStage implements Stage {
     this.raft.position.set(18.5, 0, 2.5);
     this.scene.add(this.raft);
 
-    this.hero = getModel('odysseus', { avatar });
     this.heroY = island.heightAt(13.6, 2.2);
-    this.hero.position.set(13.6, this.heroY, 2.2);
-    this.hero.rotation.y = Math.PI / 2 + 0.35;
-    this.hero.getObjectByName('handR')?.add(makeProp('sword'));
-    this.scene.add(this.hero);
+    this.hero = this.buildHero(avatar);
     this.heroRig = new HumanoidRig(this.hero);
     this.heroHead = this.hero.getObjectByName('head');
 
@@ -116,6 +112,27 @@ export class TitleStage implements Stage {
     cal.rotation.y = Math.PI / 2 + 0.9;
     this.scene.add(cal);
     this.calRig = new HumanoidRig(cal);
+  }
+
+  private buildHero(avatar?: AvatarCustomization): Group {
+    const hero = getModel('odysseus', { avatar });
+    hero.position.set(13.6, this.heroY, 2.2);
+    hero.rotation.y = Math.PI / 2 + 0.35;
+    hero.getObjectByName('handR')?.add(makeProp('sword'));
+    // 꾸미기 미리보기에서 방패 색도 보이게 (플레이 중과 같은 자리)
+    const shield = makeProp('shield', { avatar });
+    shield.position.x = 0.12;
+    hero.getObjectByName('handL')?.add(shield);
+    this.scene.add(hero);
+    return hero;
+  }
+
+  /** 꾸미기에서 옷을 바꾸면 해변의 오디세우스를 새 모습으로 */
+  setAvatar(avatar: AvatarCustomization) {
+    this.hero.removeFromParent();
+    this.hero = this.buildHero(avatar);
+    this.heroRig = new HumanoidRig(this.hero);
+    this.heroHead = this.hero.getObjectByName('head');
   }
 
   update(dt: number, _input?: InputFrame) {

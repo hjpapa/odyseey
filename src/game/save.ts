@@ -35,8 +35,11 @@ export interface SaveData {
   opened: string[];
   /** 푼 부엉이 신전 '섬:id' */
   shrines: string[];
+  /** 꾸미기 상점에서 산 물건 id */
+  owned: string[];
   learning: LearningProgress;
-  settings: { master: number; sfx: number; bgm: number };
+  /** timeLimit: 한 번에 놀 시간(분) 알림, 0 이면 끔 */
+  settings: { master: number; sfx: number; bgm: number; timeLimit: number };
   playSeconds: number;
   createdAt: number;
   updatedAt: number;
@@ -61,8 +64,9 @@ export function newSave(grade: Grade): SaveData {
     completed: [],
     opened: [],
     shrines: [],
+    owned: [],
     learning: emptyProgress(),
-    settings: { master: 0.9, sfx: 0.8, bgm: 0.6 },
+    settings: { master: 0.9, sfx: 0.8, bgm: 0.6, timeLimit: 0 },
     playSeconds: 0,
     createdAt: now,
     updatedAt: now,
@@ -90,8 +94,13 @@ export function normalizeSave(raw: unknown): SaveData | null {
     completed: (r.completed ?? []).filter((c) => CHAPTER_IDS.includes(c)),
     opened: r.opened ?? [],
     shrines: r.shrines ?? [],
+    owned: Array.isArray(r.owned) ? r.owned.filter((x) => typeof x === 'string') : [],
     learning: { boxes: learning.boxes ?? {}, stats: progress.stats, review: learning.review ?? [] },
-    settings: { ...base.settings, ...(r.settings ?? {}) },
+    settings: {
+      ...base.settings,
+      ...(r.settings ?? {}),
+      timeLimit: [0, 20, 30, 40].includes(Number(r.settings?.timeLimit)) ? Number(r.settings?.timeLimit) : 0,
+    },
     coins: Math.max(0, Number(r.coins) || 0),
   };
 }

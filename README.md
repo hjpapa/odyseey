@@ -23,6 +23,8 @@ npm run build
 개발용 페이지: `/dev/model-gallery.html` (블록 모델), `/dev/audio-test.html` (효과음·배경음)
 
 개발용 지름길: `/?play=ch02&fast=1` — 타이틀을 건너뛰고 그 장을 바로 시작, 대사를 빨리 넘깁니다 (개발 서버에서만 동작).
+`/?map=1` 바다 지도, `/?ending=1` 엔딩(이야기책·크레딧·성적표)을 바로 엽니다.
+브라우저 창이 가려져 있으면 그림이 멈추므로, 콘솔에서 `game.debugStep(초)` 로 시간을 진행해 확인할 수 있습니다.
 
 캐릭터 검수: `/src/models/review.html` (개발 서버 전용, 회전·전후 비교·관절 확인).
 미술 방향과 검증 범위는 [캐릭터 작업 기록](src/models/ART_DIRECTION.md)을 참고하세요.
