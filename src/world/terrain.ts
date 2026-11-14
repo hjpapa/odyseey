@@ -10,7 +10,7 @@ import { toonMaterial } from '../core/placeholders';
 export const SEA_FLOOR = -4;
 const STEP = 0.5;
 
-const PALETTES: Record<TerrainPalette, { sand: string; grass: string; rock: string; alt: string; seabed: string }> = {
+export const PALETTES: Record<TerrainPalette, { sand: string; grass: string; rock: string; alt: string; seabed: string }> = {
   tropical: { sand: '#f2d49b', grass: '#6cc24a', rock: '#9aa3ad', alt: '#5cb23f', seabed: '#e6c98c' },
   grass: { sand: '#e8d5a3', grass: '#7cc45a', rock: '#a3a9b0', alt: '#6ab04c', seabed: '#d8c59a' },
   rock: { sand: '#d9c9a3', grass: '#8aa37b', rock: '#8e949c', alt: '#7a8087', seabed: '#b9ab8c' },

@@ -1,6 +1,10 @@
-/** 메뉴 화면들: 타이틀, 학년 고르기, 멈춤, 장 완료, 준비 중, 확인 */
+/** 메뉴 화면들: 타이틀, 학년 고르기, 멈춤·설정(+보호자 모드), 장 완료, 준비 중, 확인 */
 import type { Grade } from '../types/contracts';
+import type { ParentReport } from '../game/parentReport';
+import { formatPlayTime } from '../game/progress';
 import { h, sleep } from './dom';
+
+const TIME_LIMITS = [0, 20, 30, 40] as const;
 
 export class Screens {
   private fadeEl = h('div', { class: 'fade' });
@@ -22,9 +26,19 @@ export class Screens {
     this.flashEl.classList.add('go');
   }
 
-  title(opts: { continueLabel: string | null; build: string; onStart(): void; onContinue(): void; onSettings(): void }): () => void {
+  title(opts: {
+    continueLabel: string | null;
+    build: string;
+    onStart(): void;
+    onContinue(): void;
+    onSettings(): void;
+    onMap?: () => void;
+    onWardrobe?: () => void;
+  }): () => void {
     const start = h('button', { class: `btn ${opts.continueLabel ? 'gray' : ''}`, type: 'button', text: opts.continueLabel ? '🆕 처음부터' : '⛵ 모험 시작' });
     const cont = opts.continueLabel ? h('button', { class: 'btn', type: 'button', text: `⛵ 이어하기 · ${opts.continueLabel}` }) : null;
+    const map = opts.onMap ? h('button', { class: 'btn blue small', type: 'button', text: '🗺️ 지도', onclick: opts.onMap }) : null;
+    const wardrobe = opts.onWardrobe ? h('button', { class: 'btn gold small', type: 'button', text: '🎽 꾸미기', onclick: opts.onWardrobe }) : null;
     const settings = h('button', { class: 'btn gray small', type: 'button', text: '⚙️ 설정' });
     start.addEventListener('click', opts.onStart);
     cont?.addEventListener('click', opts.onContinue);
@@ -33,7 +47,7 @@ export class Screens {
       'div',
       { class: 'screen clear title-screen' },
       h('header', {}, h('p', { class: 'kicker', text: '아이가 쓴 17장의 이야기' }), h('h1', { text: '오디세이' }), h('p', { class: 'sub', text: '집으로 가는 길' })),
-      h('div', { class: 'menu' }, cont, h('div', { class: 'row' }, start, settings), h('footer', { class: 'build', text: opts.build })),
+      h('div', { class: 'menu' }, cont, h('div', { class: 'row' }, start, map, wardrobe, settings), h('footer', { class: 'build', text: opts.build })),
     );
     this.root.append(el);
     (cont ?? start).focus();
@@ -91,18 +105,24 @@ export class Screens {
     onGrade(g: Grade): void;
     extra?: { label: string; onClick(): void }[];
     resumeLabel?: string;
+    /** 보호자 모드 (어른 확인 문제를 풀어야 열린다) */
+    parent?: { report(): ParentReport; onTimeLimit(min: number): void };
   }): Promise<void> {
     return new Promise((resolve) => {
+      let view: 'main' | 'gate' | 'parent' = 'main';
       const close = () => {
         window.removeEventListener('keydown', onKey, true);
         el.remove();
         resolve();
       };
       const onKey = (e: KeyboardEvent) => {
-        if (e.code === 'Escape' || e.code === 'KeyP') {
+        const typing = (e.target as HTMLElement | null)?.tagName === 'INPUT' && (e.target as HTMLInputElement).type === 'text';
+        if (e.code === 'Escape' || (e.code === 'KeyP' && !typing)) {
           e.preventDefault();
           e.stopPropagation();
-          if (!e.repeat) close();
+          if (e.repeat) return;
+          if (view === 'main') close();
+          else showMain();
           return;
         }
         const target = e.target as HTMLElement | null;
@@ -130,33 +150,130 @@ export class Screens {
       }
       const resume = h('button', { class: 'btn', type: 'button', text: opts.resumeLabel ?? '계속하기 ▶', onclick: close });
       const extras = (opts.extra ?? []).map((x) => h('button', { class: 'btn gray small', type: 'button', text: x.label, onclick: () => { close(); x.onClick(); } }));
-      const el = h(
-        'div',
-        { class: 'screen dim' },
-        h(
-          'div',
-          { class: 'card' },
-          h('h2', { text: '⚙️ 설정' }),
-          gradeRow,
-          slider('🔊 전체 소리', 'master'),
-          slider('🎵 배경음', 'bgm'),
-          slider('💥 효과음', 'sfx'),
-          h('p', { style: { fontSize: '15px', color: '#667' }, text: '조작: WASD 이동 · Space 점프 · J/클릭 공격 · Shift 구르기 · E 말하기 · 오른쪽 드래그 카메라' }),
-          h('div', { class: 'row' }, ...extras, resume),
-        ),
-      );
+      const parentBtn = opts.parent ? h('button', { class: 'btn gray small', type: 'button', text: '👪 보호자', onclick: () => showGate() }) : null;
+      const mainView = [
+        h('h2', { text: '⚙️ 설정' }),
+        gradeRow,
+        slider('🔊 전체 소리', 'master'),
+        slider('🎵 배경음', 'bgm'),
+        slider('💥 효과음', 'sfx'),
+        h('p', { style: { fontSize: '15px', color: '#667' }, text: '조작: WASD 이동 · Space 점프 · J/클릭 공격 · Shift 구르기 · E 말하기 · 오른쪽 드래그 카메라' }),
+        h('div', { class: 'row' }, parentBtn, ...extras, resume),
+      ];
+      const card = h('div', { class: 'card' }, ...mainView);
+      const el = h('div', { class: 'screen dim' }, card);
+
+      function showMain() {
+        view = 'main';
+        card.classList.remove('parent');
+        card.replaceChildren(...mainView.filter((x): x is HTMLElement => !!x));
+        (parentBtn ?? resume).focus();
+      }
+
+      // 어른 확인: 두 자리 × 한 자리 곱셈 (1~3학년은 아직 어려운 문제)
+      function showGate() {
+        view = 'gate';
+        const a = 12 + Math.floor(Math.random() * 8);
+        const b = 3 + Math.floor(Math.random() * 7);
+        const input = h('input', { type: 'text', inputmode: 'numeric', autocomplete: 'off', 'aria-label': '답', class: 'gate-input' }) as HTMLInputElement;
+        const msg = h('p', { class: 'gate-msg', 'aria-live': 'polite' });
+        const check = () => {
+          if (Number(input.value.trim()) === a * b) showParent();
+          else {
+            msg.textContent = '다시 확인해 주세요.';
+            input.value = '';
+            input.focus();
+          }
+        };
+        input.addEventListener('keydown', (e) => {
+          if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+            e.preventDefault();
+            check();
+          }
+        });
+        card.replaceChildren(
+          h('h2', { text: '👪 보호자 확인' }),
+          h('p', { text: '어른이 풀어 주세요.' }),
+          h('p', { class: 'gate-q', text: `${a} × ${b} = ?` }),
+          input,
+          msg,
+          h('div', { class: 'row' },
+            h('button', { class: 'btn gray small', type: 'button', text: '취소', onclick: () => showMain() }),
+            h('button', { class: 'btn small', type: 'button', text: '확인', onclick: check })),
+        );
+        input.focus();
+      }
+
+      function showParent() {
+        if (!opts.parent) return;
+        view = 'parent';
+        const r = opts.parent.report();
+        card.classList.add('parent');
+        const scoreRows = r.subjects.map((s) => {
+          const pct = s.total ? Math.round((s.firstTry / s.total) * 100) : 0;
+          return h('div', { class: 'report-row' },
+            h('span', { text: s.label }),
+            h('span', { class: 'report-bar' }, h('i', { style: { width: `${pct}%` } })),
+            h('b', { text: s.total ? `${s.firstTry}/${s.total} (${pct}%)` : '아직 없음' }));
+        });
+        const seg = h('div', { class: 'seg' });
+        const renderSeg = (cur: number) => {
+          seg.replaceChildren(...TIME_LIMITS.map((m) => h('button', {
+            class: `btn gray small${m === cur ? ' on' : ''}`,
+            type: 'button',
+            text: m ? `${m}분` : '끄기',
+            onclick: () => { opts.parent?.onTimeLimit(m); renderSeg(m); },
+          })));
+        };
+        renderSeg(r.timeLimit);
+        const back = h('button', { class: 'btn small', type: 'button', text: '닫기', onclick: () => showMain() });
+        card.replaceChildren(
+          h('h2', { text: '👪 보호자 모드' }),
+          h('p', { text: `${r.grade}학년 · 이야기 ${r.completed}/${r.totalChapters}장 · 🫒 ${r.coins}` }),
+          h('p', { text: `⏱️ 모두 ${formatPlayTime(r.playSeconds)} · 이번에 ${formatPlayTime(r.sessionSeconds)}` }),
+          h('h3', { text: '과목별로 한 번에 맞힌 비율' }),
+          ...scoreRows,
+          h('h3', { text: '최근에 틀린 문제' }),
+          r.missed.length
+            ? h('ul', { class: 'missed' }, ...r.missed.map((m) => h('li', { text: m })))
+            : h('p', { text: '아직 틀린 문제가 없어요. 👏' }),
+          h('h3', { text: '⏰ 한 번에 놀 시간 알림' }),
+          h('p', { class: 'note', text: '시간이 되면 알려 주고, 장을 마칠 때 쉬자고 권해요.' }),
+          seg,
+          h('div', { class: 'row' }, back),
+        );
+        back.focus();
+      }
+
       this.root.append(el);
       resume.focus();
     });
   }
 
-  chapterComplete(opts: { no: number; title: string; coins: number; correct: number; total: number; hasNext: boolean }): Promise<'next' | 'title'> {
+  chapterComplete(opts: {
+    no: number;
+    title: string;
+    coins: number;
+    correct: number;
+    total: number;
+    hasNext: boolean;
+    /** 다음 버튼 글자 (예: 마지막 장의 '🎬 엔딩 보기') */
+    nextLabel?: string;
+    /** 보호자가 정한 놀이 시간이 다 됐으면 쉬자고 권한다 */
+    rest?: boolean;
+  }): Promise<'next' | 'map' | 'title'> {
     return new Promise((resolve) => {
-      const done = (v: 'next' | 'title') => {
+      const done = (v: 'next' | 'map' | 'title') => {
         el.remove();
         resolve(v);
       };
-      const next = h('button', { class: 'btn', type: 'button', text: opts.hasNext ? '다음 장으로 ▶' : '확인', onclick: () => done('next') });
+      const next = h('button', {
+        class: `btn${opts.rest ? ' gray' : ''}`,
+        type: 'button',
+        text: opts.nextLabel ?? (opts.hasNext ? '다음 장으로 ▶' : '확인'),
+        onclick: () => done('next'),
+      });
+      const rest = opts.rest ? h('button', { class: 'btn gold', type: 'button', text: '🏠 오늘은 여기까지', onclick: () => done('title') }) : null;
       const el = h(
         'div',
         { class: 'screen dim' },
@@ -173,11 +290,12 @@ export class Screens {
                   : `🦉 문제 ${opts.total}개를 끝까지 풀었어요! 다음엔 한 번에 맞혀 봐요!`,
               })
             : null,
-          h('div', { class: 'row' }, h('button', { class: 'btn gray', type: 'button', text: '처음 화면', onclick: () => done('title') }), next),
+          opts.rest ? h('p', { class: 'rest-note', text: '⏰ 약속한 놀이 시간이 다 됐어요. 오늘은 여기까지 할까요?' }) : null,
+          h('div', { class: 'row' }, h('button', { class: 'btn gray small', type: 'button', text: '🗺️ 지도', onclick: () => done('map') }), next, rest),
         ),
       );
       this.root.append(el);
-      next.focus();
+      (rest ?? next).focus();
     });
   }
 

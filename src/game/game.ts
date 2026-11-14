@@ -1,22 +1,36 @@
 /**
- * 게임 전체 흐름 — 타이틀 → (학년 고르기) → 장 시작 카드 → 장 플레이 → 장 완료 → 다음 장.
+ * 게임 전체 흐름 — 타이틀 → (학년 고르기) → 장 시작 카드 → 장 플레이 → 장 완료 → 다음 장 … → 엔딩.
+ * 바다 지도에서는 끝낸 장을 언제든 다시 할 수 있다.
  * 렌더 루프 하나에서 지금 장면(Stage)을 그린다.
  */
 import { PCFSoftShadowMap, SRGBColorSpace, WebGLRenderer } from 'three';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import { CHAPTER_IDS, type ChapterData, type ChapterId, type Grade, type IslandLayout } from '../types/contracts';
+import { CHAPTER_IDS, type BgmId, type ChapterData, type ChapterId, type Grade, type IslandLayout } from '../types/contracts';
+import type { InputFrame } from '../core/input';
 import { createAudio } from '../audio';
 import { Input } from '../core/input';
-import { chapters, islands } from '../content';
+import { chapters, islands, shopItems } from '../content';
 import { LearningEngine } from '../learning/engine';
+import { CHILD_STORY } from '../story/childStory';
+import { CHAPTER_EMOJI, CREDITS } from '../story/credits';
 import { DialogueUI } from '../ui/dialogue';
+import { creditsRoll, reportCard, storybook } from '../ui/ending';
 import { Hud } from '../ui/hud';
+import { openHub, type HubIslandView } from '../ui/hub';
 import { QuizUI } from '../ui/quiz';
 import { Screens } from '../ui/screens';
 import { TouchControls } from '../ui/touch';
+import { openWardrobe, WARDROBE_READY } from '../ui/wardrobe';
 import { createSaveStore, emptyProgress } from './save';
+import { buy } from './shop';
 import type { ChapterResult, ChapterStage } from './chapterStage';
+import { EndingStage } from './endingStage';
+import { HubStage, type HubIsland } from './hubStage';
 import { IslandStage } from './islandStage';
+import { parentReport } from './parentReport';
+import {
+  advanceFrontier, chapterState, islandFinds, islandRoute, islandState, subjectScores, totalFinds,
+} from './progress';
 import { SeaStage } from './seaStage';
 import { TitleStage } from './titleStage';
 import type { Services, Stage } from './services';
@@ -33,7 +47,12 @@ export class Game {
   private last = performance.now();
   private closeTitle: (() => void) | null = null;
   private tempProgress = emptyProgress();
-  private currentBgm: Parameters<Services['audio']['playBgm']>[0] = 'title';
+  private currentBgm: BgmId = 'title';
+  /** 이번에 켠 뒤로 장을 논 시간(초) — 보호자 놀이 시간 알림용 */
+  private sessionPlay = 0;
+  private restNotified = false;
+  /** 느린 기기면 한 번 화질(픽셀 비율)을 낮춘다 */
+  private perf = { warm: 0, time: 0, frames: 0, low: 0, lowered: false };
 
   constructor(canvas: HTMLCanvasElement, private uiRoot: HTMLElement, labelsRoot: HTMLElement) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
@@ -108,20 +127,67 @@ export class Game {
   // ─── 루프 ─────────────────────────────────────────────────
 
   private loop = (now: number) => {
-    const dt = Math.min(0.05, Math.max(0, (now - this.last) / 1000));
+    const raw = Math.max(0, (now - this.last) / 1000);
+    const dt = Math.min(0.05, raw);
     this.last = now;
-    const input = this.svc.input.frame();
-    if (input.pause && this.chapterStage && !this.paused) void this.openPause();
-    if (this.stage && !this.paused && !this.stageComplete) {
-      this.stage.update(dt, input);
-      if (this.chapterStage && this.svc.save.data) this.svc.save.data.playSeconds += dt;
-    }
+    this.step(dt, this.svc.input.frame());
+    this.watchPerformance(raw);
     if (this.stage) {
       this.renderer.render(this.stage.scene, this.stage.camera);
       this.labels.render(this.stage.scene, this.stage.camera);
     }
     requestAnimationFrame(this.loop);
   };
+
+  /** 한 프레임 진행 — 실제 루프와 개발용 debugStep 이 같이 쓴다 */
+  private step(dt: number, input: InputFrame) {
+    if (input.pause && this.chapterStage && !this.paused) void this.openPause();
+    if (!this.stage || this.paused || this.stageComplete) return;
+    this.stage.update(dt, input);
+    if (this.chapterStage) this.countPlay(dt);
+  }
+
+  private countPlay(dt: number) {
+    const data = this.svc.save.data;
+    if (data) data.playSeconds += dt;
+    this.sessionPlay += dt;
+    const limit = data?.settings.timeLimit ?? 0;
+    if (limit > 0 && !this.restNotified && this.sessionPlay >= limit * 60) {
+      this.restNotified = true;
+      this.svc.audio.sfx('hint');
+      this.svc.ui.hud.toast(`⏰ ${limit}분 동안 모험했어요! 이 장을 마치면 쉬어요`, 6000);
+    }
+  }
+
+  private restDue(): boolean {
+    const limit = this.svc.save.data?.settings.timeLimit ?? 0;
+    return limit > 0 && this.sessionPlay >= limit * 60;
+  }
+
+  /**
+   * 장을 하는 동안 4초씩 재서 두 번 잇달아 초당 40프레임이 안 되면 픽셀 비율을 1로 (한 번만).
+   * 장 시작 3초는 그림 준비(셰이더)로 잠깐 느릴 수 있어 재지 않는다.
+   */
+  private watchPerformance(raw: number) {
+    const p = this.perf;
+    if (p.lowered || !this.chapterStage || this.paused || raw <= 0 || raw > 0.25) return;
+    if (p.warm < 3) {
+      p.warm += raw;
+      return;
+    }
+    p.time += raw;
+    p.frames++;
+    if (p.time < 4) return;
+    const fps = p.frames / p.time;
+    p.time = 0;
+    p.frames = 0;
+    p.low = fps < 40 ? p.low + 1 : 0;
+    if (p.low >= 2 && this.renderer.getPixelRatio() > 1) {
+      p.lowered = true;
+      this.renderer.setPixelRatio(1);
+      this.resize();
+    }
+  }
 
   private resize() {
     const w = window.innerWidth;
@@ -135,10 +201,11 @@ export class Game {
     this.stage?.dispose();
     this.stage = s;
     this.stageComplete = false;
+    Object.assign(this.perf, { warm: 0, time: 0, frames: 0, low: 0 });
     this.resize();
   }
 
-  private playBgm(id: typeof this.currentBgm) {
+  private playBgm(id: BgmId) {
     this.currentBgm = id;
     this.svc.audio.playBgm(id, { fadeMs: 800 });
   }
@@ -171,15 +238,46 @@ export class Game {
     this.playBgm('title');
     const data = this.svc.save.data;
     const no = data ? CHAPTER_IDS.indexOf(data.chapter) + 1 : 0;
-    const label = data ? (data.completed.length === CHAPTER_IDS.length ? '다시 모험' : `${no}장부터`) : null;
+    const allDone = !!data && data.completed.length === CHAPTER_IDS.length;
+    const label = data ? (allDone ? '지도에서 골라요' : `${no}장부터`) : null;
     this.closeTitle?.();
     this.closeTitle = this.svc.ui.screens.title({
       continueLabel: label,
-      build: `P1 · ${__BUILD_SHA__}`,
+      build: `v1 · ${__BUILD_SHA__}`,
       onStart: () => void this.newGame(),
       onContinue: () => void this.continueGame(),
       onSettings: () => void this.openSettings(),
+      onMap: data && !allDone ? () => void this.showMap() : undefined,
+      onWardrobe: data && WARDROBE_READY ? () => void this.openWardrobe() : undefined,
     });
+  }
+
+  /** 꾸미기 — 올리브잎으로 사고, 입으면 타이틀의 오디세우스가 바로 바뀐다 */
+  private async openWardrobe() {
+    const data = this.svc.save.data;
+    if (!data) return;
+    const title = this.stage instanceof TitleStage ? this.stage : null;
+    await openWardrobe(this.svc.ui.root, {
+      items: shopItems,
+      coins: data.coins,
+      owned: [...data.owned],
+      avatar: { ...data.avatar },
+      onBuy: (item) => {
+        const r = buy(item, data.coins, data.owned);
+        if (!r.ok) return null;
+        data.coins = r.coins;
+        data.owned = r.owned;
+        this.svc.save.touch();
+        return data.coins;
+      },
+      onWear: (avatar) => {
+        data.avatar = { ...avatar };
+        this.svc.save.touch();
+        title?.setAvatar(data.avatar);
+      },
+      sfx: (id) => this.svc.audio.sfx(id),
+    });
+    this.svc.save.flush();
   }
 
   private async newGame() {
@@ -197,6 +295,10 @@ export class Game {
   private async continueGame() {
     const data = this.svc.save.data;
     if (!data) return;
+    if (data.completed.length === CHAPTER_IDS.length) {
+      await this.showMap();
+      return;
+    }
     this.closeTitle?.();
     this.closeTitle = null;
     await this.playFrom(data.chapter);
@@ -225,7 +327,8 @@ export class Game {
       const data = this.svc.save.data;
       if (data) {
         if (!data.completed.includes(id)) data.completed.push(id);
-        data.chapter = next ?? id;
+        // 지도에서 앞 장을 다시 해도 '다음에 할 장'은 뒤로 가지 않는다
+        data.chapter = advanceFrontier(data.chapter, id);
       }
       this.svc.addCoins(ch.reward.coins);
       this.svc.save.flush();
@@ -239,14 +342,126 @@ export class Game {
         correct: stage.firstTry,
         total: stage.asked,
         hasNext: !!next,
+        nextLabel: next ? undefined : '🎬 엔딩 보기',
+        rest: this.restDue(),
       });
       if (choice === 'title') {
         this.showTitle();
         return;
       }
+      if (choice === 'map') {
+        await this.showMap(id);
+        return;
+      }
+      if (!next) {
+        await this.finale();
+        return;
+      }
       id = next;
     }
     this.showTitle();
+  }
+
+  // ─── 바다 지도 ────────────────────────────────────────────
+
+  private async showMap(focus?: ChapterId) {
+    const data = this.svc.save.data;
+    if (!data) {
+      this.showTitle();
+      return;
+    }
+    this.chapterStage = null;
+    this.paused = false;
+    this.clearOverlays();
+    this.closeTitle?.();
+    this.closeTitle = null;
+
+    const route = islandRoute(chapters);
+    const hubIslands: HubIsland[] = [];
+    const views: HubIslandView[] = [];
+    for (const islandId of route) {
+      const layout = islands[islandId];
+      if (!layout) continue;
+      const chs = CHAPTER_IDS.map((c) => chapters[c]).filter((c): c is ChapterData => !!c && c.island === islandId);
+      const states = chs.map((c) => chapterState(data, c.id));
+      const state = islandState(states);
+      const memory = chs.some((c) => c.memory);
+      hubIslands.push({ layout, chapters: chs, state, memory });
+      views.push({
+        id: islandId,
+        name: layout.name,
+        memory,
+        state,
+        chapters: chs.map((c, i) => ({ id: c.id, no: c.no, title: c.title, childText: c.titleCard.childText, state: states[i] })),
+        finds: islandFinds(data, layout),
+      });
+    }
+    const start = chapters[focus ?? data.chapter]?.island ?? route[0];
+    const hub = new HubStage(hubIslands, start);
+    this.setStage(hub);
+    let memoryMusic = views.find((v) => v.id === start)?.memory ?? false;
+    this.playBgm(memoryMusic ? 'memorySea' : 'sailing');
+    const choice = await openHub(this.svc.ui.root, {
+      islands: views,
+      start,
+      done: data.completed.length,
+      total: CHAPTER_IDS.length,
+      endingUnlocked: data.completed.includes('ch17'),
+      onSelect: (id) => {
+        hub.select(id);
+        const memory = views.find((v) => v.id === id)?.memory ?? false;
+        if (memory !== memoryMusic) {
+          memoryMusic = memory;
+          this.playBgm(memory ? 'memorySea' : 'sailing');
+        }
+      },
+      pick: (x, y) => hub.pick(x, y),
+      canvas: this.renderer.domElement,
+      sfx: (sfxId) => this.svc.audio.sfx(sfxId, { volume: 0.5 }),
+    });
+    if (choice.type === 'play') await this.playFrom(choice.id);
+    else if (choice.type === 'ending') await this.finale();
+    else this.showTitle();
+  }
+
+  // ─── 엔딩 ─────────────────────────────────────────────────
+
+  /** 엔딩(이야기책·크레딧) → 성적표 → 지도나 처음 화면 */
+  private async finale() {
+    await this.playEnding();
+    const data = this.svc.save.data;
+    const choice = data
+      ? await reportCard(this.svc.ui.root, {
+          playSeconds: data.playSeconds,
+          coins: data.coins,
+          chapters: data.completed.length,
+          totalChapters: CHAPTER_IDS.length,
+          subjects: subjectScores(data),
+          finds: totalFinds(data, Object.values(islands).filter((l): l is IslandLayout => !!l)),
+        })
+      : 'title';
+    if (choice === 'map') await this.showMap('ch17');
+    else this.showTitle();
+  }
+
+  private async playEnding() {
+    const { ui, audio } = this.svc;
+    this.chapterStage = null;
+    this.paused = false;
+    this.clearOverlays();
+    await ui.screens.fade(true, 500);
+    this.setStage(new EndingStage(this.svc.save.data?.avatar));
+    this.playBgm('ending');
+    await ui.screens.fade(false, 700);
+    const fast = ui.dialogue.fast;
+    const pages = CHAPTER_IDS.map((id, i) => ({
+      no: i + 1,
+      title: chapters[id]?.title ?? '',
+      text: CHILD_STORY[id],
+      emoji: CHAPTER_EMOJI[id],
+    }));
+    await storybook(ui.root, pages, { pageMs: fast ? 300 : 4800, onPage: () => audio.sfx('ui_click', { volume: 0.35 }) });
+    await creditsRoll(ui.root, CREDITS, { ms: fast ? 1200 : 28000 });
   }
 
   private async playChapter(ch: ChapterData, isl: IslandLayout): Promise<ChapterStage> {
@@ -276,6 +491,7 @@ export class Game {
       onVolume: (ch, v) => this.setVolume(ch, v),
       onGrade: (g) => this.setGrade(g),
       extra: [{ label: '🏠 처음 화면으로', onClick: () => stage.quit() }],
+      parent: this.parentOption(),
     });
     this.paused = false;
   }
@@ -287,7 +503,22 @@ export class Game {
       onVolume: (ch, v) => this.setVolume(ch, v),
       onGrade: (g) => this.setGrade(g),
       resumeLabel: '닫기',
+      parent: this.parentOption(),
     });
+  }
+
+  /** 보호자 모드 — 저장 기록이 있을 때만 */
+  private parentOption() {
+    const data = this.svc.save.data;
+    if (!data) return undefined;
+    return {
+      report: () => parentReport(data, this.sessionPlay),
+      onTimeLimit: (min: number) => {
+        data.settings.timeLimit = min;
+        this.restNotified = false;
+        this.svc.save.touch();
+      },
+    };
   }
 
   private setVolume(ch: 'master' | 'sfx' | 'bgm', v: number) {
@@ -323,9 +554,7 @@ export class Game {
   async debugStep(seconds: number, dt = 1 / 30) {
     const frames = Math.max(1, Math.round(seconds / dt));
     for (let i = 0; i < frames; i++) {
-      const input = this.svc.input.frame();
-      if (input.pause && this.chapterStage && !this.paused) void this.openPause();
-      if (this.stage && !this.paused && !this.stageComplete) this.stage.update(dt, input);
+      this.step(dt, this.svc.input.frame());
       await new Promise((r) => setTimeout(r, 0));
     }
     if (this.stage) {
@@ -339,5 +568,14 @@ export class Game {
     this.closeTitle?.();
     this.closeTitle = null;
     await this.playFrom(id);
+  }
+
+  /** 개발용: 바다 지도(?map=1) · 엔딩(?ending=1) 바로 보기 */
+  async debugShow(what: 'map' | 'ending') {
+    if (!this.svc.save.data) this.svc.save.create(2);
+    this.closeTitle?.();
+    this.closeTitle = null;
+    if (what === 'map') await this.showMap();
+    else await this.finale();
   }
 }

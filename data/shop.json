@@ -1,0 +1,6 @@
+[
+  { "id": "helmet-bronze", "slot": "helmet", "value": "bronze", "name": "청동 투구", "emoji": "🪖", "price": 0 },
+  { "id": "tunic-blue", "slot": "tunic", "value": "#3b6fd8", "name": "파란 옷", "emoji": "👕", "price": 0 },
+  { "id": "cape-red", "slot": "cape", "value": "#c0392b", "name": "빨간 망토", "emoji": "🧣", "price": 0 },
+  { "id": "shield-gold", "slot": "shield", "value": "#d4a017", "name": "금빛 방패", "emoji": "🛡️", "price": 0 }
+]

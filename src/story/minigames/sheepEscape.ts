@@ -2,6 +2,7 @@ import { BoxGeometry, Group, Mesh, MeshToonMaterial, Vector3 } from 'three';
 import { getModel } from '../../core/models';
 import type { IslandStage } from '../../game/islandStage';
 import { h, linked } from '../../ui/dom';
+import { CreatureRig } from '../../play/rig';
 
 /** 양들 곁에서 초록불에 걷고, 거인이 돌아보면 멈추는 작은 동굴 놀이. */
 export async function sheepEscape(stage: IslandStage, at: Vector3): Promise<void> {
@@ -51,6 +52,7 @@ export async function sheepEscape(stage: IslandStage, at: Vector3): Promise<void
       tableau.add(model);
       return model;
     });
+    const sheepRigs = sheep.map((model) => new CreatureRig(model));
     const hero = getModel('odysseus');
     hero.scale.setScalar(0.34);
     tableau.add(hero);
@@ -207,9 +209,11 @@ export async function sheepEscape(stage: IslandStage, at: Vector3): Promise<void
         const colors = { green: '#58cd82', yellow: '#ffd15a', red: '#f07470' };
         (lamp.material as MeshToonMaterial).color.set(colors[phase]);
         giant.rotation.y += ((phase === 'red' ? Math.PI : 0) - giant.rotation.y) * Math.min(1, dt * 5);
+        const walking = running && phase === 'green' && (held || tapTime > 0);
         sheep.forEach((model, index) => {
           model.position.z = -4.7 + distance + (index === 1 ? 0 : 0.2);
-          model.position.y = 0.05 + (running && phase === 'green' && (held || tapTime > 0) ? Math.abs(Math.sin(now * 0.006 + index)) * 0.07 : 0);
+          model.position.y = 0.05 + (walking ? Math.abs(Math.sin(now * 0.006 + index)) * 0.07 : 0);
+          sheepRigs[index].update(dt, { speed: walking ? 0.7 : 0, grounded: true, swing: null, combo: 0 });
         });
         hero.position.set((1 - lane) * 1.6, 0.03, -5.1 + distance);
         progress.textContent = `동굴 출구까지 ${Math.round(distance / 9.4 * 100)}%`;

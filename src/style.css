@@ -689,3 +689,142 @@ body {
   text-align: center;
   z-index: 10;
 }
+
+/* ─── P3: 바다 지도 ───────────────────────────── */
+.hub-ui {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: max(10px, env(safe-area-inset-top)) var(--gutter) max(12px, env(safe-area-inset-bottom));
+  pointer-events: none;
+}
+.hub-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  pointer-events: auto;
+  align-self: flex-start;
+  padding: 8px 12px;
+  border-radius: 16px;
+  background: rgba(255, 253, 246, 0.92);
+  box-shadow: 0 4px 0 rgba(29, 79, 145, 0.25);
+  font-family: var(--font-title);
+  font-size: 20px;
+  color: var(--sea);
+}
+.hub-count { font-size: 16px; color: var(--ink); }
+.hub-panel {
+  align-self: center;
+  width: min(560px, 100%);
+  max-height: 46vh;
+  overflow: auto;
+  padding: 12px 14px 14px;
+  border-radius: 22px;
+  background: var(--paper);
+  box-shadow: 0 8px 0 rgba(29, 79, 145, 0.3), 0 14px 30px rgba(0, 0, 0, 0.22);
+  pointer-events: auto;
+}
+.hub-nav { display: flex; align-items: center; gap: 8px; }
+.hub-name { flex: 1; margin: 0; text-align: center; font-family: var(--font-title); font-weight: 400; font-size: clamp(20px, 5vw, 27px); color: var(--sea); }
+.hub-arrow { min-width: 48px; min-height: 44px; padding: 6px 10px; }
+.hub-chapters { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.hub-ch {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 10px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: #f1f6fd;
+}
+.hub-ch.next { background: #fff4cc; box-shadow: inset 0 0 0 2px var(--gold); }
+.hub-ch.locked { background: #eef0f3; color: #6b7480; }
+.hub-ch-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 18px; }
+.hub-ch-head, .hub-child { grid-column: 1; }
+.hub-ch .btn { grid-column: 2; grid-row: 1 / span 2; min-height: 44px; white-space: nowrap; }
+.hub-chip { font-size: 14px; padding: 1px 8px; border-radius: 999px; background: #fff; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12); }
+.hub-child { margin: 0; font-family: var(--font-hand); font-size: 19px; line-height: 1.3; color: #3b3f4a; }
+.hub-child.locked { font-family: var(--font-body); font-size: 15px; color: #7a828d; }
+.hub-finds { margin-top: 8px; text-align: center; font-size: 16px; color: #4b5563; }
+.hub-panel > .btn { display: block; margin: 10px auto 0; }
+.nametag.hub-tag { font-size: 14px; opacity: 0.92; }
+.nametag.hub-tag.locked { background: rgba(225, 229, 235, 0.85); color: #6b7480; }
+.nametag.hub-tag.next { background: #fff2b8; }
+.nametag.hub-tag.selected { background: var(--gold); color: #4a3300; font-size: 17px; opacity: 1; box-shadow: 0 3px 0 var(--gold-d); }
+
+/* ─── P3: 엔딩 이야기책·크레딧·성적표 ─────────── */
+.book { justify-content: flex-end; gap: 12px; }
+.book .row { display: flex; gap: 10px; pointer-events: auto; }
+.book-head {
+  align-self: center;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(255, 253, 246, 0.9);
+  font-family: var(--font-title);
+  font-size: 18px;
+  color: var(--sea);
+}
+.book-page {
+  position: relative;
+  width: min(620px, 100%);
+  padding: 16px 20px 22px;
+  border-radius: 20px;
+  background: #fff8e6;
+  box-shadow: 0 8px 0 #d9b77a, 0 16px 34px rgba(0, 0, 0, 0.28);
+  text-align: center;
+  pointer-events: auto;
+  cursor: pointer;
+  overflow: hidden;
+}
+.book-page.turn { animation: pageTurn 0.45s ease; }
+.book-emoji { font-size: clamp(44px, 11vw, 64px); line-height: 1.1; }
+.book-no { font-family: var(--font-title); font-size: 18px; color: #9a6a1c; }
+.book-text { margin: 8px 0 0; font-family: var(--font-hand); font-size: clamp(22px, 5.6vw, 32px); line-height: 1.35; color: #3a2a12; }
+.book-bar { position: absolute; left: 0; bottom: 0; height: 6px; width: 0; background: var(--gold); transition: width 0.1s linear; }
+.credits { justify-content: flex-start; overflow: hidden; background: linear-gradient(rgba(10, 20, 45, 0.15), rgba(10, 20, 45, 0.55)); }
+.credits-roll {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  align-items: center;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.55);
+  animation: creditsUp linear forwards;
+  padding-top: 100vh;
+}
+.credit-role { font-size: 17px; opacity: 0.85; }
+.credit-text { font-family: var(--font-title); font-size: clamp(22px, 5.4vw, 30px); max-width: min(620px, 92vw); }
+.credit.big .credit-text { font-size: clamp(28px, 7vw, 42px); color: #ffe48a; }
+.credits-skip { position: absolute; right: var(--gutter); bottom: max(16px, env(safe-area-inset-bottom)); }
+.card.report p { margin: 4px 0; }
+.report-sub { margin-top: 10px !important; font-family: var(--font-title); color: var(--sea); }
+.report-row { display: grid; grid-template-columns: 4.6em 1fr auto; align-items: center; gap: 10px; margin: 6px 0; font-size: 18px; text-align: left; }
+.report-bar { height: 12px; border-radius: 999px; background: #e5eaf2; overflow: hidden; }
+.report-bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--green), var(--gold)); }
+.rest-note { padding: 8px 12px; border-radius: 12px; background: #fff3cd; color: #6b4e00; }
+
+/* ─── P3: 보호자 모드 ──────────────────────────── */
+.card.parent { text-align: left; max-height: 92vh; }
+.card.parent h2 { text-align: center; }
+.card.parent h3 { margin: 14px 0 4px; font-family: var(--font-title); font-weight: 400; font-size: 20px; color: var(--sea); }
+.card.parent .note { font-size: 15px; color: #667; }
+.card.parent .row { justify-content: center; }
+.missed { margin: 4px 0; padding-left: 1.2em; font-size: 17px; line-height: 1.5; }
+.gate-q { font-family: var(--font-title); font-size: 34px !important; color: var(--sea); }
+.gate-input {
+  width: 8em;
+  padding: 10px 12px;
+  border: 3px solid var(--gray-d);
+  border-radius: 14px;
+  font-size: 26px;
+  text-align: center;
+}
+.gate-input:focus { outline: none; border-color: var(--blue); }
+.gate-msg { min-height: 1.4em; color: var(--red-d); }
+
+@keyframes pageTurn { from { transform: perspective(900px) rotateY(-14deg) translateX(18px); opacity: 0.2; } to { transform: none; opacity: 1; } }
+@keyframes creditsUp { from { transform: translateY(0); } to { transform: translateY(-100%); } }
