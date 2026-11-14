@@ -113,6 +113,8 @@ export class Input {
   }
 
   private onKeyDown = (e: KeyboardEvent) => {
+    // 퀴즈 철자 타일처럼 화면(UI)이 이미 쓴 키는 게임 조작으로 받지 않는다
+    if (e.defaultPrevented) return;
     if (e.repeat && !e.code.startsWith('Key') && !e.code.startsWith('Arrow')) return;
     const target = e.target as HTMLElement | null;
     if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
@@ -124,7 +126,9 @@ export class Input {
       case 'KeyJ': this.press('attack'); break;
       case 'ShiftLeft': case 'ShiftRight': case 'KeyK': this.press('roll'); break;
       case 'KeyE': case 'KeyF': this.press('interact'); break;
-      case 'Escape': case 'KeyP': this.press('pause'); break;
+      case 'Escape': this.press('pause'); break;
+      // P 는 게임 조작 중에만 멈춤 키 (퀴즈에서 'pig' 를 칠 때 멈춤 창이 열리지 않게). Esc 는 언제나
+      case 'KeyP': if (this.enabled) this.press('pause'); break;
       case 'ArrowLeft': case 'KeyA': this.press('left'); break;
       case 'ArrowRight': case 'KeyD': this.press('right'); break;
     }

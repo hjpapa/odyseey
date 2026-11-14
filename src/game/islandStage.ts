@@ -369,9 +369,11 @@ export class IslandStage extends ChapterStage {
   }
 
   async playMinigame(id: MinigameId, at: Vector3) {
+    if (this.signal.aborted) return;
     const fn = ISLAND_MINIGAMES[id];
     if (fn) await fn(this, at);
     else await this.playSteps([{ type: 'line', speaker: 'athenaOwl', text: '이 놀이는 아직 준비 중이야. 다음으로 가자!' }]);
+    if (this.signal.aborted) return;
     this.runner.emit({ type: 'minigame', id });
   }
 

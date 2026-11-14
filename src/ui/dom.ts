@@ -48,7 +48,9 @@ export function waitAdvance(target: HTMLElement, opts: { minMs?: number; autoMs?
     const cleanup = () => {
       target.removeEventListener('pointerup', onPointer);
       window.removeEventListener('keydown', onKey, true);
-      if (auto) clearTimeout(auto);
+      opts.signal?.removeEventListener('abort', cleanup);
+      if (auto !== null) clearTimeout(auto);
+      auto = null;
     };
     opts.signal?.addEventListener('abort', cleanup, { once: true });
     const done = () => {
@@ -56,12 +58,14 @@ export function waitAdvance(target: HTMLElement, opts: { minMs?: number; autoMs?
       if (!opts.signal?.aborted) resolve();
     };
     const ready = () => performance.now() - start >= (opts.minMs ?? 0);
+    const paused = () => document.hidden || !!document.querySelector('.screen.dim');
     const onPointer = (e: PointerEvent) => {
+      if (paused()) return;
       e.preventDefault();
       if (ready()) done();
     };
     const onKey = (e: KeyboardEvent) => {
-      if (['Space', 'Enter', 'KeyE', 'KeyJ', 'NumpadEnter'].includes(e.code)) {
+      if (!paused() && ['Space', 'Enter', 'KeyE', 'KeyJ', 'NumpadEnter'].includes(e.code)) {
         e.preventDefault();
         e.stopPropagation();
         if (ready()) done();
@@ -69,6 +73,14 @@ export function waitAdvance(target: HTMLElement, opts: { minMs?: number; autoMs?
     };
     target.addEventListener('pointerup', onPointer);
     window.addEventListener('keydown', onKey, true);
-    if (opts.autoMs) auto = setTimeout(done, opts.autoMs);
+    if (opts.autoMs) {
+      const advanceWhenReady = () => {
+        auto = null;
+        if (opts.signal?.aborted) return;
+        if (paused()) auto = setTimeout(advanceWhenReady, 200);
+        else done();
+      };
+      auto = setTimeout(advanceWhenReady, opts.autoMs);
+    }
   });
 }

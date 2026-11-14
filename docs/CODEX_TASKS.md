@@ -10,11 +10,11 @@
 | A4 블록 모델 | ✅ 완료 (PR #1·#2) | `src/models/` | Astra High | `npm run test:accept -- tests/models` |
 | B1 챕터 데이터 (3~17장) | ✅ 완료 (PR #1) | `data/chapters/` | Medium | `npm run test:accept -- tests/chapters` |
 | B2 섬 레이아웃 (12곳) | ✅ 완료 (PR #4) | `data/islands/` | Medium | `npm run test:accept -- tests/islands` |
-| **C1 보스 패턴 7종** | **▶ 지금** | `src/enemies/bosses/` | High (논리·밸런스) | `npm run test:accept -- tests/bosses` |
-| **C2 미니게임 8종** | **▶ C1 다음** | `src/story/minigames/` | High (조작감·화면) | `npm run test:accept -- tests/minigames` |
+| C1 보스 패턴 7종 | ✅ 완료 (PR #6) | `src/enemies/bosses/` | High (논리·밸런스) | `npm run test:accept -- tests/bosses` |
+| C2 미니게임 8종 | ✅ 완료 (PR #6) | `src/story/minigames/` | High (조작감·화면) | `npm run test:accept -- tests/minigames` |
 
-> **P2 엔진 완료 (2026-11-12)**: 보스전·버티기·바다 항해가 들어가 1~17장 모두 끝까지 진행됩니다.
-> 아직 전용 패턴이 없는 보스 7종은 '기본 보스 패턴'으로, 미니게임 8종은 '준비 중' 안내로 넘어갑니다 — C1·C2 가 이것을 채웁니다.
+> **C1·C2 완료 (2026-11-14, PR #6)**: 땅 위 보스 8종이 모두 전용 패턴을 쓰고, 미니게임 9종(1장 뗏목 포함)이 모두 실제 놀이로 바뀌었습니다.
+> 수용 테스트 50개 전부 통과 — 이 표의 Codex 작업은 모두 끝났습니다. 다음은 P3 마무리.
 
 > **P1 완료 (2026-11-07)**: 1·2장은 Claude 가 만들어 두었습니다 — `data/chapters/ch01.json`, `ch02.json`,
 > `data/islands/ogygia.json`, `stormSea.json`. Codex 는 이 네 파일을 **수정하지 말고 형식·말투의 견본**으로 쓰세요.

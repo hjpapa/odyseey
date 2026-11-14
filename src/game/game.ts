@@ -28,6 +28,8 @@ export class Game {
   private stage: Stage | null = null;
   private chapterStage: ChapterStage | null = null;
   private paused = false;
+  /** 완료 화면에서는 마지막 장면을 그리기만 하고 전투·이동은 멈춘다. */
+  private stageComplete = false;
   private last = performance.now();
   private closeTitle: (() => void) | null = null;
   private tempProgress = emptyProgress();
@@ -110,7 +112,7 @@ export class Game {
     this.last = now;
     const input = this.svc.input.frame();
     if (input.pause && this.chapterStage && !this.paused) void this.openPause();
-    if (this.stage && !this.paused) {
+    if (this.stage && !this.paused && !this.stageComplete) {
       this.stage.update(dt, input);
       if (this.chapterStage && this.svc.save.data) this.svc.save.data.playSeconds += dt;
     }
@@ -132,6 +134,7 @@ export class Game {
   private setStage(s: Stage | null) {
     this.stage?.dispose();
     this.stage = s;
+    this.stageComplete = false;
     this.resize();
   }
 
@@ -217,6 +220,7 @@ export class Game {
         this.showTitle();
         return;
       }
+      this.stageComplete = true;
       const next: ChapterId | null = CHAPTER_IDS[CHAPTER_IDS.indexOf(id) + 1] ?? null;
       const data = this.svc.save.data;
       if (data) {
@@ -320,7 +324,8 @@ export class Game {
     const frames = Math.max(1, Math.round(seconds / dt));
     for (let i = 0; i < frames; i++) {
       const input = this.svc.input.frame();
-      if (this.stage && !this.paused) this.stage.update(dt, input);
+      if (input.pause && this.chapterStage && !this.paused) void this.openPause();
+      if (this.stage && !this.paused && !this.stageComplete) this.stage.update(dt, input);
       await new Promise((r) => setTimeout(r, 0));
     }
     if (this.stage) {

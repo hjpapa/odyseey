@@ -3,11 +3,27 @@ import type { Vector3 } from 'three';
 import type { MinigameId } from '../../types/contracts';
 import type { IslandStage } from '../../game/islandStage';
 import { raftBuild } from './raftBuild';
+import { sheepEscape } from './sheepEscape';
+import { windSail } from './windSail';
+import { rhythmShield } from './rhythmShield';
+import { ballGame } from './ballGame';
+import { hideWeapons } from './hideWeapons';
+import { bowString } from './bowString';
+import { axeArchery } from './axeArchery';
+import { feast } from './feast';
 
 export type IslandMinigame = (stage: IslandStage, at: Vector3) => Promise<void>;
 
 export const ISLAND_MINIGAMES: Partial<Record<MinigameId, IslandMinigame>> = {
   raftBuild,
+  sheepEscape,
+  windSail,
+  rhythmShield,
+  ballGame,
+  hideWeapons,
+  bowString,
+  axeArchery,
+  feast,
 };
 
 export const MINIGAME_LABEL: Record<MinigameId, string> = {

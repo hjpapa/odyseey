@@ -6,9 +6,23 @@
 import type { BossFactory, BossId } from '../../types/contracts';
 import { genericBoss, type GenericOptions } from './generic';
 import polyphemus from './polyphemus';
+import lotusKing from './lotusKing';
+import laestrygonianKing from './laestrygonianKing';
+import circe from './circe';
+import helios from './helios';
+import sirenQueen from './sirenQueen';
+import soldierCaptain from './soldierCaptain';
+import antinous from './antinous';
 
 export const BOSSES: Partial<Record<BossId, BossFactory>> = {
   polyphemus,
+  lotusKing,
+  laestrygonianKing,
+  circe,
+  helios,
+  sirenQueen,
+  soldierCaptain,
+  antinous,
 };
 
 /** 전용 패턴이 없는 보스의 임시 설정 */
