@@ -20,10 +20,8 @@ export const openWardrobe: OpenWardrobe = (root, opts) => new Promise<void>((res
   const life = new AbortController();
   const prefix = 'wardrobe-' + ++instance;
   const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-  const canvas = document.getElementById('scene');
-  const previewWasOpen = canvas?.classList.contains('wardrobe-preview') ?? false;
-  canvas?.classList.add('wardrobe-preview');
-  const titles = [...root.querySelectorAll<HTMLElement>('.title-screen')].map((el) => ({
+  // 3D 미리보기(카드 위 오디세우스 근접 촬영)는 엔진의 타이틀 카메라가 맡는다 — TitleStage.setCloseUp
+  const titles =[...root.querySelectorAll<HTMLElement>('.title-screen')].map((el) => ({
     el, visibility: el.style.visibility, inert: el.inert, hidden: el.getAttribute('aria-hidden'),
   }));
   for (const { el } of titles) {
@@ -175,7 +173,6 @@ export const openWardrobe: OpenWardrobe = (root, opts) => new Promise<void>((res
     closed = true;
     life.abort();
     screen.remove();
-    if (!previewWasOpen) canvas?.classList.remove('wardrobe-preview');
     for (const saved of titles) {
       saved.el.style.visibility = saved.visibility;
       saved.el.inert = saved.inert;

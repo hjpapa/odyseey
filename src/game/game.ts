@@ -257,7 +257,8 @@ export class Game {
     const data = this.svc.save.data;
     if (!data) return;
     const title = this.stage instanceof TitleStage ? this.stage : null;
-    await openWardrobe(this.svc.ui.root, {
+    const root = this.svc.ui.root;
+    const shown = openWardrobe(root, {
       items: shopItems,
       coins: data.coins,
       owned: [...data.owned],
@@ -277,6 +278,16 @@ export class Game {
       },
       sfx: (id) => this.svc.audio.sfx(id),
     });
+    // 미리보기: 꾸미기 카드 위쪽 빈 곳에 오디세우스를 크게 (카드 높이는 화면 크기마다 다르니 매 프레임 잰다)
+    title?.setCloseUp(() => {
+      const card = root.querySelector('.wardrobe-card');
+      return card ? card.getBoundingClientRect().top / Math.max(1, window.innerHeight) : 1;
+    });
+    try {
+      await shown;
+    } finally {
+      title?.setCloseUp(null);
+    }
     this.svc.save.flush();
   }
 

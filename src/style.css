@@ -830,7 +830,6 @@ body {
 @keyframes creditsUp { from { transform: translateY(0); } to { transform: translateY(-100%); } }
 
 /* C3 꾸미기 */
-#scene.wardrobe-preview { transform: translate(-18vw, -72vh) scale(3); }
 .wardrobe-screen {
   position: absolute;
   inset: 0;
@@ -929,7 +928,6 @@ body {
   .wardrobe-heading h2 { font-size: 22px; }
   .wardrobe-balance { font-size: 18px; padding: 6px 9px; }
   .wardrobe-tabs { gap: 5px; }
-  #scene.wardrobe-preview { transform: translate(0, -58vh) scale(3); }
   .wardrobe-tab { font-size: 16px; gap: 2px; padding: 8px 3px; white-space: nowrap; }
   .wardrobe-tab span { font-size: 14px; }
   .wardrobe-items { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -942,7 +940,6 @@ body {
   .wardrobe-choices .btn { font-size: 18px; }
 }
 @media (max-height: 500px) and (min-width: 521px) {
-  #scene.wardrobe-preview { transform: translate(-12vw, -68vh) scale(1.8); }
   .wardrobe-card { max-height: 76vh; max-height: 76svh; gap: 6px; padding: 10px 14px; }
   .wardrobe-item { min-height: 90px; padding: 6px 4px; gap: 3px; }
   .wardrobe-help { display: none; }
