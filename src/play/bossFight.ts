@@ -6,6 +6,7 @@ import { Group, Vector3, type Scene } from 'three';
 import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import type { BossContext, BossDef, BossFactory, ModelId, SfxId } from '../types/contracts';
 import { getModel } from '../core/models';
+import { compactModel } from '../world/merge';
 import { HumanoidRig } from './rig';
 import { label } from './effects';
 import type { Hazards } from './hazards';
@@ -66,7 +67,7 @@ export class BossFight implements Hittable {
   constructor(factory: BossFactory, readonly arena: BossArena, private host: BossHost) {
     this.def = factory();
     this.hp = this.def.maxHp;
-    this.model = getModel(this.def.model);
+    this.model = compactModel(getModel(this.def.model));
     this.root.add(this.model);
     this.rig = new HumanoidRig(this.model);
     this.height = (this.model.userData.height as number) || 3;

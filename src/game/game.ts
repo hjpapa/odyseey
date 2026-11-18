@@ -3,12 +3,13 @@
  * 바다 지도에서는 끝낸 장을 언제든 다시 할 수 있다.
  * 렌더 루프 하나에서 지금 장면(Stage)을 그린다.
  */
-import { PCFSoftShadowMap, SRGBColorSpace, WebGLRenderer } from 'three';
+import { DirectionalLight, Mesh, type MeshStandardMaterial, PCFSoftShadowMap, SRGBColorSpace, WebGLRenderer } from 'three';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { CHAPTER_IDS, type BgmId, type ChapterData, type ChapterId, type Grade, type IslandLayout } from '../types/contracts';
 import type { InputFrame } from '../core/input';
 import { createAudio } from '../audio';
 import { Input } from '../core/input';
+import { lowerQuality, qualityLevel, qualityTier } from '../core/quality';
 import { chapters, islands, shopItems } from '../content';
 import { LearningEngine } from '../learning/engine';
 import { CHILD_STORY } from '../story/childStory';
@@ -20,6 +21,8 @@ import { openHub, type HubIslandView } from '../ui/hub';
 import { QuizUI } from '../ui/quiz';
 import { Screens } from '../ui/screens';
 import { TouchControls } from '../ui/touch';
+import { waterMaterial } from '../world/environment';
+import { disposeScene } from '../world/merge';
 import { openWardrobe, WARDROBE_READY } from '../ui/wardrobe';
 import { createSaveStore, emptyProgress } from './save';
 import { buy } from './shop';
@@ -52,13 +55,15 @@ export class Game {
   /** 이번에 켠 뒤로 장을 논 시간(초) — 보호자 놀이 시간 알림용 */
   private sessionPlay = 0;
   private restNotified = false;
-  /** 느린 기기면 한 번 화질(픽셀 비율)을 낮춘다 */
-  private perf = { warm: 0, time: 0, frames: 0, low: 0, lowered: false };
+  /** 실제로 느리면 화질을 한 단계씩 낮춘다 */
+  private perf = { warm: 0, time: 0, frames: 0, low: 0 };
+  private frameNo = 0;
 
   constructor(canvas: HTMLCanvasElement, private uiRoot: HTMLElement, labelsRoot: HTMLElement) {
     applyPrefs();
-    this.renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // 가장 낮은 화질에서는 계단 현상 제거(안티앨리어싱)도 끈다
+    this.renderer = new WebGLRenderer({ canvas, antialias: qualityLevel() > 0, powerPreference: 'high-performance' });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, qualityTier().ratio));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
     this.renderer.outputColorSpace = SRGBColorSpace;
@@ -135,6 +140,7 @@ export class Game {
     this.step(dt, this.svc.input.frame());
     this.watchPerformance(raw);
     if (this.stage) {
+      this.prepareShadows();
       this.renderer.render(this.stage.scene, this.stage.camera);
       this.labels.render(this.stage.scene, this.stage.camera);
     }
@@ -166,13 +172,42 @@ export class Game {
     return limit > 0 && this.sessionPlay >= limit * 60;
   }
 
+  /** 화질에 따라 그림자를 몇 프레임에 한 번만 다시 그린다 */
+  private prepareShadows() {
+    const every = qualityTier().shadowEvery;
+    this.renderer.shadowMap.autoUpdate = every === 1;
+    if (every > 1 && this.frameNo++ % every === 0) this.renderer.shadowMap.needsUpdate = true;
+  }
+
+  /** 지금 화질 단계를 렌더러와 지금 장면에 적용한다 */
+  private applyQuality() {
+    const t = qualityTier();
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, t.ratio));
+    this.renderer.shadowMap.needsUpdate = true;
+    this.stage?.scene.traverse((o) => {
+      if (o instanceof DirectionalLight) {
+        o.castShadow = t.shadowMap > 0;
+        if (t.shadowMap > 0 && o.shadow.mapSize.x !== t.shadowMap) {
+          o.shadow.mapSize.set(t.shadowMap, t.shadowMap);
+          o.shadow.map?.dispose();
+          o.shadow.map = null;
+        }
+      } else if (o instanceof Mesh && o.userData.water && t.simpleWater && (o.material as MeshStandardMaterial).isMeshStandardMaterial) {
+        const old = o.material as MeshStandardMaterial;
+        o.material = waterMaterial(old.color, true);
+        old.dispose();
+      }
+    });
+    this.resize();
+  }
+
   /**
-   * 장을 하는 동안 4초씩 재서 두 번 잇달아 초당 40프레임이 안 되면 픽셀 비율을 1로 (한 번만).
+   * 장을 하는 동안 4초씩 재서 두 번 잇달아 초당 40프레임이 안 되면 화질을 한 단계 낮춘다.
    * 장 시작 3초는 그림 준비(셰이더)로 잠깐 느릴 수 있어 재지 않는다.
    */
   private watchPerformance(raw: number) {
     const p = this.perf;
-    if (p.lowered || !this.chapterStage || this.paused || raw <= 0 || raw > 0.25) return;
+    if (qualityLevel() === 0 || !this.chapterStage || this.paused || raw <= 0 || raw > 0.25) return;
     if (p.warm < 3) {
       p.warm += raw;
       return;
@@ -184,10 +219,10 @@ export class Game {
     p.time = 0;
     p.frames = 0;
     p.low = fps < 40 ? p.low + 1 : 0;
-    if (p.low >= 2 && this.renderer.getPixelRatio() > 1) {
-      p.lowered = true;
-      this.renderer.setPixelRatio(1);
-      this.resize();
+    if (p.low >= 2 && lowerQuality()) {
+      p.low = 0;
+      p.warm = 0;
+      this.applyQuality();
     }
   }
 
@@ -200,7 +235,10 @@ export class Game {
   }
 
   private setStage(s: Stage | null) {
-    this.stage?.dispose();
+    if (this.stage) {
+      this.stage.dispose();
+      disposeScene(this.stage.scene);
+    }
     this.stage = s;
     this.stageComplete = false;
     Object.assign(this.perf, { warm: 0, time: 0, frames: 0, low: 0 });
@@ -571,6 +609,7 @@ export class Game {
       await new Promise((r) => setTimeout(r, 0));
     }
     if (this.stage) {
+      this.prepareShadows();
       this.renderer.render(this.stage.scene, this.stage.camera);
       this.labels.render(this.stage.scene, this.stage.camera);
     }

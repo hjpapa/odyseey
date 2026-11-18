@@ -3,12 +3,15 @@
  * - 이웃 칸 높이 차이를 0.5m 이하로 다듬어서 어디든 걸어서 오를 수 있다 (아이용)
  * - 중요한 자리(시작점·문·NPC…)는 평평하게
  */
-import { BoxGeometry, Color, Group, InstancedMesh, Matrix4, Mesh, PlaneGeometry, Quaternion, Vector3 } from 'three';
+import { BufferGeometry, Color, Float32BufferAttribute, Group, Mesh, PlaneGeometry } from 'three';
 import type { IslandLayout, TerrainPalette, XZ } from '../types/contracts';
 import { toonMaterial } from '../core/placeholders';
+import { BAKED_MATERIAL } from './merge';
 
 export const SEA_FLOOR = -4;
 const STEP = 0.5;
+/** 지형 한 구역의 칸 수 */
+const CHUNK_CELLS = 18;
 
 export const PALETTES: Record<TerrainPalette, { sand: string; grass: string; rock: string; alt: string; seabed: string }> = {
   tropical: { sand: '#f2d49b', grass: '#6cc24a', rock: '#9aa3ad', alt: '#5cb23f', seabed: '#e6c98c' },
@@ -144,10 +147,28 @@ export function buildTerrain(layout: IslandLayout, flatten: { pos: XZ; r: number
     if (!changed) break;
   }
 
-  // 기둥 쌓기 (재질별 InstancedMesh)
+  // 기둥 쌓기 — 보이는 면(윗면과 이웃보다 높은 옆면)만 만들고, 구역별 메시로 나눈다.
+  // 이렇게 하면 삼각형이 크게 줄고, 화면·그림자 범위 밖 구역은 그리지 않는다.
   const pal = PALETTES[T.palette] ?? PALETTES.tropical;
-  const kinds: Record<'sand' | 'grass' | 'rock' | 'alt', { x: number; z: number; h: number }[]> = { sand: [], grass: [], rock: [], alt: [] };
+  const colors = { sand: new Color(pal.sand), grass: new Color(pal.grass), rock: new Color(pal.rock), alt: new Color(pal.alt) };
   const rockLine = 1.5 + T.maxHeight * 0.72;
+  const heightOf = (ix: number, iz: number) => {
+    if (Math.abs(ix) > n || Math.abs(iz) > n) return SEA_FLOOR;
+    const v = H[idx(ix, iz)];
+    return v >= 0 ? v : SEA_FLOOR;
+  };
+  type Chunk = { pos: number[]; nor: number[]; col: number[]; idx: number[] };
+  const chunks = new Map<string, Chunk>();
+  const quad = (c: Chunk, pts: number[], nx: number, ny: number, nz: number, r: number, g: number, b: number) => {
+    const base = c.pos.length / 3;
+    c.pos.push(...pts);
+    for (let i = 0; i < 4; i++) {
+      c.nor.push(nx, ny, nz);
+      c.col.push(r, g, b);
+    }
+    c.idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
+  };
+  const half = cell / 2;
   for (let ix = -n; ix <= n; ix++) {
     for (let iz = -n; iz <= n; iz++) {
       const k = idx(ix, iz);
@@ -156,30 +177,39 @@ export function buildTerrain(layout: IslandLayout, flatten: { pos: XZ; r: number
       const x = ix * cell;
       const z = iz * cell;
       const kind = beach[k] ? 'sand' : h >= rockLine ? 'rock' : hash2(ix, iz, T.seed + 9) < 0.1 ? 'alt' : 'grass';
-      kinds[kind].push({ x, z, h });
+      const v = 0.9 + hash2(Math.round(x * 7), Math.round(z * 7), 3) * 0.12;
+      const r = colors[kind].r * v;
+      const g = colors[kind].g * v;
+      const b = colors[kind].b * v;
+      const key = `${Math.floor(ix / CHUNK_CELLS)},${Math.floor(iz / CHUNK_CELLS)}`;
+      let c = chunks.get(key);
+      if (!c) chunks.set(key, (c = { pos: [], nor: [], col: [], idx: [] }));
+      const x0 = x - half;
+      const x1 = x + half;
+      const z0 = z - half;
+      const z1 = z + half;
+      quad(c, [x0, h, z0, x0, h, z1, x1, h, z1, x1, h, z0], 0, 1, 0, r, g, b);
+      let low = heightOf(ix + 1, iz);
+      if (low < h) quad(c, [x1, h, z1, x1, low, z1, x1, low, z0, x1, h, z0], 1, 0, 0, r, g, b);
+      low = heightOf(ix - 1, iz);
+      if (low < h) quad(c, [x0, h, z0, x0, low, z0, x0, low, z1, x0, h, z1], -1, 0, 0, r, g, b);
+      low = heightOf(ix, iz + 1);
+      if (low < h) quad(c, [x0, h, z1, x0, low, z1, x1, low, z1, x1, h, z1], 0, 0, 1, r, g, b);
+      low = heightOf(ix, iz - 1);
+      if (low < h) quad(c, [x1, h, z0, x1, low, z0, x0, low, z0, x0, h, z0], 0, 0, -1, r, g, b);
     }
   }
   const group = new Group();
-  const geo = new BoxGeometry(1, 1, 1);
-  const m = new Matrix4();
-  const q = new Quaternion();
-  const tint = new Color();
-  const p = new Vector3();
-  const s = new Vector3();
-  for (const kind of ['sand', 'grass', 'rock', 'alt'] as const) {
-    const cells = kinds[kind];
-    if (cells.length === 0) continue;
-    const inst = new InstancedMesh(geo, toonMaterial(pal[kind]), cells.length);
-    cells.forEach((c, i) => {
-      p.set(c.x, (c.h + SEA_FLOOR) / 2, c.z);
-      s.set(cell, c.h - SEA_FLOOR, cell);
-      inst.setMatrixAt(i, m.compose(p, q, s));
-      const v = 0.9 + hash2(Math.round(c.x * 7), Math.round(c.z * 7), 3) * 0.12;
-      inst.setColorAt(i, tint.setRGB(v, v, v));
-    });
-    inst.castShadow = true;
-    inst.receiveShadow = true;
-    group.add(inst);
+  for (const c of chunks.values()) {
+    const geo = new BufferGeometry();
+    geo.setAttribute('position', new Float32BufferAttribute(c.pos, 3));
+    geo.setAttribute('normal', new Float32BufferAttribute(c.nor, 3));
+    geo.setAttribute('color', new Float32BufferAttribute(c.col, 3));
+    geo.setIndex(c.idx);
+    const mesh = new Mesh(geo, BAKED_MATERIAL);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    group.add(mesh);
   }
   const seabed = new Mesh(new PlaneGeometry(900, 900), toonMaterial(pal.seabed));
   seabed.rotation.x = -Math.PI / 2;

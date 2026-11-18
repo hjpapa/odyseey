@@ -6,6 +6,7 @@ import type { AudioApi, AvatarCustomization } from '../types/contracts';
 import type { InputFrame } from '../core/input';
 import { getModel } from '../core/models';
 import { makeProp } from '../world/props';
+import { compactModel } from '../world/merge';
 import type { IslandWorld } from '../world/island';
 import { HumanoidRig } from './rig';
 import { makeBody, stepBody, type Body } from './body';
@@ -64,6 +65,7 @@ export class Player {
     const shield = makeProp('shield', { avatar });
     shield.position.x = 0.12;
     this.model.getObjectByName('handL')?.add(shield);
+    compactModel(this.model);
     this.body = makeBody(0, 0, 0, 0.45);
   }
 

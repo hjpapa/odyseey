@@ -13,6 +13,7 @@ import type { InputFrame } from '../core/input';
 import { getModel } from '../core/models';
 import { IslandWorld, type Collider } from '../world/island';
 import { buildGate, gateColliders, glowRing } from '../world/gates';
+import { compactModel } from '../world/merge';
 import { makeProp } from '../world/props';
 import { FollowCamera } from '../play/camera';
 import { Effects } from '../play/effects';
@@ -287,7 +288,7 @@ export class IslandStage extends ChapterStage {
   private buildPickups() {
     for (const c of this.layout.collectibles) {
       const id = ITEM_MODEL[c.item] ?? (isProp(c.item) ? c.item : 'coin');
-      const obj = isProp(id) ? makeProp(id) : getModel(id);
+      const obj = compactModel(isProp(id) ? makeProp(id) : getModel(id));
       const y = this.world.ground(c.pos[0], c.pos[1]);
       obj.position.set(c.pos[0], y + 0.3, c.pos[1]);
       const ring = new Mesh(new CylinderGeometry(0.9, 0.9, 0.04, 20), new MeshBasicMaterial({ color: '#ffe066', transparent: true, opacity: 0.45, depthWrite: false }));

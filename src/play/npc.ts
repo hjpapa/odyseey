@@ -3,6 +3,7 @@ import { Group, type Vector3 } from 'three';
 import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import type { ModelId } from '../types/contracts';
 import { getModel } from '../core/models';
+import { compactModel } from '../world/merge';
 import { SPEAKERS } from '../story/speakers';
 import { createRig, type CreatureRig, type HumanoidRig } from './rig';
 import { label } from './effects';
@@ -17,7 +18,7 @@ export class Npc {
   waving = false;
 
   constructor(readonly id: string, modelId: ModelId, pos: Vector3, rotY: number) {
-    this.model = getModel(modelId);
+    this.model = compactModel(getModel(modelId));
     this.root.add(this.model);
     this.root.position.copy(pos);
     this.root.rotation.y = rotY;

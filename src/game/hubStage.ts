@@ -13,6 +13,7 @@ import type { ChapterData, IslandId, IslandLayout, PropId } from '../types/contr
 import type { InputFrame } from '../core/input';
 import { toonMaterial } from '../core/placeholders';
 import { createEnvironment, type Environment } from '../world/environment';
+import { compactModel } from '../world/merge';
 import { makeProp } from '../world/props';
 import { PALETTES } from '../world/terrain';
 import { label } from '../play/effects';
@@ -197,6 +198,7 @@ export class HubStage implements Stage {
       const locked = isl.state === 'locked';
       const mini = miniIsland(L, locked, this.owned);
       mini.group.position.copy(pos);
+      compactModel(mini.group);
       this.scene.add(mini.group);
       this.spots.set(L.id, { pos, radius: mini.radius, top: mini.top });
 

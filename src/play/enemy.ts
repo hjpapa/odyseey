@@ -6,6 +6,7 @@ import { Group, Mesh, MeshToonMaterial, Vector3 } from 'three';
 import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import type { AudioApi, ModelId } from '../types/contracts';
 import { getModel } from '../core/models';
+import { compactModel } from '../world/merge';
 import type { IslandWorld } from '../world/island';
 import { createRig, type CreatureRig, type HumanoidRig } from './rig';
 import { makeBody, stepBody, type Body } from './body';
@@ -48,7 +49,7 @@ export class Enemy implements Hittable {
 
   constructor(readonly group: string, readonly spec: EnemySpec, home: Vector3, private audio: AudioApi) {
     this.hp = spec.hp;
-    this.model = getModel(spec.model, { variant: spec.variant });
+    this.model = compactModel(getModel(spec.model, { variant: spec.variant }));
     if (spec.shadow) {
       this.model.traverse((o) => {
         if (o instanceof Mesh) {
