@@ -127,6 +127,8 @@ export class SeaStage extends ChapterStage {
   private gates: SeaGate[] = [];
   private boss: SeaBoss | null = null;
   private bossDone = false;
+  /** 뗏목이 부서져 다시 시작한 횟수 — 많을수록 바다가 순해진다 (아이가 끝까지 갈 수 있게) */
+  private fails = 0;
 
   constructor(chapter: ChapterData, layout: IslandLayout, svc: Services) {
     super(chapter, layout, svc);
@@ -221,7 +223,7 @@ export class SeaStage extends ChapterStage {
         this.vy = JUMP;
         this.svc.audio.sfx('jump');
       }
-      if (!this.halted) this.z += this.speed * dt;
+      if (!this.halted) this.z += this.speed * (1 - 0.1 * Math.min(3, this.fails)) * dt;
       if (this.mode === 'runner') this.spawnAhead();
       else {
         this.checkGates();
@@ -308,7 +310,7 @@ export class SeaStage extends ChapterStage {
       const at = this.nextSpawn;
       const nearCalm = this.checkpoints.some((c) => c > 0 && Math.abs(c - at) < 25);
       if (!nearCalm) this.spawnPattern(at);
-      this.nextSpawn += 18 + this.rng.next() * 12;
+      this.nextSpawn += (18 + this.rng.next() * 12) * (this.fails >= 2 ? 1.5 : 1);
     }
     while (this.nextLetterAt < horizon && this.nextLetterAt < this.length - 30) {
       this.spawnLetters(this.nextLetterAt);
@@ -321,7 +323,7 @@ export class SeaStage extends ChapterStage {
     const progress = z / this.length;
     if (r < 0.45) {
       // 바위 1~2개 (빈 줄은 꼭 남긴다)
-      const lanes = this.rng.shuffle([0, 1, 2]).slice(0, progress > 0.4 && this.rng.chance(0.5) ? 2 : 1);
+      const lanes = this.rng.shuffle([0, 1, 2]).slice(0, progress > 0.4 && this.fails < 2 && this.rng.chance(0.5) ? 2 : 1);
       for (const lane of lanes) {
         const rock = compactModel(makeProp('rock'));
         rock.scale.setScalar(1.4);
@@ -636,7 +638,8 @@ export class SeaStage extends ChapterStage {
 
   private hurt() {
     if (this.invuln > 0) return;
-    this.hp--;
+    // 세 번 넘게 다시 시작했다면 마지막 하트는 지켜 준다 — 언젠가는 꼭 지나갈 수 있게
+    this.hp = this.fails >= 3 ? Math.max(1, this.hp - 1) : this.hp - 1;
     this.invuln = 1.5;
     this.shake = 0.8;
     this.svc.audio.sfx('player_hurt');
@@ -655,6 +658,7 @@ export class SeaStage extends ChapterStage {
       this.svc.ui.hud.toast('🧣 이노의 스카프! 뗏목이 다시 튼튼해졌어요', 2600);
     } else {
       await this.svc.ui.screens.fade(true, 350);
+      this.fails++;
       this.z = this.lastCheckpoint;
       this.clearAhead();
       if (this.boss?.active) {
@@ -666,7 +670,7 @@ export class SeaStage extends ChapterStage {
       }
       this.halted = false;
       await this.svc.ui.screens.fade(false, 350);
-      this.svc.ui.hud.toast('🚩 체크포인트에서 다시! 할 수 있어요 💪', 2400);
+      this.svc.ui.hud.toast(this.fails >= 2 ? '🌊 바다가 조금 잔잔해졌어요. 천천히 가 봐요!' : '🚩 체크포인트에서 다시! 할 수 있어요 💪', 2400);
     }
     this.hp = MAX_HP;
     this.invuln = 2;

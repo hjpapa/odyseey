@@ -22,6 +22,8 @@ export interface BotOptions {
   until?: string;
   /** 새 게임 대신 '이어하기'로 시작 */
   resume?: boolean;
+  /** clumsy: 피하지 않고 타이밍도 엉망인 서툰 플레이 — 그래도 끝까지 갈 수 있는지 본다 */
+  skill?: 'good' | 'clumsy';
 }
 
 interface ChapterLog {
@@ -274,6 +276,7 @@ let wasRespawning = false;
 let lastHp = 5;
 let skipSide = new Set<string>();
 let attackAt = 0;
+let seaNext = 0;
 let question: Any = null;
 let questionTries = 0;
 let quizWrongPlanned = false;
@@ -289,6 +292,7 @@ function mulberry(a: number) {
   };
 }
 
+const clumsy = () => opts.skill === 'clumsy';
 const game = () => w.game as Any;
 const stage = () => game().debug.stage as Any;
 const step = (s: number) => game().debugStep(s);
@@ -425,7 +429,7 @@ async function playMini(p: HTMLElement) {
     mark('sheepEscape');
     const sig = p.children[1].textContent ?? '';
     const go = byText('button', /이동|출발/, p);
-    if (sig.includes('🟡') || sig.includes('🔴') || sig.includes('무사히')) holdUp();
+    if (!clumsy() && (sig.includes('🟡') || sig.includes('🔴') || sig.includes('무사히'))) holdUp();
     else if (go && !holdEl) holdDown(go);
     if (sig.includes('괜찮아요')) { holdUp(); if (go) holdDown(go); }
     await sleep(50);
@@ -434,7 +438,7 @@ async function playMini(p: HTMLElement) {
     const WIND = ['왼쪽 60°', '왼쪽 30°', '똑바로', '오른쪽 30°', '오른쪽 60°'];
     const want = WIND.findIndex((n) => p.children[1].textContent?.includes(n));
     const have = WIND.findIndex((n) => p.children[2].textContent?.includes(n));
-    const btn = want === have ? $('[aria-label="바람 받기"]', p) : $(want > have ? '[aria-label="오른쪽으로 돛 돌리기"]' : '[aria-label="왼쪽으로 돛 돌리기"]', p);
+    const btn = clumsy() && rand() < 0.4 ? $('[aria-label="바람 받기"]', p) : want === have ? $('[aria-label="바람 받기"]', p) : $(want > have ? '[aria-label="오른쪽으로 돛 돌리기"]' : '[aria-label="왼쪽으로 돛 돌리기"]', p);
     if (btn && !(btn as HTMLButtonElement).disabled) tap(btn);
     await sleep(120);
   } else if (dm === 'rhythmShield') {
@@ -446,7 +450,7 @@ async function playMini(p: HTMLElement) {
       const li = lanes.findIndex((b) => b.textContent?.includes('♪'));
       if (li >= 0 && lanes[li].getAttribute('aria-pressed') !== 'true') tap(lanes[li]);
       const icon = $$('span', p).find((s) => s.textContent === '♪');
-      if (icon && icon.style.visibility !== 'hidden' && parseFloat(icon.style.top) >= 70) tap(action);
+      if (icon && icon.style.visibility !== 'hidden' && (clumsy() ? rand() < 0.04 : parseFloat(icon.style.top) >= 70)) tap(action);
     }
     await sleep(30);
   } else if (dm === 'ballGame') {
@@ -456,7 +460,7 @@ async function playMini(p: HTMLElement) {
     else {
       const icon = $$('span', p).find((s) => s.textContent === '⚽');
       const left = parseFloat(icon?.style.left ?? '0');
-      if (left >= 76 && left < 87.5) tap(action);
+      if (clumsy() ? rand() < 0.04 : left >= 76 && left < 87.5) tap(action);
     }
     await sleep(30);
   } else if (dm === 'hideWeapons') {
@@ -473,7 +477,7 @@ async function playMini(p: HTMLElement) {
     const btn = $<HTMLButtonElement>('button.btn', p)!;
     const cursor = $('[role=progressbar] > div:nth-child(2)', p);
     const left = parseFloat(cursor?.style.left ?? '0');
-    if (!btn.disabled && Math.abs(left - 50) < 8) tap(btn);
+    if (!btn.disabled && (clumsy() ? rand() < 0.03 : Math.abs(left - 50) < 8)) tap(btn);
     await sleep(25);
   } else if (dm === 'feast') {
     mark(dm);
@@ -566,7 +570,7 @@ function beginChapter(st: Any) {
   cur = { id: st.chapter.id, gameSec: 0, realSec: 0, deaths: 0, hurt: 0, quizzes: 0, wrong: 0, coins: 0, chests: 0, shrines: 0, minis: [], notes: [], hits: [] };
   chapterStart = performance.now();
   nav = null; path = null; pathGoal = ''; lastObj = ''; skipSide = new Set(); wasRespawning = false; lastHp = 99;
-  attackAt = 0; replanAt = 0; lastPos = { x: 0, z: 0, t: 0 };
+  attackAt = 0; seaNext = 0; replanAt = 0; lastPos = { x: 0, z: 0, t: 0 };
   BOT.now = st.chapter.id;
 }
 
@@ -588,7 +592,12 @@ function finishChapter() {
 function pathTo(st: Any, gx: number, gz: number, stop: number): boolean {
   const p = st.player.pos;
   const active = st.world.colliders.filter((c: Any) => c.active).length;
-  if (!nav || nav.stamp !== active) { nav = new Nav(st); path = null; }
+  if (!nav || nav.stamp !== active) {
+    // 문이 열리면 전에 못 갔던 보물도 다시 시도한다
+    if (nav) skipSide.clear();
+    nav = new Nav(st);
+    path = null;
+  }
   const key = `${Math.round(gx)},${Math.round(gz)},${stop}`;
   if (!path || key !== pathGoal || st.time > replanAt) {
     path = nav.find(p.x, p.z, gx, gz, stop);
@@ -621,13 +630,14 @@ const attackBtn = () => $('.tbtn.big');
 
 function attack(st: Any) {
   if (st.time < attackAt) return;
-  attackAt = st.time + 0.22;
+  attackAt = st.time + (clumsy() ? 0.75 : 0.22);
   const b = attackBtn();
   if (b) press(b);
 }
 
 /** 예고 원 안이면 피한다. 피하는 중이면 true */
 function dodge(st: Any): boolean {
+  if (clumsy()) return false;
   const p = st.player.pos;
   let worst: Any = null;
   let left = 1e9;
@@ -713,7 +723,7 @@ async function islandTick(st: Any) {
     path = null;
   }
   const waited = st.time - objSince;
-  if (waited > (o.type === 'boss' ? 420 : 260)) {
+  if (waited > (o.type === 'boss' ? 900 : 600)) {
     BOT.error = `${st.chapter.id} 목표에서 막힘: ${objKey} (${Math.round(waited)}초)`;
     BOT.stop = true;
     return;
@@ -832,7 +842,19 @@ async function islandTick(st: Any) {
 async function seaTick(st: Any) {
   if (st.hp < lastHp && lastHp !== 99 && cur) cur.hurt += lastHp - st.hp;
   lastHp = st.hp;
+  if (st.time > 1500) {
+    BOT.error = `${st.chapter.id} 바다에서 25분 넘게 끝나지 않음 (z=${Math.round(st.z)}, 다시 시작 ${st.fails}번)`;
+    BOT.stop = true;
+    return;
+  }
+  if (cur) cur.notes = st.fails ? [`다시 시작 ${st.fails}번`] : cur.notes;
   if (!st.running || st.isBlocked || st.finishing) { await step(0.1); return; }
+  if (clumsy()) {
+    // 가끔만 반응한다
+    if (st.time < seaNext) { await step(1 / 15); return; }
+    seaNext = st.time + 0.5;
+    if (rand() < 0.5) { await step(1 / 15); return; }
+  }
   const lane = st.lane as number;
   const danger = (l: number) => {
     let score = 0;
@@ -873,7 +895,7 @@ async function seaTick(st: Any) {
 // ─── 시작 ────────────────────────────────────────────────
 
 export async function start(o: BotOptions = {}) {
-  opts = { grade: o.grade ?? 2, wrongRate: o.wrongRate ?? 0.15, collectAll: o.collectAll ?? true, until: o.until ?? '', resume: o.resume ?? false };
+  opts = { grade: o.grade ?? 2, wrongRate: o.wrongRate ?? 0.15, collectAll: o.collectAll ?? true, until: o.until ?? '', resume: o.resume ?? false, skill: o.skill ?? 'good' };
   rand = mulberry(20261118);
   Object.assign(BOT, { log: [], issues: [], phase: 'run', done: false, stop: false, error: null, now: 'title', startedAt: performance.now() });
   w.BOT = BOT;

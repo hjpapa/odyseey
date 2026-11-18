@@ -90,6 +90,8 @@ export class IslandStage extends ChapterStage {
   private bossCollider: Collider | null = null;
   private survive: { left: number; total: number; text: string; spawn: number; shown: number } | null = null;
   private shake = 0;
+  /** 이 장에서 쓰러진 횟수 */
+  private falls = 0;
 
   constructor(chapter: ChapterData, layout: IslandLayout, svc: Services) {
     super(chapter, layout, svc);
@@ -678,6 +680,10 @@ export class IslandStage extends ChapterStage {
     this.hazards.clear();
     await this.svc.ui.screens.fade(true, 350);
     this.player.place(this.checkpoint.x, this.checkpoint.y, this.checkpoint.z);
+    // 두 번 쓰러지면 아테나가 하트를 나눠 준다 (이 장이 끝날 때까지)
+    this.falls++;
+    const blessed = this.falls === 2;
+    if (blessed) this.player.maxHp += 2;
     this.player.heal();
     this.player.invuln = 2;
     this.svc.ui.hud.setHearts(this.player.hp, this.player.maxHp);
@@ -685,7 +691,7 @@ export class IslandStage extends ChapterStage {
     await this.svc.ui.screens.fade(false, 350);
     this.unblock();
     this.respawning = false;
-    this.svc.ui.hud.toast('다시 해 보자! 💪');
+    this.svc.ui.hud.toast(blessed ? '🦉 아테나가 하트 2개를 나눠 줬어요!' : '다시 해 보자! 💪');
   }
 
   override dispose() {
