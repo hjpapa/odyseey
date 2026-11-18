@@ -227,7 +227,7 @@ export class Game {
     p.time = 0;
     p.frames = 0;
     p.low = fps < 40 ? p.low + 1 : 0;
-    if (p.low >= 2 && lowerQuality()) {
+    if (p.low >= 2 && lowerQuality(fps < 25)) {
       p.low = 0;
       p.warm = 0;
       this.applyQuality();

@@ -57,10 +57,15 @@ let level = initialLevel(readStored(), hints());
 export const qualityLevel = () => level;
 export const qualityTier = (): QualityTier => TIERS[level];
 
-/** 한 단계 낮춘다. 더 낮출 수 없으면 false */
-export function lowerQuality(): boolean {
+/**
+ * 한 단계 낮춘다. 더 낮출 수 없으면 false.
+ * remember: 다음에도 이 단계로 시작 — 아주 느릴 때만 기억한다
+ * (절전 모드처럼 잠깐 초당 30프레임으로 묶인 기기를 영영 낮은 화질로 두지 않게)
+ */
+export function lowerQuality(remember: boolean): boolean {
   if (level <= 0) return false;
   level--;
+  if (!remember) return true;
   try {
     localStorage.setItem(KEY, String(level));
   } catch {
