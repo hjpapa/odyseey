@@ -12,11 +12,11 @@
 | B2 섬 레이아웃 (12곳) | ✅ 완료 (PR #4) | `data/islands/` | Medium | `npm run test:accept -- tests/islands` |
 | C1 보스 패턴 7종 | ✅ 완료 (PR #6) | `src/enemies/bosses/` | High (논리·밸런스) | `npm run test:accept -- tests/bosses` |
 | C2 미니게임 8종 | ✅ 완료 (PR #6) | `src/story/minigames/` | High (조작감·화면) | `npm run test:accept -- tests/minigames` |
-| **C3 꾸미기 상점** | **▶ 지금 (P3 병합 뒤)** | `data/shop.json`, `src/ui/wardrobe.ts` | High (화면·아이 눈높이) | `npm run test:accept -- tests/wardrobe` |
+| C3 꾸미기 상점 | ✅ 완료 (PR #8) | `data/shop.json`, `src/ui/wardrobe.ts` | High (화면·아이 눈높이) | `npm run test:accept -- tests/wardrobe` |
 
 > **C1·C2 완료 (2026-11-14, PR #6)**: 땅 위 보스 8종이 모두 전용 패턴을 쓰고, 미니게임 9종(1장 뗏목 포함)이 모두 실제 놀이로 바뀌었습니다.
 > **P3 (Claude, PR #7)**: 바다 지도·엔딩·보호자 모드가 들어왔고, 모은 올리브잎을 쓸 곳(C3 꾸미기 상점)의 계약·규칙·연결은 Claude 가 미리 만들어 두었습니다 —
-> Codex 는 물건 목록과 화면만 채우면 타이틀에 '🎽 꾸미기' 버튼이 나타납니다.
+> Codex 는 물건 목록과 화면을 채웠고(PR #8), 미리보기는 엔진의 타이틀 카메라가 오디세우스를 가까이 담습니다. 이 표의 Codex 작업은 모두 끝났습니다 — 다음은 P4 다듬기.
 
 > **P1 완료 (2026-11-07)**: 1·2장은 Claude 가 만들어 두었습니다 — `data/chapters/ch01.json`, `ch02.json`,
 > `data/islands/ogygia.json`, `stormSea.json`. Codex 는 이 네 파일을 **수정하지 말고 형식·말투의 견본**으로 쓰세요.

@@ -1,6 +1,26 @@
 [
+  { "id": "helmet-none", "slot": "helmet", "value": "none", "name": "가벼운 머리", "emoji": "🌬️", "price": 0 },
   { "id": "helmet-bronze", "slot": "helmet", "value": "bronze", "name": "청동 투구", "emoji": "🪖", "price": 0 },
-  { "id": "tunic-blue", "slot": "tunic", "value": "#3b6fd8", "name": "파란 옷", "emoji": "👕", "price": 0 },
-  { "id": "cape-red", "slot": "cape", "value": "#c0392b", "name": "빨간 망토", "emoji": "🧣", "price": 0 },
-  { "id": "shield-gold", "slot": "shield", "value": "#d4a017", "name": "금빛 방패", "emoji": "🛡️", "price": 0 }
+  { "id": "helmet-crested", "slot": "helmet", "value": "crested", "name": "붉은 깃 투구", "emoji": "🪶", "price": 75 },
+  { "id": "helmet-laurel", "slot": "helmet", "value": "laurel", "name": "초록 월계관", "emoji": "🌿", "price": 40 },
+  { "id": "helmet-owl", "slot": "helmet", "value": "owl", "name": "아테나 부엉이", "emoji": "🦉", "price": 120 },
+
+  { "id": "tunic-blue", "slot": "tunic", "value": "#3b6fd8", "name": "에게해 파란 옷", "emoji": "👕", "price": 0 },
+  { "id": "tunic-sea", "slot": "tunic", "value": "#36b6cf", "name": "맑은 바다 옷", "emoji": "🌊", "price": 20 },
+  { "id": "tunic-olive", "slot": "tunic", "value": "#83b94d", "name": "올리브 초록 옷", "emoji": "🌿", "price": 30 },
+  { "id": "tunic-sunset", "slot": "tunic", "value": "#f28c6b", "name": "노을빛 옷", "emoji": "🌅", "price": 45 },
+  { "id": "tunic-athena", "slot": "tunic", "value": "#d4dbe8", "name": "아테나 은빛 옷", "emoji": "✨", "price": 70 },
+
+  { "id": "cape-red", "slot": "cape", "value": "#c0392b", "name": "영웅 빨간 망토", "emoji": "🧣", "price": 0 },
+  { "id": "cape-none", "slot": "cape", "value": null, "name": "망토 없음", "emoji": "🍃", "price": 0 },
+  { "id": "cape-seabreeze", "slot": "cape", "value": "#7ac9e5", "name": "바람 하늘 망토", "emoji": "💨", "price": 25 },
+  { "id": "cape-dawn", "slot": "cape", "value": "#f5a5c2", "name": "새벽 분홍 망토", "emoji": "🌸", "price": 40 },
+  { "id": "cape-iris", "slot": "cape", "value": "#a991e8", "name": "무지개 보라 망토", "emoji": "🌈", "price": 55 },
+  { "id": "cape-starlight", "slot": "cape", "value": "#5368a8", "name": "별빛 남색 망토", "emoji": "🌟", "price": 80 },
+
+  { "id": "shield-gold", "slot": "shield", "value": "#d4a017", "name": "영웅 금빛 방패", "emoji": "🛡️", "price": 0 },
+  { "id": "shield-sea", "slot": "shield", "value": "#31abc4", "name": "바다빛 방패", "emoji": "🌊", "price": 30 },
+  { "id": "shield-olive", "slot": "shield", "value": "#89ac48", "name": "올리브 방패", "emoji": "🫒", "price": 40 },
+  { "id": "shield-pearl", "slot": "shield", "value": "#eee3d4", "name": "조개 진주 방패", "emoji": "🐚", "price": 60 },
+  { "id": "shield-sun", "slot": "shield", "value": "#f3c24f", "name": "태양빛 방패", "emoji": "☀️", "price": 95 }
 ]

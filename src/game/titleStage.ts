@@ -11,6 +11,8 @@ import type { Stage } from './services';
 
 const CELL = 1.5;
 const SEA_FLOOR = -4;
+/** 해변의 오디세우스가 바다(뗏목) 쪽을 보는 방향 */
+const HERO_YAW = Math.PI / 2 + 0.35;
 
 export function buildIsland() {
   type Cell = { x: number; z: number; h: number };
@@ -84,6 +86,13 @@ export class TitleStage implements Stage {
   private heroHead: Object3D | undefined;
   private focus = new Vector3(9, 5.2, 0.5);
   private reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  private view = { w: 1, h: 1 };
+  /** 꾸미기 중: 화면 위쪽에서 비어 있는 비율(0~1)을 알려 주는 함수 — 그 안에 오디세우스를 크게 담는다 */
+  private closeUp: (() => number) | null = null;
+  private closeK = 0;
+  private freeTop = 0.45;
+  /** 꾸미기 중 천천히 도는 각도 (등의 망토도 보이게) */
+  private spin = 0;
 
   constructor(avatar?: AvatarCustomization) {
     this.env = createEnvironment(this.scene, 'day');
@@ -117,7 +126,7 @@ export class TitleStage implements Stage {
   private buildHero(avatar?: AvatarCustomization): Group {
     const hero = getModel('odysseus', { avatar });
     hero.position.set(13.6, this.heroY, 2.2);
-    hero.rotation.y = Math.PI / 2 + 0.35;
+    hero.rotation.y = HERO_YAW;
     hero.getObjectByName('handR')?.add(makeProp('sword'));
     // 꾸미기 미리보기에서 방패 색도 보이게 (플레이 중과 같은 자리)
     const shield = makeProp('shield', { avatar });
@@ -125,6 +134,14 @@ export class TitleStage implements Stage {
     hero.getObjectByName('handL')?.add(shield);
     this.scene.add(hero);
     return hero;
+  }
+
+  /**
+   * 꾸미기 미리보기 — 카메라가 오디세우스 앞으로 다가가, 아래 카드에 가리지 않는 위쪽 빈 곳에 크게 담는다.
+   * freeTop(): 화면 높이 중 위에서부터 비어 있는 비율. null 이면 원래 궤도 카메라로 돌아간다.
+   */
+  setCloseUp(freeTop: (() => number) | null) {
+    this.closeUp = freeTop;
   }
 
   /** 꾸미기에서 옷을 바꾸면 해변의 오디세우스를 새 모습으로 */
@@ -150,11 +167,38 @@ export class TitleStage implements Stage {
     this.clouds.rotation.y = t * 0.004;
     const a = 0.62 + Math.sin(t * 0.06) * 0.35;
     const r = this.camera.aspect < 1 ? 34 : 27;
-    this.camera.position.set(this.focus.x + Math.cos(a) * r, 10 + Math.sin(t * 0.1) * 1.2, this.focus.z + Math.sin(a) * r);
-    this.camera.lookAt(this.focus);
+    const pos = new Vector3(this.focus.x + Math.cos(a) * r, 10 + Math.sin(t * 0.1) * 1.2, this.focus.z + Math.sin(a) * r);
+    const look = this.focus.clone();
+
+    // 꾸미기 미리보기: 부드럽게 다가가고(closeK 0→1), 비어 있는 위쪽 가운데에 오디세우스가 오도록 화면을 올린다
+    this.closeK += ((this.closeUp ? 1 : 0) - this.closeK) * Math.min(1, dt * 5);
+    if (this.closeUp) this.freeTop = Math.min(1, Math.max(0.28, this.closeUp()));
+    const k = this.closeK < 0.002 ? 0 : this.closeK;
+    // 미리보기 동안 제자리에서 천천히 돌아 등의 망토까지 보여 주고, 끝나면 원래 방향으로 돌아온다
+    if (this.closeUp && !this.reduceMotion) this.spin = (this.spin + dt * 0.55) % (Math.PI * 2);
+    if (k === 0) this.spin = 0;
+    const turn = Math.atan2(Math.sin(this.spin), Math.cos(this.spin));
+    this.hero.rotation.y = HERO_YAW + turn * k;
+    if (k > 0) {
+      const chest = new Vector3(this.hero.position.x, this.heroY + 1.1, this.hero.position.z);
+      const yaw = HERO_YAW + 0.5; // 살짝 비스듬히 앞에서
+      const half = Math.tan((this.camera.fov * Math.PI) / 360);
+      // 키(약 2.3)가 빈 곳 높이의 80% 쯤 되는 거리
+      const dist = 2.3 / (0.8 * this.freeTop) / (2 * half);
+      const near = chest.clone().add(new Vector3(Math.sin(yaw) * dist, dist * 0.18, Math.cos(yaw) * dist));
+      pos.lerp(near, k);
+      look.lerp(chest, k);
+      const { w, h } = this.view;
+      this.camera.setViewOffset(w, h, 0, ((h - this.freeTop * h) / 2) * k, w, h);
+    } else if (this.camera.view?.enabled) {
+      this.camera.clearViewOffset();
+    }
+    this.camera.position.copy(pos);
+    this.camera.lookAt(look);
   }
 
   resize(w: number, h: number) {
+    this.view = { w, h };
     this.camera.aspect = w / h;
     this.camera.fov = w < h ? 62 : 50;
     this.camera.updateProjectionMatrix();
