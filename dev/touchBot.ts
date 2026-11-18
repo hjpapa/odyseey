@@ -566,6 +566,7 @@ function beginChapter(st: Any) {
   cur = { id: st.chapter.id, gameSec: 0, realSec: 0, deaths: 0, hurt: 0, quizzes: 0, wrong: 0, coins: 0, chests: 0, shrines: 0, minis: [], notes: [], hits: [] };
   chapterStart = performance.now();
   nav = null; path = null; pathGoal = ''; lastObj = ''; skipSide = new Set(); wasRespawning = false; lastHp = 99;
+  attackAt = 0; replanAt = 0; lastPos = { x: 0, z: 0, t: 0 };
   BOT.now = st.chapter.id;
 }
 

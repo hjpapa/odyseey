@@ -23,7 +23,8 @@
   --font-body: 'Noto Sans KR', system-ui, sans-serif;
   --font-hand: 'Gaegu', 'Jua', system-ui, sans-serif;
   --radius: 18px;
-  --gutter: 16px;
+  /* 가로로 든 휴대폰의 노치에 글자·버튼이 가리지 않게 */
+  --gutter: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
   /* 글자 크기 배율 — 설정의 '큰 글씨' */
   --t: 1;
 }
@@ -117,6 +118,8 @@ body {
   animation: fadeIn 0.25s ease;
 }
 .screen.dim { background: rgba(10, 30, 60, 0.55); backdrop-filter: blur(2px); }
+/* 터치 기기에서는 흐림 효과를 빼서 메뉴가 버벅이지 않게 */
+.touch-mode .screen.dim { background: rgba(10, 30, 60, 0.68); backdrop-filter: none; }
 .screen.clear { pointer-events: none; }
 .screen.clear .btn, .screen.clear .card { pointer-events: auto; }
 

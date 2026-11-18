@@ -58,6 +58,8 @@ export class Game {
   /** 실제로 느리면 화질을 한 단계씩 낮춘다 */
   private perf = { warm: 0, time: 0, frames: 0, low: 0 };
   private frameNo = 0;
+  /** 멈춤·장 완료 화면에서는 3D 를 다시 그리지 않는다 (배터리 절약) — 크기가 바뀌면 한 번 그린다 */
+  private redraw = true;
 
   constructor(canvas: HTMLCanvasElement, private uiRoot: HTMLElement, labelsRoot: HTMLElement) {
     applyPrefs();
@@ -144,7 +146,8 @@ export class Game {
     this.last = now;
     this.step(dt, this.svc.input.frame());
     this.watchPerformance(raw);
-    if (this.stage) {
+    if (this.stage && (this.redraw || !(this.paused || this.stageComplete))) {
+      this.redraw = false;
       this.prepareShadows();
       this.renderer.render(this.stage.scene, this.stage.camera);
       this.labels.render(this.stage.scene, this.stage.camera);
@@ -237,6 +240,7 @@ export class Game {
     this.renderer.setSize(w, h, false);
     this.labels.setSize(w, h);
     this.stage?.resize(w, h);
+    this.redraw = true;
   }
 
   private setStage(s: Stage | null) {
