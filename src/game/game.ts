@@ -107,14 +107,19 @@ export class Game {
     hud.onPause = () => void this.openPause();
     this.applyVolumes();
 
+    // 브라우저는 터치라면 '손을 뗄 때', 마우스·키보드라면 '누를 때'에만 소리를 허락한다.
+    // 그래서 소리가 켜질 때까지 사용자가 무언가 할 때마다 다시 시도한다.
+    let firstGesture = true;
     const unlock = () => {
-      if (audio.unlocked) return;
       audio.unlock();
+      if (!firstGesture) return;
+      firstGesture = false;
       this.applyVolumes();
       audio.playBgm(this.currentBgm);
     };
-    window.addEventListener('pointerdown', unlock);
-    window.addEventListener('keydown', unlock);
+    for (const type of ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown']) {
+      window.addEventListener(type, unlock, { capture: true, passive: true });
+    }
     window.addEventListener('resize', () => this.resize());
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {

@@ -28,6 +28,14 @@ export interface EnemySpec {
 
 type State = 'idle' | 'chase' | 'windup' | 'strike' | 'recover' | 'hurt' | 'dead';
 
+/** 한꺼번에 공격하는 적의 수 — 아이가 둘러싸여 한순간에 쓰러지지 않게 */
+export const MAX_ATTACKERS = 2;
+
+/** 지금 공격을 시작해도 되는가 (이미 공격 중인 적이 적을 때만) */
+export function mayAttack(others: readonly { alive: boolean; attacking: boolean }[]): boolean {
+  return others.filter((o) => o.alive && o.attacking).length < MAX_ATTACKERS;
+}
+
 const shadowMaterial = new MeshToonMaterial({ color: '#5b4b9a', transparent: true, opacity: 0.82, emissive: '#2a1f55' });
 
 export class Enemy implements Hittable {
@@ -71,6 +79,11 @@ export class Enemy implements Hittable {
 
   get pos() {
     return this.body.pos;
+  }
+
+  /** 공격 동작 중인가 */
+  get attacking() {
+    return this.state === 'windup' || this.state === 'strike';
   }
 
   hit(dmg: number, from: Vector3) {
@@ -148,9 +161,15 @@ export class Enemy implements Hittable {
           break;
         }
         if (dist < 1.9) {
-          this.state = 'windup';
-          this.timer = s.windup;
-          this.alert.visible = true;
+          if (mayAttack(others)) {
+            this.state = 'windup';
+            this.timer = s.windup;
+            this.alert.visible = true;
+            break;
+          }
+          // 차례가 아니면 한 걸음 물러나 기다린다
+          move = toPlayer.clone().normalize().multiplyScalar(-1);
+          speed = s.speed * 0.4;
           break;
         }
         move = toPlayer.clone().normalize();

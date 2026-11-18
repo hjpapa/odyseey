@@ -44,7 +44,8 @@ export class Input {
     window.addEventListener('pointermove', this.onPointerMove);
     window.addEventListener('pointerup', this.onPointerUp);
     window.addEventListener('pointercancel', this.onPointerUp);
-    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    // 길게 누르기(이동·버튼)로 메뉴가 뜨지 않게
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
       this.cam.zoom += Math.sign(e.deltaY);
