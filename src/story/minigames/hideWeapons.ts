@@ -54,10 +54,10 @@ export async function hideWeapons(stage: IslandStage, at: Vector3): Promise<void
     };
 
     const info = h('div', { text: '📦 0 / 6개 정리했어요', role: 'status', 'aria-live': 'polite' });
-    const hint = h('p', { text: '무기를 고른 뒤 창고에 놓아요.', style: { margin: '4px 0', fontSize: '16px' } });
+    const hint = h('p', { text: '무기를 고른 뒤 창고에 놓아요.', style: { margin: '4px 0', fontSize: 'calc(16px * var(--t))' } });
     const grid = h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' } });
     const action = h('button', { class: 'btn gold', type: 'button', text: '🤲 무기 집기',
-      style: { minHeight: '48px', fontSize: '18px', padding: '8px 12px', touchAction: 'none' } });
+      style: { minHeight: '48px', fontSize: 'calc(18px * var(--t))', padding: '8px 12px', touchAction: 'none' } });
     const card = h('div', {
       style: {
         width: 'min(94vw, 500px)', boxSizing: 'border-box', padding: '12px',
@@ -66,14 +66,14 @@ export async function hideWeapons(stage: IslandStage, at: Vector3): Promise<void
         boxShadow: '0 4px 12px #10243b44', textAlign: 'center', pointerEvents: 'auto',
       },
     },
-    h('strong', { text: '텔레마코스와 준비물 정리', style: { fontSize: '20px' } }),
+    h('strong', { text: '텔레마코스와 준비물 정리', style: { fontSize: 'calc(20px * var(--t))' } }),
     hint, info, grid,
     h('div', { style: { display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '8px', flexWrap: 'wrap' } },
       h('button', { class: 'btn gray small', type: 'button', text: '◀', 'aria-label': '이전 무기' }),
       action,
       h('button', { class: 'btn gray small', type: 'button', text: '▶', 'aria-label': '다음 무기' })),
     h('small', { text: '← → 고르기 · Space 집기/놓기 · 끌어서 놓기도 돼요',
-      style: { display: 'block', fontSize: '12px', lineHeight: '1.4' } }));
+      style: { display: 'block', fontSize: 'calc(12px * var(--t))', lineHeight: '1.4' } }));
     panel = h('div', { class: 'mini-panel', 'data-minigame': 'hideWeapons', role: 'group', 'aria-label': '무기 숨기기' }, card);
     svc.ui.root.append(panel);
 
@@ -85,7 +85,7 @@ export async function hideWeapons(stage: IslandStage, at: Vector3): Promise<void
     const buttons = equipment.map((item, index) => {
       const button = h('button', {
         class: 'btn gray small', type: 'button', text: item.name, 'aria-label': item.name,
-        style: { minHeight: '48px', touchAction: 'none', fontSize: '16px' },
+        style: { minHeight: '48px', touchAction: 'none', fontSize: 'calc(16px * var(--t))' },
       });
       button.addEventListener('click', () => pick(index), { signal: controls.signal });
       button.addEventListener('pointerdown', (event) => {

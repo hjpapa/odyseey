@@ -74,11 +74,11 @@ export async function bowString(stage: IslandStage, at: Vector3): Promise<void> 
     }, band, cursor);
     const button = h('button', {
       class: 'btn gold', type: 'button', text: '🏹 활시위 걸기 · Space',
-      style: { width: '100%', boxSizing: 'border-box', fontSize: '18px', padding: '10px 12px', minHeight: '48px' },
+      style: { width: '100%', boxSizing: 'border-box', fontSize: 'calc(18px * var(--t))', padding: '10px 12px', minHeight: '48px' },
     });
     const board = h('div', {
-      style: { display: 'grid', gap: '8px', width: 'min(360px, calc(100vw - 24px))', boxSizing: 'border-box', padding: '14px', borderRadius: '18px', color: '#49391e', background: 'rgba(255, 252, 240, 0.97)', textAlign: 'center', pointerEvents: 'auto', boxShadow: '0 4px 0 #0002', fontSize: '16px' },
-    }, h('strong', { text: '오디세우스의 활', style: { fontSize: '21px' } }), count, gauge, status, button);
+      style: { display: 'grid', gap: '8px', width: 'min(360px, calc(100vw - 24px))', boxSizing: 'border-box', padding: '14px', borderRadius: '18px', color: '#49391e', background: 'rgba(255, 252, 240, 0.97)', textAlign: 'center', pointerEvents: 'auto', boxShadow: '0 4px 0 #0002', fontSize: 'calc(16px * var(--t))' },
+    }, h('strong', { text: '오디세우스의 활', style: { fontSize: 'calc(21px * var(--t))' } }), count, gauge, status, button);
     panel = h('div', { class: 'mini-panel', 'data-minigame': 'bowString', style: { gap: '8px' } }, board);
     stage.svc.ui.root.append(panel);
     button.focus();

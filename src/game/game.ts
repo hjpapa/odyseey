@@ -28,6 +28,7 @@ import { EndingStage } from './endingStage';
 import { HubStage, type HubIsland } from './hubStage';
 import { IslandStage } from './islandStage';
 import { parentReport } from './parentReport';
+import { applyPrefs } from './prefs';
 import {
   advanceFrontier, chapterState, islandFinds, islandRoute, islandState, subjectScores, totalFinds,
 } from './progress';
@@ -55,6 +56,7 @@ export class Game {
   private perf = { warm: 0, time: 0, frames: 0, low: 0, lowered: false };
 
   constructor(canvas: HTMLCanvasElement, private uiRoot: HTMLElement, labelsRoot: HTMLElement) {
+    applyPrefs();
     this.renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;

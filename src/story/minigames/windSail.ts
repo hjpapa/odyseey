@@ -80,16 +80,16 @@ export async function windSail(stage: IslandStage, at: Vector3): Promise<void> {
       look: new Vector3(at.x, y + 0.6, at.z - 0.8),
     };
 
-    const title = h('strong', { text: '⛵ 바람 따라 이타카로', style: { fontSize: 'clamp(18px, 4vw, 23px)' } });
-    const target = h('div', { style: { fontSize: '19px', fontWeight: '700' } });
-    const direction = h('div', { style: { fontSize: '16px' } });
-    const progress = h('div', { text: '이타카까지 바람 0 / 6', style: { fontSize: '16px' } });
-    const message = h('div', { text: '← →로 돛 돌리기 · Space로 바람 받기', 'aria-live': 'polite', style: { minHeight: '20px', fontSize: '14px', lineHeight: '1.4' } });
+    const title = h('strong', { text: '⛵ 바람 따라 이타카로', style: { fontSize: 'calc(clamp(18px, 4vw, 23px) * var(--t))' } });
+    const target = h('div', { style: { fontSize: 'calc(19px * var(--t))', fontWeight: '700' } });
+    const direction = h('div', { style: { fontSize: 'calc(16px * var(--t))' } });
+    const progress = h('div', { text: '이타카까지 바람 0 / 6', style: { fontSize: 'calc(16px * var(--t))' } });
+    const message = h('div', { text: '← →로 돛 돌리기 · Space로 바람 받기', 'aria-live': 'polite', style: { minHeight: '20px', fontSize: 'calc(14px * var(--t))', lineHeight: '1.4' } });
     const left = h('button', { class: 'btn blue', type: 'button', text: '← 돛', 'aria-label': '왼쪽으로 돛 돌리기' });
     const catchButton = h('button', { class: 'btn gold', type: 'button', text: '바람 받기', 'aria-label': '바람 받기' });
     const right = h('button', { class: 'btn blue', type: 'button', text: '돛 →', 'aria-label': '오른쪽으로 돛 돌리기' });
     for (const button of [left, catchButton, right]) {
-      Object.assign(button.style, { pointerEvents: 'auto', touchAction: 'manipulation', minHeight: '48px', padding: '9px 10px', fontSize: '17px', minWidth: '0' });
+      Object.assign(button.style, { pointerEvents: 'auto', touchAction: 'manipulation', minHeight: '48px', padding: '9px 10px', fontSize: 'calc(17px * var(--t))', minWidth: '0' });
     }
     const controls = h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.7fr 1fr', gap: '8px', width: '100%' } }, left, catchButton, right);
     panel = h('div', {

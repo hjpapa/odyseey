@@ -1,5 +1,6 @@
 /**
  * 예고 공격 — 땅에 빨간 원을 그리고(안쪽이 차오름), 시간이 되면 그 자리를 친다.
+ * 빨강과 초록을 구별하기 어려워도 보이도록 흰 테두리와 어두운 바깥 선을 함께 그린다.
  * 보스 패턴(BossContext.telegraph)과 '버티기' 목표가 함께 쓴다.
  */
 import { BoxGeometry, CircleGeometry, Mesh, MeshBasicMaterial, MeshToonMaterial, RingGeometry, type Scene } from 'three';
@@ -17,11 +18,14 @@ interface Hazard extends Impact {
   t: number;
   y: number;
   ring: Mesh;
+  edge: Mesh;
+  base: Mesh;
   fill: Mesh;
   drop?: Mesh;
 }
 
-const ringGeo = new RingGeometry(0.9, 1, 40);
+const ringGeo = new RingGeometry(0.88, 1, 40);
+const edgeGeo = new RingGeometry(1, 1.08, 40);
 const discGeo = new CircleGeometry(1, 32);
 const rockGeo = new BoxGeometry(1, 1, 1);
 const boltGeo = new BoxGeometry(0.35, 1, 0.35);
@@ -45,16 +49,20 @@ export class Hazards {
 
   add(x: number, z: number, r: number, delay: number, effect: HazardEffect) {
     const y = this.ground(x, z) + 0.06;
-    const ring = new Mesh(ringGeo, new MeshBasicMaterial({ color: '#ff3b30', transparent: true, opacity: 0.85, depthWrite: false }));
-    const fill = new Mesh(discGeo, new MeshBasicMaterial({ color: '#ff3b30', transparent: true, opacity: 0.3, depthWrite: false }));
-    for (const m of [ring, fill]) {
+    const ring = new Mesh(ringGeo, new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9, depthWrite: false }));
+    const edge = new Mesh(edgeGeo, new MeshBasicMaterial({ color: '#2a0b0b', transparent: true, opacity: 0.75, depthWrite: false }));
+    const base = new Mesh(discGeo, new MeshBasicMaterial({ color: '#ff3b30', transparent: true, opacity: 0.22, depthWrite: false }));
+    const fill = new Mesh(discGeo, new MeshBasicMaterial({ color: '#ff3b30', transparent: true, opacity: 0.45, depthWrite: false }));
+    for (const m of [base, fill, edge, ring]) {
       m.rotation.x = -Math.PI / 2;
       m.position.set(x, y, z);
       m.renderOrder = 2;
     }
     ring.scale.setScalar(r);
+    edge.scale.setScalar(r);
+    base.scale.setScalar(r);
     fill.scale.setScalar(0.01);
-    this.scene.add(ring, fill);
+    this.scene.add(base, fill, edge, ring);
     let drop: Mesh | undefined;
     const d = DROP[effect];
     if (d) {
@@ -64,7 +72,7 @@ export class Hazards {
       drop.visible = false;
       this.scene.add(drop);
     }
-    this.list.push({ x, z, r, effect, delay: Math.max(0.6, delay), t: 0, y, ring, fill, drop });
+    this.list.push({ x, z, r, effect, delay: Math.max(0.6, delay), t: 0, y, ring, edge, base, fill, drop });
   }
 
   update(dt: number) {
@@ -101,17 +109,17 @@ export class Hazards {
   }
 
   private dispose(h: Hazard, afterSec: number) {
+    const marks = [h.ring, h.edge, h.base, h.fill];
     const remove = () => {
-      h.ring.removeFromParent();
-      h.fill.removeFromParent();
+      for (const m of marks) {
+        m.removeFromParent();
+        (m.material as MeshBasicMaterial).dispose();
+      }
       h.drop?.removeFromParent();
-      (h.ring.material as MeshBasicMaterial).dispose();
-      (h.fill.material as MeshBasicMaterial).dispose();
       (h.drop?.material as MeshBasicMaterial | undefined)?.dispose();
     };
     if (afterSec > 0) {
-      h.ring.visible = false;
-      h.fill.visible = false;
+      for (const m of marks) m.visible = false;
       setTimeout(remove, afterSec * 1000);
     } else remove();
   }

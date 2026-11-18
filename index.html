@@ -5,16 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
     <meta name="theme-color" content="#4aa8ff" />
     <meta name="description" content="아이가 쓴 이야기로 만드는 오디세이 모험 — 영어단어·한자·수학·시계·예절을 배우는 액션 RPG" />
+    <!-- 태블릿·휴대폰 홈 화면에 추가하면 주소창 없이 온 화면으로 -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="오디세이" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <title>오디세이 — 집으로 가는 길</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+      /* 게임 코드를 받는 동안 보이는 첫 화면 */
+      #boot { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; background: linear-gradient(#4aa8ff, #cfeeff); color: #1d4f91; font: 700 20px system-ui, sans-serif; }
+    </style>
   </head>
   <body>
     <canvas id="scene" aria-label="오디세이 게임 화면"></canvas>
     <div id="labels"></div>
     <div id="ui"></div>
+    <div id="boot" role="status">⛵ 모험을 준비하고 있어요…</div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

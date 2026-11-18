@@ -1,0 +1,12 @@
+{
+  "name": "오디세이 — 집으로 가는 길",
+  "short_name": "오디세이",
+  "lang": "ko",
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#4aa8ff",
+  "theme_color": "#4aa8ff",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

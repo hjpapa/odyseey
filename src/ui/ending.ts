@@ -4,6 +4,7 @@
  */
 import type { CreditLine } from '../story/credits';
 import type { Finds, SubjectScore } from '../game/progress';
+import { prefs } from '../game/prefs';
 import { formatPlayTime } from '../game/progress';
 import { h } from './dom';
 
@@ -105,9 +106,11 @@ export function creditsRoll(root: HTMLElement, lines: CreditLine[], opts: { ms: 
       ...lines.map((l) => h('div', { class: `credit ${l.role ? '' : 'big'}` },
         l.role ? h('div', { class: 'credit-role', text: l.role }) : null,
         h('div', { class: 'credit-text', text: l.text }))));
-    roll.style.animationDuration = `${opts.ms}ms`;
-    const skip = h('button', { class: 'btn gray small credits-skip', type: 'button', text: '건너뛰기 ⏭' });
-    const el = h('div', { class: 'screen clear credits' }, roll, skip);
+    // '번쩍임·흔들림 줄이기'를 켜면 움직이지 않는 목록으로 보여 주고 버튼으로 넘어간다
+    const still = prefs.calm;
+    roll.style.setProperty('--roll', `${opts.ms}ms`);
+    const skip = h('button', { class: 'btn gray small credits-skip', type: 'button', text: still ? '다음 ▶' : '건너뛰기 ⏭' });
+    const el = h('div', { class: `screen clear credits${still ? ' still' : ''}` }, roll, skip);
     root.append(el);
     const end = () => {
       life.abort();
@@ -118,7 +121,7 @@ export function creditsRoll(root: HTMLElement, lines: CreditLine[], opts: { ms: 
     document.addEventListener('visibilitychange', () => {
       roll.style.animationPlayState = document.hidden ? 'paused' : 'running';
     }, { signal: life.signal });
-    roll.addEventListener('animationend', end, { signal: life.signal });
+    if (!still) roll.addEventListener('animationend', end, { signal: life.signal });
     skip.addEventListener('click', end, { signal: life.signal });
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Escape' || ((e.code === 'Space' || e.code === 'Enter') && e.target !== skip)) {

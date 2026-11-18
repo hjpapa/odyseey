@@ -23,6 +23,7 @@ import { HumanoidRig } from '../play/rig';
 import { englishWords } from '../learning/data';
 import { h, sleep } from '../ui/dom';
 import { ChapterStage } from './chapterStage';
+import { prefs } from './prefs';
 import type { Services } from './services';
 
 const MAX_HP = 3;
@@ -271,8 +272,9 @@ export class SeaStage extends ChapterStage {
 
     // 카메라 — 세로 화면에서도 세 줄이 모두 보이도록 더 뒤·위에서
     this.shake = Math.max(0, this.shake - dt * 2);
-    const sx = (Math.random() - 0.5) * this.shake;
-    const sy = (Math.random() - 0.5) * this.shake;
+    const shake = prefs.calm ? 0 : this.shake;
+    const sx = (Math.random() - 0.5) * shake;
+    const sy = (Math.random() - 0.5) * shake;
     const tall = this.camera.aspect < 0.8;
     const wide = this.mode === 'sail' ? 1.25 : 1;
     const back = (tall ? 15 : 9.5) * wide;

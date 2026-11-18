@@ -24,6 +24,7 @@ import { BossFight, type BossArena, type BossHost } from '../play/bossFight';
 import { bossFactory } from '../enemies/bosses';
 import { ISLAND_MINIGAMES, MINIGAME_LABEL } from '../story/minigames';
 import { ChapterStage } from './chapterStage';
+import { prefs } from './prefs';
 import type { Services } from './services';
 
 interface Interactable {
@@ -631,8 +632,10 @@ export class IslandStage extends ChapterStage {
       this.cam.update(dt, this.focus(), frozen ? null : input, moving ? this.player.heading : null, (x, z) => this.world.ground(x, z));
     }
     if (this.shake > 0) {
-      this.camera.position.x += (Math.random() - 0.5) * this.shake * 0.8;
-      this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.8;
+      if (!prefs.calm) {
+        this.camera.position.x += (Math.random() - 0.5) * this.shake * 0.8;
+        this.camera.position.y += (Math.random() - 0.5) * this.shake * 0.8;
+      }
       this.shake = Math.max(0, this.shake - dt * 1.6);
     }
     this.fx.update(dt);

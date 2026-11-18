@@ -12,6 +12,12 @@ export class TouchControls {
   constructor(root: HTMLElement, private input: Input) {
     root.append(this.el);
     input.onTouchModeChange = () => this.render();
+    this.markMode();
+  }
+
+  /** 터치로 노는 중인지 CSS 에 알린다 (안내 문구 자리가 달라진다) */
+  private markMode() {
+    document.documentElement.classList.toggle('touch-mode', this.input.touchMode);
   }
 
   set(layout: TouchLayout) {
@@ -28,6 +34,7 @@ export class TouchControls {
   }
 
   private render() {
+    this.markMode();
     this.el.replaceChildren();
     this.actBtn = null;
     this.input.setTouchMove(0, 0);

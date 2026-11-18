@@ -16,6 +16,7 @@ import { createEnvironment, type Environment } from '../world/environment';
 import { makeProp } from '../world/props';
 import { PALETTES } from '../world/terrain';
 import { label } from '../play/effects';
+import { prefs } from './prefs';
 import type { ChapterState } from './progress';
 import type { Stage } from './services';
 
@@ -182,7 +183,6 @@ export class HubStage implements Stage {
   private ray = new Raycaster();
   private owned = { geos: [] as BufferGeometry[], mats: [] as Material[] };
   private portrait = false;
-  private reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   selected: IslandId;
 
   constructor(private islands: HubIsland[], selected: IslandId) {
@@ -290,7 +290,7 @@ export class HubStage implements Stage {
     this.selected = id;
     this.shipFrom.copy(this.ship.position).setY(0);
     this.shipTo.copy(this.harbor(id));
-    this.sailT = this.reduceMotion ? 1 : 0;
+    this.sailT = prefs.calm ? 1 : 0;
     const d = this.shipTo.clone().sub(this.shipFrom);
     if (d.lengthSq() > 0.01) this.shipYaw = Math.atan2(d.x, d.z);
     this.focusTarget.copy(this.spots.get(id)!.pos);
@@ -328,7 +328,7 @@ export class HubStage implements Stage {
 
     this.focus.lerp(this.focusTarget, Math.min(1, dt * 2.5));
     const dist = this.portrait ? 1.45 : 1;
-    const sway = this.reduceMotion ? 0 : Math.sin(t * 0.15) * 2;
+    const sway = prefs.calm ? 0 : Math.sin(t * 0.15) * 2;
     // 아래쪽 섬 안내판에 가리지 않도록 고른 섬이 화면 위쪽에 오게 본다
     const lead = this.portrait ? 11 : 5;
     this.camera.position.set(this.focus.x + sway, 26 * dist, this.focus.z + 25 * dist + lead);
