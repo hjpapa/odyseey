@@ -26,5 +26,15 @@ npm run build
 `/?map=1` 바다 지도, `/?ending=1` 엔딩(이야기책·크레딧·성적표)을 바로 엽니다.
 브라우저 창이 가려져 있으면 그림이 멈추므로, 콘솔에서 `game.debugStep(초)` 로 시간을 진행해 확인할 수 있습니다.
 
+터치 자동 플레이 (새 게임부터 엔딩까지, 개발 서버 콘솔):
+
+```js
+localStorage.removeItem('odyseey.save.v1'); location.href = '/';
+// 새로 열린 뒤
+const bot = await import('/dev/touchBot.ts');
+bot.start({ grade: 2 });             // 서툰 플레이는 { grade: 1, wrongRate: 0.5, skill: 'clumsy' }
+bot.summary();                       // 장별 기록, 못 누른 버튼, 오류
+```
+
 캐릭터 검수: `/src/models/review.html` (개발 서버 전용, 회전·전후 비교·관절 확인).
 미술 방향과 검증 범위는 [캐릭터 작업 기록](src/models/ART_DIRECTION.md)을 참고하세요.

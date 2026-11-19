@@ -79,7 +79,7 @@ export async function axeArchery(stage: IslandStage, at: Vector3): Promise<void>
     const count = h('strong', { text: '관통한 도끼 0 / 12' });
     const dots = Array.from({ length: 12 }, (_, index) => h('span', {
       text: String(index + 1),
-      style: { display: 'grid', placeItems: 'center', minWidth: '0', height: '24px', border: '2px solid #d2c4a5', borderRadius: '50%', fontSize: '11px', boxSizing: 'border-box', background: '#fffaf0' },
+      style: { display: 'grid', placeItems: 'center', minWidth: '0', height: '24px', border: '2px solid #d2c4a5', borderRadius: '50%', fontSize: 'calc(11px * var(--t))', boxSizing: 'border-box', background: '#fffaf0' },
     }));
     const sequence = h('div', { 'aria-label': '도끼 열두 개', style: { display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: '2px' } }, ...dots);
     const band = h('div', { style: { position: 'absolute', top: '0', bottom: '0', borderRadius: '8px', background: '#9bd3ac' } });
@@ -90,11 +90,11 @@ export async function axeArchery(stage: IslandStage, at: Vector3): Promise<void>
     }, band, cursor);
     const button = h('button', {
       class: 'btn gold', type: 'button', text: '🏹 화살 쏘기 · Space',
-      style: { width: '100%', boxSizing: 'border-box', fontSize: '18px', padding: '10px 12px', minHeight: '48px' },
+      style: { width: '100%', boxSizing: 'border-box', fontSize: 'calc(18px * var(--t))', padding: '10px 12px', minHeight: '48px' },
     });
     const board = h('div', {
-      style: { display: 'grid', gap: '8px', width: 'min(390px, calc(100vw - 24px))', boxSizing: 'border-box', padding: '14px', borderRadius: '18px', color: '#49391e', background: 'rgba(255, 252, 240, 0.97)', textAlign: 'center', pointerEvents: 'auto', boxShadow: '0 4px 0 #0002', fontSize: '16px' },
-    }, h('strong', { text: '열두 도끼를 한 번에!', style: { fontSize: '21px' } }), count, sequence, gauge, status, button);
+      style: { display: 'grid', gap: '8px', width: 'min(390px, calc(100vw - 24px))', boxSizing: 'border-box', padding: '14px', borderRadius: '18px', color: '#49391e', background: 'rgba(255, 252, 240, 0.97)', textAlign: 'center', pointerEvents: 'auto', boxShadow: '0 4px 0 #0002', fontSize: 'calc(16px * var(--t))' },
+    }, h('strong', { text: '열두 도끼를 한 번에!', style: { fontSize: 'calc(21px * var(--t))' } }), count, sequence, gauge, status, button);
     panel = h('div', { class: 'mini-panel', 'data-minigame': 'axeArchery' }, board);
     stage.svc.ui.root.append(panel);
     button.focus();

@@ -68,13 +68,13 @@ export async function rhythmShield(stage: IslandStage, at: Vector3): Promise<voi
       look: new Vector3(at.x, y + 1.1, at.z + 1.4),
     };
 
-    const title = h('strong', { text: '🎶 리듬 방패', style: { fontSize: '20px' } });
-    const progress = h('div', { text: `막은 음표 0 / ${MELODY.length}`, style: { fontSize: '17px' } });
+    const title = h('strong', { text: '🎶 리듬 방패', style: { fontSize: 'calc(20px * var(--t))' } });
+    const progress = h('div', { text: `막은 음표 0 / ${MELODY.length}`, style: { fontSize: 'calc(17px * var(--t))' } });
     const status = h('div', {
       role: 'status', 'aria-live': 'polite', text: '음표가 내려오는 줄을 골라요.',
-      style: { minHeight: '40px', fontSize: '16px', lineHeight: '1.3', textAlign: 'center' },
+      style: { minHeight: '40px', fontSize: 'calc(16px * var(--t))', lineHeight: '1.3', textAlign: 'center' },
     });
-    const pausedNotice = h('div', { text: '잠시 쉬는 중이에요.', hidden: true, style: { fontSize: '15px' } });
+    const pausedNotice = h('div', { text: '잠시 쉬는 중이에요.', hidden: true, style: { fontSize: 'calc(15px * var(--t))' } });
     const board = h('div', {
       'aria-label': '음표 세 줄',
       style: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '5px', width: '100%', height: '120px', pointerEvents: 'auto' },
@@ -86,15 +86,15 @@ export async function rhythmShield(stage: IslandStage, at: Vector3): Promise<voi
         position: 'relative', minWidth: '0', border: '2px solid #8fbed3', borderRadius: '12px', padding: '0',
         background: '#e6f4fa', color: '#20405b', cursor: 'pointer', touchAction: 'manipulation', overflow: 'hidden',
       },
-    }, h('span', { text: name, style: { position: 'absolute', bottom: '4px', left: '0', right: '0', fontSize: '14px' } }),
+    }, h('span', { text: name, style: { position: 'absolute', bottom: '4px', left: '0', right: '0', fontSize: 'calc(14px * var(--t))' } }),
     h('span', { style: { position: 'absolute', left: '4%', right: '4%', top: '77%', height: '8px', background: '#f1bf42', borderRadius: '5px' } })));
     board.append(...lanes);
     const noteIcon = h('span', {
       text: '♪', 'aria-hidden': 'true',
-      style: { position: 'absolute', left: '50%', top: '8%', transform: 'translate(-50%, -50%)', fontSize: '34px', lineHeight: '1', color: '#5148a2', pointerEvents: 'none' },
+      style: { position: 'absolute', left: '50%', top: '8%', transform: 'translate(-50%, -50%)', fontSize: 'calc(34px * var(--t))', lineHeight: '1', color: '#5148a2', pointerEvents: 'none' },
     });
-    const action = h('button', { class: 'btn gold', type: 'button', text: '🎵 시작하기', style: { width: '100%', fontSize: '19px', padding: '10px 8px' } });
-    const hint = h('div', { text: '← → 줄 고르기 · Space 방패', style: { fontSize: '13px', textAlign: 'center' } });
+    const action = h('button', { class: 'btn gold', type: 'button', text: '🎵 시작하기', style: { width: '100%', fontSize: 'calc(19px * var(--t))', padding: '10px 8px' } });
+    const hint = h('div', { text: '← → 줄 고르기 · Space 방패', style: { fontSize: 'calc(13px * var(--t))', textAlign: 'center' } });
     panel = h('div', {
       class: 'mini-panel', 'data-minigame': 'rhythmShield',
       style: {

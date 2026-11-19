@@ -67,15 +67,15 @@ export async function sheepEscape(stage: IslandStage, at: Vector3): Promise<void
       look: new Vector3(at.x, y + 0.5, at.z + 0.5),
     };
 
-    const title = h('strong', { text: '🐑 양들과 살금살금', style: { fontSize: 'clamp(18px, 4vw, 23px)' } });
-    const signal = h('div', { text: '초록에 이동, 노랑에 손 떼기!', 'aria-live': 'polite', style: { fontWeight: '700', fontSize: '18px' } });
-    const progress = h('div', { text: '동굴 출구까지 0%', style: { fontSize: '15px' } });
-    const help = h('div', { text: 'Space 꾹 누르기 · ← → 옆 양으로 숨기', style: { fontSize: '14px', lineHeight: '1.35' } });
+    const title = h('strong', { text: '🐑 양들과 살금살금', style: { fontSize: 'calc(clamp(18px, 4vw, 23px) * var(--t))' } });
+    const signal = h('div', { text: '초록에 이동, 노랑에 손 떼기!', 'aria-live': 'polite', style: { fontWeight: '700', fontSize: 'calc(18px * var(--t))' } });
+    const progress = h('div', { text: '동굴 출구까지 0%', style: { fontSize: 'calc(15px * var(--t))' } });
+    const help = h('div', { text: 'Space 꾹 누르기 · ← → 옆 양으로 숨기', style: { fontSize: 'calc(14px * var(--t))', lineHeight: '1.35' } });
     const left = h('button', { class: 'btn gray', type: 'button', text: '← 양', 'aria-label': '왼쪽 양으로 숨기' });
     const move = h('button', { class: 'btn', type: 'button', text: '꾹 눌러 이동', 'aria-label': '양들과 이동' });
     const right = h('button', { class: 'btn gray', type: 'button', text: '양 →', 'aria-label': '오른쪽 양으로 숨기' });
     for (const button of [left, move, right]) {
-      Object.assign(button.style, { pointerEvents: 'auto', touchAction: 'none', minHeight: '48px', padding: '9px 12px', fontSize: '17px', minWidth: '0' });
+      Object.assign(button.style, { pointerEvents: 'auto', touchAction: 'none', minHeight: '48px', padding: '9px 12px', fontSize: 'calc(17px * var(--t))', minWidth: '0' });
     }
     const controls = h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.7fr 1fr', gap: '8px', width: '100%' } }, left, move, right);
     panel = h('div', {

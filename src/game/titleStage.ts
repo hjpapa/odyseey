@@ -7,6 +7,7 @@ import { block, toonMaterial } from '../core/placeholders';
 import { createEnvironment, type Environment } from '../world/environment';
 import { makeProp } from '../world/props';
 import { HumanoidRig } from '../play/rig';
+import { prefs } from './prefs';
 import type { Stage } from './services';
 
 const CELL = 1.5;
@@ -85,7 +86,6 @@ export class TitleStage implements Stage {
   private calRig: HumanoidRig;
   private heroHead: Object3D | undefined;
   private focus = new Vector3(9, 5.2, 0.5);
-  private reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   private view = { w: 1, h: 1 };
   /** 꾸미기 중: 화면 위쪽에서 비어 있는 비율(0~1)을 알려 주는 함수 — 그 안에 오디세우스를 크게 담는다 */
   private closeUp: (() => number) | null = null;
@@ -153,7 +153,7 @@ export class TitleStage implements Stage {
   }
 
   update(dt: number, _input?: InputFrame) {
-    this.t += dt * (this.reduceMotion ? 0.3 : 1);
+    this.t += dt * (prefs.calm ? 0.3 : 1);
     const t = this.t;
     this.env.follow(new Vector3(10, 0, 0));
     this.env.update(t);
@@ -175,7 +175,7 @@ export class TitleStage implements Stage {
     if (this.closeUp) this.freeTop = Math.min(1, Math.max(0.28, this.closeUp()));
     const k = this.closeK < 0.002 ? 0 : this.closeK;
     // 미리보기 동안 제자리에서 천천히 돌아 등의 망토까지 보여 주고, 끝나면 원래 방향으로 돌아온다
-    if (this.closeUp && !this.reduceMotion) this.spin = (this.spin + dt * 0.55) % (Math.PI * 2);
+    if (this.closeUp && !prefs.calm) this.spin = (this.spin + dt * 0.55) % (Math.PI * 2);
     if (k === 0) this.spin = 0;
     const turn = Math.atan2(Math.sin(this.spin), Math.cos(this.spin));
     this.hero.rotation.y = HERO_YAW + turn * k;

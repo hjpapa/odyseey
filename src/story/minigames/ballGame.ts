@@ -61,31 +61,31 @@ export async function ballGame(stage: IslandStage, at: Vector3): Promise<void> {
       look: at.clone().setY((playerPosition.y + partnerPosition.y) / 2 + 1.2),
     };
 
-    const title = h('strong', { text: '⚽ 나우시카와 공놀이', style: { fontSize: '20px', textAlign: 'center' } });
-    const score = h('div', { text: `주고받은 공 0 / ${PASSES}`, style: { fontSize: '17px' } });
+    const title = h('strong', { text: '⚽ 나우시카와 공놀이', style: { fontSize: 'calc(20px * var(--t))', textAlign: 'center' } });
+    const score = h('div', { text: `주고받은 공 0 / ${PASSES}`, style: { fontSize: 'calc(17px * var(--t))' } });
     const status = h('div', {
       role: 'status', 'aria-live': 'polite', text: '공이 노란 자리에 오면 받아서 보내요.',
-      style: { minHeight: '42px', fontSize: '16px', lineHeight: '1.35', textAlign: 'center' },
+      style: { minHeight: '42px', fontSize: 'calc(16px * var(--t))', lineHeight: '1.35', textAlign: 'center' },
     });
-    const pausedNotice = h('div', { text: '잠시 쉬는 중이에요.', hidden: true, style: { fontSize: '15px' } });
+    const pausedNotice = h('div', { text: '잠시 쉬는 중이에요.', hidden: true, style: { fontSize: 'calc(15px * var(--t))' } });
     const targetZone = h('div', {
       'aria-hidden': 'true',
       style: { position: 'absolute', left: '73%', right: '3%', top: '7px', bottom: '7px', borderRadius: '15px', background: '#ffe69a', border: '2px solid #d69d22' },
     });
     const ballIcon = h('span', {
       text: '⚽', 'aria-hidden': 'true',
-      style: { position: 'absolute', top: '50%', left: '8%', transform: 'translate(-50%, -50%)', fontSize: '30px', lineHeight: '1' },
+      style: { position: 'absolute', top: '50%', left: '8%', transform: 'translate(-50%, -50%)', fontSize: 'calc(30px * var(--t))', lineHeight: '1' },
     });
     const track = h('div', {
       'aria-label': '나우시카에서 내 쪽으로 오는 공',
       style: { position: 'relative', width: '100%', height: '66px', borderRadius: '18px', background: '#e0f1fc', border: '2px solid #9bc4d7', boxSizing: 'border-box', pointerEvents: 'auto', overflow: 'hidden' },
     }, targetZone, ballIcon);
     const names = h('div', {
-      style: { display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '14px', padding: '0 8px', boxSizing: 'border-box' },
+      style: { display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: 'calc(14px * var(--t))', padding: '0 8px', boxSizing: 'border-box' },
     }, h('span', { text: '나우시카' }), h('span', { text: '나 🙌' }));
     const action = h('button', {
       class: 'btn gold', type: 'button', text: '⚽ 공놀이 시작',
-      style: { width: '100%', fontSize: '19px', padding: '10px 8px', touchAction: 'manipulation' },
+      style: { width: '100%', fontSize: 'calc(19px * var(--t))', padding: '10px 8px', touchAction: 'manipulation' },
     });
     panel = h('div', {
       class: 'mini-panel', 'data-minigame': 'ballGame',
@@ -95,7 +95,7 @@ export async function ballGame(stage: IslandStage, at: Vector3): Promise<void> {
         padding: '12px', gap: '8px', borderRadius: '20px', background: 'rgba(255, 255, 255, 0.97)', color: '#24415c', pointerEvents: 'auto',
       },
     }, title, score, status, pausedNotice, names, track, action,
-    h('div', { text: 'Space 또는 받기 버튼을 눌러요.', style: { fontSize: '13px', textAlign: 'center' } }));
+    h('div', { text: 'Space 또는 받기 버튼을 눌러요.', style: { fontSize: 'calc(13px * var(--t))', textAlign: 'center' } }));
     svc.ui.root.append(panel);
     action.focus();
 

@@ -244,9 +244,9 @@ export class QuizUI implements QuizPresenter {
     };
     const stepper = (label: string, minus: () => void, plus: () => void) =>
       h('div', { class: 'stepper' },
-        h('button', { class: 'btn gray small', type: 'button', text: '◀', onclick: minus }),
+        h('button', { class: 'btn gray small', type: 'button', text: '◀', 'aria-label': `${label} 줄이기`, onclick: minus }),
         label,
-        h('button', { class: 'btn gray small', type: 'button', text: '▶', onclick: plus }));
+        h('button', { class: 'btn gray small', type: 'button', text: '▶', 'aria-label': `${label} 늘리기`, onclick: plus }));
     const ok = h('button', { class: 'btn', type: 'button', text: '이 시각이에요! ✔' });
     ok.addEventListener('click', () => {
       if (isDone()) return;

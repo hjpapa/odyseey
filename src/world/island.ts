@@ -9,7 +9,7 @@ import { createEnvironment, type Environment, type Mood } from './environment';
 import { buildTerrain, type Terrain } from './terrain';
 import { block } from '../core/placeholders';
 import { makeProp, SOLID_RADIUS } from './props';
-import { mergeStatic } from './merge';
+import { compactModel, mergeStatic } from './merge';
 
 export interface Collider {
   x: number;
@@ -132,6 +132,8 @@ export class IslandWorld {
     obj.rotation.y = rotY;
     const r = SOLID_RADIUS[id];
     obj.scale.setScalar(scale * (r ? fitToCollider(obj, r) : 1));
+    // 장면에 따로 놓는 소품(상자·신전 등)도 가볍게 — 합쳐질 소품(parent=statics)은 나중에 한꺼번에
+    if (parent === this.scene) compactModel(obj);
     parent.add(obj);
     if (r) this.addCollider(pos[0], pos[1], r * scale, id);
     return obj;

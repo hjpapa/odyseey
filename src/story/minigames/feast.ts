@@ -85,11 +85,11 @@ export async function feast(stage: IslandStage, at: Vector3): Promise<void> {
     };
 
     const info = h('div', { class: 'info', text: '🍇 가족과 함께하는 잔치', role: 'status', 'aria-live': 'polite',
-      style: { fontSize: 'clamp(17px, 4vw, 22px)', maxWidth: '90vw', textAlign: 'center' } });
+      style: { fontSize: 'calc(clamp(17px, 4vw, 22px) * var(--t))', maxWidth: '90vw', textAlign: 'center' } });
     const startButton = h('button', { class: 'btn gold', type: 'button', text: '🍽️ 잔치 시작' });
     const guide = h('div', {
       text: '식사 예절 세 가지 · ← → 고르기 · Space 선택',
-      style: { background: '#fff8ee', padding: '8px 12px', borderRadius: '12px', maxWidth: '90vw', textAlign: 'center', fontSize: '16px' },
+      style: { background: '#fff8ee', padding: '8px 12px', borderRadius: '12px', maxWidth: '90vw', textAlign: 'center', fontSize: 'calc(16px * var(--t))' },
     });
     panel = h('div', { class: 'mini-panel', 'data-minigame': 'feast', role: 'group', 'aria-label': '가족 잔치' }, info, guide, startButton);
     svc.ui.root.append(panel);

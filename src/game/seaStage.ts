@@ -18,11 +18,13 @@ import { block } from '../core/placeholders';
 import { createEnvironment, type Environment } from '../world/environment';
 import { alignLengthToZ, makeProp, splitByHeight } from '../world/props';
 import { buildGate } from '../world/gates';
+import { compactModel } from '../world/merge';
 import { Effects, label } from '../play/effects';
 import { HumanoidRig } from '../play/rig';
 import { englishWords } from '../learning/data';
 import { h, sleep } from '../ui/dom';
 import { ChapterStage } from './chapterStage';
+import { prefs } from './prefs';
 import type { Services } from './services';
 
 const MAX_HP = 3;
@@ -125,6 +127,8 @@ export class SeaStage extends ChapterStage {
   private gates: SeaGate[] = [];
   private boss: SeaBoss | null = null;
   private bossDone = false;
+  /** 뗏목이 부서져 다시 시작한 횟수 — 많을수록 바다가 순해진다 (아이가 끝까지 갈 수 있게) */
+  private fails = 0;
 
   constructor(chapter: ChapterData, layout: IslandLayout, svc: Services) {
     super(chapter, layout, svc);
@@ -143,7 +147,7 @@ export class SeaStage extends ChapterStage {
     // 돛대·돛(높은 부분)은 숨긴다 — 앞이 잘 보이게 (2장: 폭풍에 부러짐)
     splitByHeight(raftModel, 0.9).tall.forEach((m) => (m.visible = false));
     this.raft.add(raftModel);
-    this.hero = getModel('odysseus', { avatar: svc.save.data?.avatar });
+    this.hero = compactModel(getModel('odysseus', { avatar: svc.save.data?.avatar }));
     this.hero.position.set(0, 0.4, -0.6);
     this.raft.add(this.hero);
     this.rig = new HumanoidRig(this.hero);
@@ -219,7 +223,7 @@ export class SeaStage extends ChapterStage {
         this.vy = JUMP;
         this.svc.audio.sfx('jump');
       }
-      if (!this.halted) this.z += this.speed * dt;
+      if (!this.halted) this.z += this.speed * (1 - 0.1 * Math.min(3, this.fails)) * dt;
       if (this.mode === 'runner') this.spawnAhead();
       else {
         this.checkGates();
@@ -271,8 +275,9 @@ export class SeaStage extends ChapterStage {
 
     // 카메라 — 세로 화면에서도 세 줄이 모두 보이도록 더 뒤·위에서
     this.shake = Math.max(0, this.shake - dt * 2);
-    const sx = (Math.random() - 0.5) * this.shake;
-    const sy = (Math.random() - 0.5) * this.shake;
+    const shake = prefs.calm ? 0 : this.shake;
+    const sx = (Math.random() - 0.5) * shake;
+    const sy = (Math.random() - 0.5) * shake;
     const tall = this.camera.aspect < 0.8;
     const wide = this.mode === 'sail' ? 1.25 : 1;
     const back = (tall ? 15 : 9.5) * wide;
@@ -305,7 +310,7 @@ export class SeaStage extends ChapterStage {
       const at = this.nextSpawn;
       const nearCalm = this.checkpoints.some((c) => c > 0 && Math.abs(c - at) < 25);
       if (!nearCalm) this.spawnPattern(at);
-      this.nextSpawn += 18 + this.rng.next() * 12;
+      this.nextSpawn += (18 + this.rng.next() * 12) * (this.fails >= 2 ? 1.5 : 1);
     }
     while (this.nextLetterAt < horizon && this.nextLetterAt < this.length - 30) {
       this.spawnLetters(this.nextLetterAt);
@@ -318,9 +323,9 @@ export class SeaStage extends ChapterStage {
     const progress = z / this.length;
     if (r < 0.45) {
       // 바위 1~2개 (빈 줄은 꼭 남긴다)
-      const lanes = this.rng.shuffle([0, 1, 2]).slice(0, progress > 0.4 && this.rng.chance(0.5) ? 2 : 1);
+      const lanes = this.rng.shuffle([0, 1, 2]).slice(0, progress > 0.4 && this.fails < 2 && this.rng.chance(0.5) ? 2 : 1);
       for (const lane of lanes) {
-        const rock = makeProp('rock');
+        const rock = compactModel(makeProp('rock'));
         rock.scale.setScalar(1.4);
         this.addThing({ kind: 'rock', lane, z, obj: rock });
       }
@@ -455,7 +460,7 @@ export class SeaStage extends ChapterStage {
   private buildCourse() {
     for (const p of this.layout.props) {
       if (this.hazardLane(p.model, p.pos[0]) >= 0) continue;
-      const obj = makeProp(p.model);
+      const obj = compactModel(makeProp(p.model));
       obj.position.set(p.pos[0], -0.8, p.pos[1]);
       obj.rotation.y = p.rotY ?? 0;
       obj.scale.setScalar(p.scale ?? 1);
@@ -484,7 +489,7 @@ export class SeaStage extends ChapterStage {
     for (const p of this.layout.props) {
       const lane = this.hazardLane(p.model, p.pos[0]);
       if (lane < 0 || p.pos[1] < fromZ) continue;
-      const obj = makeProp(p.model);
+      const obj = compactModel(makeProp(p.model));
       obj.scale.setScalar((p.scale ?? 1) * 1.2);
       this.addThing({ kind: HAZARD_PROPS[p.model]!, lane, z: p.pos[1], obj });
     }
@@ -534,7 +539,7 @@ export class SeaStage extends ChapterStage {
   }
 
   private makeBoss(z: number): SeaBoss {
-    const model = getModel(this.layout.boss!.id);
+    const model = compactModel(getModel(this.layout.boss!.id));
     model.position.set(0, -1.5, z);
     model.rotation.y = Math.PI;
     this.scene.add(model);
@@ -633,7 +638,8 @@ export class SeaStage extends ChapterStage {
 
   private hurt() {
     if (this.invuln > 0) return;
-    this.hp--;
+    // 세 번 넘게 다시 시작했다면 마지막 하트는 지켜 준다 — 언젠가는 꼭 지나갈 수 있게
+    this.hp = this.fails >= 3 ? Math.max(1, this.hp - 1) : this.hp - 1;
     this.invuln = 1.5;
     this.shake = 0.8;
     this.svc.audio.sfx('player_hurt');
@@ -652,6 +658,7 @@ export class SeaStage extends ChapterStage {
       this.svc.ui.hud.toast('🧣 이노의 스카프! 뗏목이 다시 튼튼해졌어요', 2600);
     } else {
       await this.svc.ui.screens.fade(true, 350);
+      this.fails++;
       this.z = this.lastCheckpoint;
       this.clearAhead();
       if (this.boss?.active) {
@@ -663,7 +670,7 @@ export class SeaStage extends ChapterStage {
       }
       this.halted = false;
       await this.svc.ui.screens.fade(false, 350);
-      this.svc.ui.hud.toast('🚩 체크포인트에서 다시! 할 수 있어요 💪', 2400);
+      this.svc.ui.hud.toast(this.fails >= 2 ? '🌊 바다가 조금 잔잔해졌어요. 천천히 가 봐요!' : '🚩 체크포인트에서 다시! 할 수 있어요 💪', 2400);
     }
     this.hp = MAX_HP;
     this.invuln = 2;
@@ -718,7 +725,7 @@ export class SeaStage extends ChapterStage {
     shore.add(block(70, 2, 30, '#e6c98c', 0, 0, L + 22));
     shore.add(block(50, 3, 18, '#7cc45a', 0, 1, L + 34));
     for (const [x, dz] of [[-14, 18], [10, 20], [22, 26], [-24, 28]]) {
-      const p = makeProp('palmTree');
+      const p = compactModel(makeProp('palmTree'));
       p.position.set(x, 1, L + dz);
       shore.add(p);
     }

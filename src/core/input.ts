@@ -44,7 +44,8 @@ export class Input {
     window.addEventListener('pointermove', this.onPointerMove);
     window.addEventListener('pointerup', this.onPointerUp);
     window.addEventListener('pointercancel', this.onPointerUp);
-    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    // 길게 누르기(이동·버튼)로 메뉴가 뜨지 않게
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
       this.cam.zoom += Math.sign(e.deltaY);
@@ -139,7 +140,8 @@ export class Input {
   };
 
   private onPointerDown = (e: PointerEvent) => {
-    if (e.pointerType === 'touch') {
+    // 태블릿 펜도 손가락과 똑같이 다룬다 (터치 버튼이 사라지지 않게)
+    if (e.pointerType === 'touch' || e.pointerType === 'pen') {
       this.setTouchMode(true);
       if (!this.drag) this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY };
       return;

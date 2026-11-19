@@ -11,6 +11,7 @@ import { makeProp } from '../world/props';
 import { createRig, type CreatureRig, type HumanoidRig } from '../play/rig';
 import { Effects } from '../play/effects';
 import { buildClouds, buildIsland } from './titleStage';
+import { prefs } from './prefs';
 import type { Stage } from './services';
 
 const FIREWORK = ['#ffe066', '#ff8fb1', '#8fd3ff', '#b7f28f', '#ffffff'];
@@ -26,7 +27,6 @@ export class EndingStage implements Stage {
   private actors: { model: Object3D; rig: HumanoidRig | CreatureRig; wave?: boolean; hop?: boolean; baseY: number }[] = [];
   private center = new Vector3(4, 0, 0);
   private portrait = false;
-  private reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
   constructor(avatar?: AvatarCustomization) {
     this.env = createEnvironment(this.scene, 'dusk');
@@ -76,7 +76,7 @@ export class EndingStage implements Stage {
   }
 
   update(dt: number, _input?: InputFrame) {
-    this.t += dt * (this.reduceMotion ? 0.4 : 1);
+    this.t += dt * (prefs.calm ? 0.4 : 1);
     const t = this.t;
     this.env.follow(this.center);
     this.env.update(t);
@@ -95,7 +95,7 @@ export class EndingStage implements Stage {
 
     // 별가루 불꽃
     this.nextFirework -= dt;
-    if (this.nextFirework <= 0 && !this.reduceMotion) {
+    if (this.nextFirework <= 0 && !prefs.calm) {
       this.nextFirework = 0.9 + Math.random() * 0.8;
       const at = new Vector3(this.center.x + 10 + Math.random() * 14, this.center.y + 9 + Math.random() * 6, this.center.z - 12 + Math.random() * 24);
       this.fx.burst(at, FIREWORK[Math.floor(Math.random() * FIREWORK.length)], 60, 7, 2);

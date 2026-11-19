@@ -1,8 +1,9 @@
 /** 하늘·빛·바다 — 장면 분위기(mood)별 */
 import {
-  BackSide, BufferAttribute, Color, DirectionalLight, Fog, HemisphereLight, Mesh, MeshStandardMaterial,
+  BackSide, BufferAttribute, Color, DirectionalLight, Fog, HemisphereLight, type Material, Mesh, MeshLambertMaterial, MeshStandardMaterial,
   PlaneGeometry, type Scene, ShaderMaterial, SphereGeometry, type Vector3,
 } from 'three';
+import { qualityTier } from '../core/quality';
 
 export type Mood = 'day' | 'memory' | 'storm' | 'dusk';
 
@@ -32,8 +33,14 @@ export interface Environment {
   waterHeight(x: number, z: number, t: number): number;
 }
 
-const SEG = 90;
 const SIZE = 520;
+
+/** 바다 재질 — 화질이 낮으면 빛 반사 계산을 뺀다 */
+export function waterMaterial(color: string | Color, simple: boolean): Material {
+  return simple
+    ? new MeshLambertMaterial({ color, flatShading: true })
+    : new MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.05, flatShading: true });
+}
 
 export function createEnvironment(scene: Scene, mood: Mood): Environment {
   const m = MOODS[mood];
@@ -68,20 +75,23 @@ export function createEnvironment(scene: Scene, mood: Mood): Environment {
   scene.add(sky);
 
   scene.add(new HemisphereLight(m.hemiSky, m.hemiGround, m.hemi));
+  const tier = qualityTier();
   const sun = new DirectionalLight(m.sun, m.sunI);
-  sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.castShadow = tier.shadowMap > 0;
+  sun.shadow.mapSize.set(tier.shadowMap || 1024, tier.shadowMap || 1024);
   Object.assign(sun.shadow.camera, { left: -36, right: 36, top: 36, bottom: -36, near: 1, far: 160 });
   sun.shadow.camera.updateProjectionMatrix();
   sun.shadow.bias = -0.0004;
   sun.shadow.normalBias = 0.03;
   scene.add(sun, sun.target);
 
+  const SEG = tier.waterSeg;
   const geo = new PlaneGeometry(SIZE, SIZE, SEG, SEG);
   geo.rotateX(-Math.PI / 2);
   const base = Float32Array.from(geo.attributes.position.array as Float32Array);
-  const water = new Mesh(geo, new MeshStandardMaterial({ color: m.water, roughness: 0.3, metalness: 0.05, flatShading: true }));
+  const water = new Mesh(geo, waterMaterial(m.water, tier.simpleWater));
   water.receiveShadow = true;
+  water.userData.water = true;
   scene.add(water);
 
   const cellSize = SIZE / SEG;
@@ -105,8 +115,7 @@ export function createEnvironment(scene: Scene, mood: Mood): Environment {
       const pos = geo.attributes.position as BufferAttribute;
       const arr = pos.array as Float32Array;
       for (let i = 0; i < arr.length; i += 3) arr[i + 1] = waveHeight(base[i] + ox, base[i + 2] + oz, t, amp);
-      pos.needsUpdate = true;
-      geo.computeVertexNormals();
+      pos.needsUpdate = true; // 면마다 평평하게 칠하므로(flatShading) 법선은 다시 계산하지 않아도 된다
     },
     waterHeight: (x, z, t) => waveHeight(x, z, t, amp),
   };

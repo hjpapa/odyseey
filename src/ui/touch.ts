@@ -8,10 +8,17 @@ export class TouchControls {
   private el = h('div', { class: 'touch' });
   private layout: TouchLayout = 'none';
   private actBtn: HTMLButtonElement | null = null;
+  private repeat: ReturnType<typeof setInterval> | null = null;
 
   constructor(root: HTMLElement, private input: Input) {
     root.append(this.el);
     input.onTouchModeChange = () => this.render();
+    this.markMode();
+  }
+
+  /** 터치로 노는 중인지 CSS 에 알린다 (안내 문구 자리가 달라진다) */
+  private markMode() {
+    document.documentElement.classList.toggle('touch-mode', this.input.touchMode);
   }
 
   set(layout: TouchLayout) {
@@ -27,7 +34,14 @@ export class TouchControls {
     if (label) this.actBtn.setAttribute('aria-label', label);
   }
 
+  private stopRepeat() {
+    if (this.repeat !== null) clearInterval(this.repeat);
+    this.repeat = null;
+  }
+
   private render() {
+    this.markMode();
+    this.stopRepeat();
     this.el.replaceChildren();
     this.actBtn = null;
     this.input.setTouchMove(0, 0);
@@ -36,15 +50,23 @@ export class TouchControls {
     else this.renderRunner();
   }
 
-  private button(label: string, b: Button, cls = '') {
+  /** holdMs: 누르고 있으면 그 간격으로 계속 (칼 휘두르기) */
+  private button(label: string, b: Button, cls = '', holdMs = 0) {
     const el = h('button', { class: `tbtn ${cls}`, type: 'button', 'aria-label': label, text: label });
     el.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       e.stopPropagation();
       el.classList.add('pressed');
       this.input.press(b);
+      if (holdMs) {
+        this.stopRepeat();
+        this.repeat = setInterval(() => this.input.press(b), holdMs);
+      }
     });
-    const up = () => el.classList.remove('pressed');
+    const up = () => {
+      el.classList.remove('pressed');
+      if (holdMs) this.stopRepeat();
+    };
     el.addEventListener('pointerup', up);
     el.addEventListener('pointercancel', up);
     el.addEventListener('pointerleave', up);
@@ -103,7 +125,7 @@ export class TouchControls {
       h('span'),
       this.button('⤴️', 'jump'),
       this.button('🌀', 'roll'),
-      this.button('⚔️', 'attack', 'big'),
+      this.button('⚔️', 'attack', 'big', 240),
     );
     this.actBtn = this.button('✋', 'interact', 'act');
     this.actBtn.style.display = 'none';

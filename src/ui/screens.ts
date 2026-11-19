@@ -1,6 +1,7 @@
 /** 메뉴 화면들: 타이틀, 학년 고르기, 멈춤·설정(+보호자 모드), 장 완료, 준비 중, 확인 */
 import type { Grade } from '../types/contracts';
 import type { ParentReport } from '../game/parentReport';
+import { prefs, setPref, type Prefs } from '../game/prefs';
 import { formatPlayTime } from '../game/progress';
 import { h, sleep } from './dom';
 
@@ -21,6 +22,7 @@ export class Screens {
   }
 
   flash() {
+    if (prefs.calm) return;
     this.flashEl.classList.remove('go');
     void this.flashEl.offsetWidth;
     this.flashEl.classList.add('go');
@@ -138,6 +140,17 @@ export class Screens {
         input.addEventListener('input', () => opts.onVolume(ch, Number(input.value)));
         return h('div', { class: 'settings-row' }, h('span', { text: label }), input);
       };
+      const toggle = (label: string, key: keyof Prefs) => {
+        const b = h('button', { class: 'btn gray small toggle', type: 'button', role: 'switch', 'aria-label': label });
+        const paint = () => {
+          b.textContent = prefs[key] ? '켜짐' : '꺼짐';
+          b.classList.toggle('on', prefs[key]);
+          b.setAttribute('aria-checked', String(prefs[key]));
+        };
+        b.addEventListener('click', () => { setPref(key, !prefs[key]); paint(); });
+        paint();
+        return h('div', { class: 'settings-row' }, h('span', { text: label }), b);
+      };
       let gradeRow: HTMLElement | null = null;
       if (opts.grade) {
         const seg = h('div', { class: 'seg' });
@@ -157,7 +170,14 @@ export class Screens {
         slider('🔊 전체 소리', 'master'),
         slider('🎵 배경음', 'bgm'),
         slider('💥 효과음', 'sfx'),
-        h('p', { style: { fontSize: '15px', color: '#667' }, text: '조작: WASD 이동 · Space 점프 · J/클릭 공격 · Shift 구르기 · E 말하기 · 오른쪽 드래그 카메라' }),
+        toggle('🔠 큰 글씨', 'bigText'),
+        toggle('🌙 번쩍임·흔들림 줄이기', 'calm'),
+        h('p', {
+          class: 'settings-help',
+          text: document.documentElement.classList.contains('touch-mode')
+            ? '조작: 왼쪽을 끌어 이동 · ⚔️ 공격 · ⤴️ 점프 · 🌀 구르기 · ✋ 말하기 · 오른쪽을 끌어 카메라'
+            : '조작: WASD 이동 · Space 점프 · J/클릭 공격 · Shift 구르기 · E 말하기 · 오른쪽 드래그 카메라',
+        }),
         h('div', { class: 'row' }, parentBtn, ...extras, resume),
       ];
       const card = h('div', { class: 'card' }, ...mainView);
