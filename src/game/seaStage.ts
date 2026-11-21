@@ -6,8 +6,8 @@
  *   바다 위 지혜의 문 앞에서 멈춰 퀴즈를 풀고, 보스(스킬라) 무대에서 멈춰 싸운다.
  */
 import {
-  AdditiveBlending, BoxGeometry, BufferAttribute, BufferGeometry, Group, Mesh, MeshBasicMaterial, MeshToonMaterial,
-  type Object3D, Points, PointsMaterial, Scene, SphereGeometry, Vector3,
+  AdditiveBlending, Box3, BoxGeometry, BufferAttribute, BufferGeometry, Color, Group, InstancedMesh, Matrix4, Mesh,
+  MeshBasicMaterial, MeshToonMaterial, type Object3D, Points, PointsMaterial, RingGeometry, Scene, SphereGeometry, Vector3,
 } from 'three';
 import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import type { ChapterData, EnglishWord, IslandLayout, Objective, PropId } from '../types/contracts';
@@ -29,7 +29,28 @@ import type { Services } from './services';
 
 const MAX_HP = 3;
 const JUMP = 9;
-const GRAV = 26;
+/** 떠 있는 시간이 1초쯤 — 파도를 넘는 때를 넉넉하게 맞출 수 있다 */
+const GRAV = 18;
+/** 다친 뒤 깜빡이며 다치지 않는 시간(초) */
+const INVULN = 2;
+/** 번개·스킬라가 내리치기 전에 미리 알려 주는 시간(초) */
+const BOLT_WARN = 1.8;
+const BOSS_WARN = 1.7;
+/** 파도와 부딪히는 앞뒤 거리 */
+const WAVE_HIT = 0.9;
+/** 파도를 넘는 높이 — 점프한 뒤 [AIR_FROM, AIR_TO] 초 동안 이 높이 위에 있다 */
+const CLEAR_H = 0.9;
+const AIR_D = Math.sqrt(JUMP * JUMP - 2 * GRAV * CLEAR_H);
+const AIR_FROM = (JUMP - AIR_D) / GRAV;
+const AIR_TO = (JUMP + AIR_D) / GRAV;
+/** 줄 사이 부표 간격(m)과 한 줄에 놓는 개수 */
+const BUOY_GAP = 9;
+const BUOY_N = 14;
+
+/** 바위·소용돌이 둘레의 물거품 고리 — 내 줄로 다가오면 빨갛게 깜빡인다 */
+const RING_GEO = new RingGeometry(1, 1.3, 20).rotateX(-Math.PI / 2);
+const RING_SAFE = new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.7, depthWrite: false });
+const RING_DANGER = new MeshBasicMaterial({ color: '#ff4040', transparent: true, opacity: 0.95, depthWrite: false });
 
 type Kind = 'rock' | 'pool' | 'wave' | 'letter' | 'bolt';
 interface Thing {
@@ -39,6 +60,9 @@ interface Thing {
   obj: Group | Mesh;
   letter?: string;
   tag?: CSS2DObject;
+  /** 바위·소용돌이: 물거품 고리와 그 크기 */
+  ring?: Mesh;
+  ringR?: number;
   /** 번개: 내리치기까지 남은 시간 */
   t?: number;
   /** 번개: 뗏목이 가까이 와서 예고가 시작됨 */
@@ -65,6 +89,8 @@ interface SeaBoss {
   t: number;
   phase: 'idle' | 'warn';
   lane: number;
+  /** 내리칠 줄 위의 경고 표시 */
+  warnTag: CSS2DObject;
   strikes: number;
   busy: boolean;
   active: boolean;
@@ -84,6 +110,29 @@ const FALLBACK_WORDS: Pick<EnglishWord, 'word' | 'meaningKo' | 'emoji'>[] = [
   { word: 'sun', meaningKo: '해', emoji: '☀️' },
   { word: 'star', meaningKo: '별', emoji: '⭐' },
 ];
+
+/**
+ * 세 줄의 x 위치 — 0번 줄(◀)이 화면 왼쪽.
+ * 바다 카메라는 +z 쪽을 바라보므로 화면 왼쪽이 +x 다 (반대로 두면 ◀ 를 눌렀을 때 배가 오른쪽으로 간다).
+ */
+export function seaLanes(side: number): number[] {
+  return [side, 0, -side];
+}
+
+/** 바다 카메라 자리 — 높이서 앞쪽을 내려다봐서, 세로 화면에서도 세 줄과 다가오는 장애물이 오디세우스에 가리지 않는다 */
+export function seaCameraPose(x: number, y: number, z: number, aspect: number, sail: boolean, pos: Vector3, look: Vector3) {
+  const tall = aspect < 0.8;
+  const wide = sail ? 1.2 : 1;
+  const back = (tall ? 13 : 9.5) * wide;
+  const up = (tall ? 10.5 : 7) * wide;
+  pos.set(x * 0.4, y + up, z - back);
+  look.set(x * 0.5, 0.3, z + (tall ? 15 : 16));
+}
+
+const camPos = new Vector3();
+const camLook = new Vector3();
+const buoyM = new Matrix4();
+const buoyC = new Color();
 
 export class SeaStage extends ChapterStage {
   readonly scene = new Scene();
@@ -129,12 +178,18 @@ export class SeaStage extends ChapterStage {
   private bossDone = false;
   /** 뗏목이 부서져 다시 시작한 횟수 — 많을수록 바다가 순해진다 (아이가 끝까지 갈 수 있게) */
   private fails = 0;
+  /** 줄 사이 부표 (세 줄이 눈에 보이게) */
+  private buoys: InstancedMesh;
+  /** 처음 본 장애물마다 한 번씩 피하는 법을 알려 준다 */
+  private tipped = new Set<Kind>();
+  private jumpReady = false;
 
   constructor(chapter: ChapterData, layout: IslandLayout, svc: Services) {
     super(chapter, layout, svc);
     this.mode = chapter.objectives.some((o) => o.type === 'minigame' && o.target === 'waveRunner') ? 'runner' : 'sail';
     const half = (layout.course?.width ?? 12) / 2;
-    this.lanes = this.mode === 'runner' ? [-4, 0, 4] : [-half * 0.66, 0, half * 0.66];
+    // 카메라가 +z 쪽을 바라보므로 화면 왼쪽이 +x 다 — 0번 줄(◀)이 화면 왼쪽에 오게 한다
+    this.lanes = seaLanes(this.mode === 'runner' ? 4 : half * 0.66);
     this.speed = this.mode === 'runner' ? 14 : 10;
     this.length = layout.course?.length ?? 900;
     this.checkpoints = layout.checkpoints.map((c) => c.pos[1]).sort((a, b) => a - b);
@@ -152,6 +207,9 @@ export class SeaStage extends ChapterStage {
     this.raft.add(this.hero);
     this.rig = new HumanoidRig(this.hero);
     this.scene.add(this.raft);
+    this.buoys = new InstancedMesh(new BoxGeometry(0.42, 0.62, 0.42), new MeshToonMaterial({ color: '#ffffff' }), BUOY_N * 2);
+    this.buoys.frustumCulled = false;
+    this.scene.add(this.buoys);
 
     if (this.mode === 'runner') {
       this.poseidon = getModel('poseidon');
@@ -178,17 +236,90 @@ export class SeaStage extends ChapterStage {
       h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center' } }, this.mode === 'runner' ? this.wordCard : null, barWrap),
     );
     if (this.mode === 'runner') this.renderWord();
-    svc.ui.touch.set('runner');
+    // 항해에는 넘을 파도가 없으니 점프 버튼을 두지 않는다
+    svc.ui.touch.set(this.mode === 'runner' ? 'runner' : 'sail');
     this.place();
+    this.placeBuoys();
   }
 
   override begin() {
     super.begin();
     const touch = this.svc.input.touchMode;
     const hint = this.mode === 'runner'
-      ? touch ? '◀ ▶ 로 줄을 바꾸고, ⤴️ 로 파도를 넘어요!' : '← → (A/D) 로 줄 바꾸기 · Space 로 파도 넘기'
-      : touch ? '◀ ▶ 로 줄을 바꿔 바위와 소용돌이를 피해요!' : '← → (A/D) 로 줄을 바꿔 바위와 소용돌이를 피해요';
+      ? touch ? '◀ ▶ 로 줄을 바꾸고, ⤴️ 로 파도를 넘어요! 화면을 밀어도 돼요' : '← → (A/D) 로 줄 바꾸기 · Space 로 파도 넘기'
+      : touch ? '◀ ▶ 로 줄을 바꿔 바위와 소용돌이를 피해요! 화면을 밀어도 돼요' : '← → (A/D) 로 줄을 바꿔 바위와 소용돌이를 피해요';
     this.svc.ui.hud.toast(hint, 4500);
+  }
+
+  /** 멈춤 창의 조작 안내 [터치, 키보드] — 항해에는 점프가 없다 */
+  get controlsHelp(): [string, string] {
+    return this.mode === 'runner'
+      ? ['조작: ◀ ▶ 줄 바꾸기 · ⤴️ 파도 넘기 · 화면을 옆으로 밀어도 줄이 바뀌어요', '조작: ← → (A/D) 줄 바꾸기 · Space 파도 넘기']
+      : ['조작: ◀ ▶ 줄 바꾸기 · 화면을 옆으로 밀어도 줄이 바뀌어요', '조작: ← → (A/D) 줄 바꾸기'];
+  }
+
+  /** 지금 빠르기 — 러너는 처음 250m 동안 천천히 빨라지고, 다시 시작할수록 느려진다 */
+  private get pace() {
+    const ramp = this.mode === 'runner' ? 0.75 + 0.25 * Math.min(1, this.z / 250) : 1;
+    return this.speed * ramp * (1 - 0.1 * Math.min(3, this.fails));
+  }
+
+  /** 처음 보는 장애물마다 한 번, 피하는 법을 알려 준다 */
+  private tip(kind: Kind) {
+    if (this.tipped.has(kind)) return;
+    this.tipped.add(kind);
+    const touch = this.svc.input.touchMode;
+    const move = touch ? '◀ ▶' : '← →';
+    const text: Record<Kind, string> = {
+      rock: `🪨 내 줄로 오는 바위는 빨갛게 빛나요. ${move} 로 피해요!`,
+      pool: `🌀 소용돌이도 빨갛게 빛나면 ${move} 로 피해요!`,
+      wave: touch ? '🌊 큰 파도! ⤴️ 가 반짝일 때 눌러서 넘어요' : '🌊 큰 파도! ⤴️ 가 반짝일 때 Space 로 넘어요',
+      bolt: '⚡ 번개가 칠 줄이 노랗게 빛나요! 옆 줄로 비켜요',
+      letter: '',
+    };
+    if (text[kind]) this.svc.ui.hud.toast(text[kind], 3400);
+  }
+
+  private setJumpReady(on: boolean) {
+    if (on === this.jumpReady) return;
+    this.jumpReady = on;
+    this.svc.ui.touch.setJumpReady(on);
+  }
+
+  /** lane 말고 다른 줄 가운데, 앞으로 sec 초 동안 바위·소용돌이가 없는 줄이 있는가 */
+  private canDodge(lane: number, sec: number): boolean {
+    const reach = this.z + this.pace * sec + 4;
+    return [0, 1, 2].some((l) => l !== lane && !this.things.some((t) =>
+      (t.kind === 'rock' || t.kind === 'pool') && !t.done && t.lane === l && t.z > this.z - 1 && t.z < reach));
+  }
+
+  /** 줄 사이 부표 — 뗏목 앞뒤로만 놓고, 지나가면 앞으로 옮긴다 */
+  private placeBuoys() {
+    const first = Math.floor((this.z - 12) / BUOY_GAP);
+    for (let i = 0; i < BUOY_N; i++) {
+      const n = first + i;
+      const z = n * BUOY_GAP;
+      for (let s = 0; s < 2; s++) {
+        const x = (this.lanes[s] + this.lanes[s + 1]) / 2;
+        const y = z < this.length - 6 ? this.env.waterHeight(x, z, this.time) + 0.1 : -50;
+        buoyM.makeTranslation(x, y, z);
+        this.buoys.setMatrixAt(i * 2 + s, buoyM);
+        this.buoys.setColorAt(i * 2 + s, buoyC.set(n % 2 ? '#ffffff' : '#ff8a3d'));
+      }
+    }
+    this.buoys.instanceMatrix.needsUpdate = true;
+    if (this.buoys.instanceColor) this.buoys.instanceColor.needsUpdate = true;
+  }
+
+  /** 바위·소용돌이 둘레에 물거품 고리를 단다 */
+  private withRing(t: Thing): Thing {
+    const size = new Box3().setFromObject(t.obj).getSize(new Vector3());
+    t.ringR = Math.max(1.2, Math.max(size.x, size.z) * 0.55);
+    t.ring = new Mesh(RING_GEO, RING_SAFE);
+    t.ring.position.set(t.lane >= 0 ? this.lanes[t.lane] : 0, 0, t.z);
+    t.ring.scale.setScalar(t.ringR);
+    this.scene.add(t.ring);
+    return t;
   }
 
   protected setupObjective(o: Objective | null) {
@@ -223,7 +354,7 @@ export class SeaStage extends ChapterStage {
         this.vy = JUMP;
         this.svc.audio.sfx('jump');
       }
-      if (!this.halted) this.z += this.speed * (1 - 0.1 * Math.min(3, this.fails)) * dt;
+      if (!this.halted) this.z += this.pace * dt;
       if (this.mode === 'runner') this.spawnAhead();
       else {
         this.checkGates();
@@ -243,6 +374,7 @@ export class SeaStage extends ChapterStage {
     this.updateThings(dt, active);
     if (this.boss) this.updateBoss(dt, active);
     this.place();
+    this.placeBuoys();
 
     this.rig.update(dt, { speed: 0, grounded: this.y <= 0.01, swing: null, combo: 0 });
     this.hero.visible = this.invuln <= 0 || Math.floor(this.invuln * 12) % 2 === 0;
@@ -273,17 +405,14 @@ export class SeaStage extends ChapterStage {
       }
     }
 
-    // 카메라 — 세로 화면에서도 세 줄이 모두 보이도록 더 뒤·위에서
+    // 카메라 — 높이서 앞을 내려다봐서 세로 화면에서도 세 줄과 다가오는 장애물이 보이게
     this.shake = Math.max(0, this.shake - dt * 2);
     const shake = prefs.calm ? 0 : this.shake;
-    const sx = (Math.random() - 0.5) * shake;
-    const sy = (Math.random() - 0.5) * shake;
-    const tall = this.camera.aspect < 0.8;
-    const wide = this.mode === 'sail' ? 1.25 : 1;
-    const back = (tall ? 15 : 9.5) * wide;
-    const up = (tall ? 8.5 : 5) * wide;
-    this.camera.position.set(this.x * 0.4 + sx, this.raft.position.y + up + sy, this.z - back);
-    this.camera.lookAt(this.x * 0.5, 0.5, this.z + (tall ? 12 : 10));
+    seaCameraPose(this.x, this.raft.position.y, this.z, this.camera.aspect, this.mode === 'sail', camPos, camLook);
+    camPos.x += (Math.random() - 0.5) * shake;
+    camPos.y += (Math.random() - 0.5) * shake;
+    this.camera.position.copy(camPos);
+    this.camera.lookAt(camLook);
 
     this.env.follow(new Vector3(this.x, 0, this.z));
     this.env.update(this.time);
@@ -319,25 +448,34 @@ export class SeaStage extends ChapterStage {
   }
 
   private spawnPattern(z: number) {
-    const r = this.rng.next();
     const progress = z / this.length;
+    // 하나씩 익히게 — 처음에는 바위만, 120m 부터 파도, 230m 부터 번개
+    const r = this.rng.next() * (z < 120 ? 0.45 : z < 230 ? 0.75 : 1);
     if (r < 0.45) {
       // 바위 1~2개 (빈 줄은 꼭 남긴다)
       const lanes = this.rng.shuffle([0, 1, 2]).slice(0, progress > 0.4 && this.fails < 2 && this.rng.chance(0.5) ? 2 : 1);
       for (const lane of lanes) {
         const rock = compactModel(makeProp('rock'));
         rock.scale.setScalar(1.4);
-        this.addThing({ kind: 'rock', lane, z, obj: rock });
+        this.addThing(this.withRing({ kind: 'rock', lane, z, obj: rock }));
       }
     } else if (r < 0.75) {
       const wave = new Mesh(new BoxGeometry(13, 1.4, 1.4), new MeshToonMaterial({ color: '#cfe8ff', transparent: true, opacity: 0.85 }));
       const crest = block(13.2, 0.35, 0.6, '#ffffff', 0, 0.8, 0.2);
       wave.add(crest);
-      this.addThing({ kind: 'wave', lane: -1, z, obj: wave });
+      // 뗏목 바로 앞에 ⤴️ — 지금 누르면 넘을 수 있을 때 반짝인다
+      const tag = label('⤴️', 'hazard-tag jump');
+      tag.position.set(0, 2.2, 0);
+      wave.add(tag);
+      this.addThing({ kind: 'wave', lane: -1, z, obj: wave, tag });
     } else {
-      // 번개: 지금 있는 줄을 노린다 (예고 1.3초)
+      // 번개: 뗏목이 다가오면 그때 있는 줄을 노린다 (예고 BOLT_WARN 초)
       const glow = new Mesh(new BoxGeometry(3.2, 0.1, 10), new MeshBasicMaterial({ color: '#ffe066', transparent: true, opacity: 0.0, depthWrite: false }));
-      this.addThing({ kind: 'bolt', lane: this.lane, z, obj: glow, t: 1.3 });
+      const tag = label('⚡', 'hazard-tag');
+      tag.position.set(0, 2.4, -2);
+      tag.visible = false;
+      glow.add(tag);
+      this.addThing({ kind: 'bolt', lane: this.lane, z, obj: glow, t: BOLT_WARN, tag });
     }
   }
 
@@ -366,19 +504,49 @@ export class SeaStage extends ChapterStage {
   }
 
   private updateThings(dt: number, active: boolean) {
+    // 지금 누르면 파도를 넘을 수 있는 앞쪽 거리 (떠 있는 시간 × 빠르기, 앞뒤로 조금 여유)
+    const pace = this.pace;
+    const jumpFrom = WAVE_HIT + pace * AIR_FROM + 0.3;
+    const jumpTo = pace * AIR_TO - WAVE_HIT - 0.3;
+    let ready = false;
     for (const t of this.things) {
       const wave = this.env.waterHeight(t.obj.position.x, t.z, this.time);
+      const dz = t.z - this.z;
+      if (active && !t.done && t.kind !== 'bolt' && dz > 0 && dz < 30) this.tip(t.kind);
       if (t.kind === 'letter') t.obj.position.y = wave + 1.4 + Math.sin(this.time * 3 + t.z) * 0.2;
-      else if (t.kind === 'wave') t.obj.position.y = wave + 0.5;
-      else if (t.kind === 'rock') t.obj.position.y = wave - 0.6;
-      else if (t.kind === 'pool') {
-        t.obj.position.y = wave + 0.05;
-        t.obj.rotation.y += dt * 2.5;
+      else if (t.kind === 'wave') {
+        t.obj.position.y = wave + 0.5;
+        const go = active && !t.done && this.y <= 0.01 && dz >= jumpFrom && dz <= jumpTo;
+        if (t.tag) {
+          t.tag.position.x = this.x - t.obj.position.x;
+          t.tag.element.classList.toggle('go', go);
+        }
+        ready ||= go;
+      } else if (t.kind === 'rock' || t.kind === 'pool') {
+        if (t.kind === 'rock') t.obj.position.y = wave - 0.6;
+        else {
+          t.obj.position.y = wave + 0.05;
+          t.obj.rotation.y += dt * 2.5;
+        }
+        if (t.ring) {
+          // 내 줄로 다가오는 것만 빨갛게 — 어느 쪽으로 피할지 한눈에
+          const danger = !t.done && t.lane === this.lane && dz > -1 && dz < 32;
+          t.ring.material = danger ? RING_DANGER : RING_SAFE;
+          t.ring.scale.setScalar(t.ringR! * (danger && !prefs.calm ? 1 + Math.sin(this.time * 10) * 0.1 : 1));
+          t.ring.position.set(t.obj.position.x, wave + 0.12, t.z);
+        }
       } else if (t.kind === 'bolt' && active && !t.done) {
         if (!t.armed) {
           if (this.z < t.z - 12) continue;
+          // 비켜설 줄이 모두 바위로 막혀 있으면 이번 번개는 치지 않는다
+          if (!this.canDodge(this.lane, BOLT_WARN)) {
+            t.done = true;
+            continue;
+          }
           t.armed = true;
           t.lane = this.lane;
+          if (t.tag) t.tag.visible = true;
+          this.tip('bolt');
           this.svc.audio.sfx('magic', { volume: 0.5 });
         }
         t.t! -= dt;
@@ -396,11 +564,13 @@ export class SeaStage extends ChapterStage {
         }
       }
     }
+    this.setJumpReady(ready);
     // 지나간 것 정리
     this.things = this.things.filter((t) => {
       const gone = t.done || t.z < this.z - 8;
       if (gone) {
         t.obj.removeFromParent();
+        t.ring?.removeFromParent();
         t.tag?.element.remove();
       }
       return !gone;
@@ -409,13 +579,13 @@ export class SeaStage extends ChapterStage {
 
   private collide() {
     for (const t of this.things) {
-      if (t.done || Math.abs(t.z - this.z) > 1.3) continue;
+      if (t.done || Math.abs(t.z - this.z) > (t.kind === 'wave' ? WAVE_HIT : 1.3)) continue;
       if ((t.kind === 'rock' || t.kind === 'pool') && t.lane === this.lane && this.y < 1.2) {
         t.done = true;
         this.fx.burst(t.obj.position.clone().setY(1), t.kind === 'pool' ? '#7fd3ff' : '#9aa3ad', 14, 4, 3);
         if (t.kind === 'pool') this.svc.audio.sfx('whirlpool');
         this.hurt();
-      } else if (t.kind === 'wave' && this.y < 0.9) {
+      } else if (t.kind === 'wave' && this.y < CLEAR_H) {
         t.done = true;
         this.fx.burst(new Vector3(this.x, 1.2, this.z), '#ffffff', 20, 5, 4);
         this.svc.audio.sfx('splash');
@@ -491,7 +661,7 @@ export class SeaStage extends ChapterStage {
       if (lane < 0 || p.pos[1] < fromZ) continue;
       const obj = compactModel(makeProp(p.model));
       obj.scale.setScalar((p.scale ?? 1) * 1.2);
-      this.addThing({ kind: HAZARD_PROPS[p.model]!, lane, z: p.pos[1], obj });
+      this.addThing(this.withRing({ kind: HAZARD_PROPS[p.model]!, lane, z: p.pos[1], obj }));
     }
   }
 
@@ -551,8 +721,12 @@ export class SeaStage extends ChapterStage {
     const laneWidth = Math.abs(this.lanes[1] - this.lanes[0]) * 0.9;
     const glow = new Mesh(new BoxGeometry(laneWidth, 0.12, 9), new MeshBasicMaterial({ color: '#ff3b30', transparent: true, opacity: 0.4, depthWrite: false }));
     glow.visible = false;
+    // 빨간색만으로 알리지 않도록 줄 위에 경고 표시도 띄운다
+    const warnTag = label('⚠️', 'hazard-tag');
+    warnTag.position.set(0, 2.4, -1.5);
+    glow.add(warnTag);
     this.scene.add(glow);
-    return { name: '머리 여섯 스킬라', model, heads, glow, hp: 8, max: 8, t: 0, phase: 'idle', lane: 1, strikes: 0, busy: false, active: false, lunge: 0, head: 0 };
+    return { name: '머리 여섯 스킬라', model, heads, glow, hp: 8, max: 8, t: 0, phase: 'idle', lane: 1, warnTag, strikes: 0, busy: false, active: false, lunge: 0, head: 0 };
   }
 
   private updateBoss(dt: number, active: boolean) {
@@ -576,7 +750,7 @@ export class SeaStage extends ChapterStage {
       this.svc.audio.sfx('magic', { volume: 0.5 });
     } else if (s.phase === 'warn') {
       (s.glow.material as MeshBasicMaterial).opacity = 0.25 + 0.35 * Math.abs(Math.sin(this.time * 10));
-      if (s.t > 1.2) {
+      if (s.t > BOSS_WARN) {
         s.glow.visible = false;
         s.lunge = 0.4;
         s.head = s.strikes % Math.max(1, s.heads.length);
@@ -640,7 +814,7 @@ export class SeaStage extends ChapterStage {
     if (this.invuln > 0) return;
     // 세 번 넘게 다시 시작했다면 마지막 하트는 지켜 준다 — 언젠가는 꼭 지나갈 수 있게
     this.hp = this.fails >= 3 ? Math.max(1, this.hp - 1) : this.hp - 1;
-    this.invuln = 1.5;
+    this.invuln = INVULN;
     this.shake = 0.8;
     this.svc.audio.sfx('player_hurt');
     this.svc.ui.hud.flashHurt();
@@ -682,8 +856,10 @@ export class SeaStage extends ChapterStage {
   private clearAhead() {
     for (const t of this.things) {
       t.obj.removeFromParent();
+      t.ring?.removeFromParent();
       t.tag?.element.remove();
     }
+    this.setJumpReady(false);
     this.things = [];
     this.nextSpawn = this.z + 30;
     this.nextLetterAt = this.z + 20;
@@ -750,6 +926,8 @@ export class SeaStage extends ChapterStage {
   override dispose() {
     super.dispose();
     for (const t of this.things) t.tag?.element.remove();
+    this.boss?.warnTag.element.remove();
+    this.svc.ui.touch.setJumpReady(false);
     this.fx.dispose();
     this.svc.ui.hud.setExtra(null);
     this.svc.ui.hud.setBoss(null);

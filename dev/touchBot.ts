@@ -435,9 +435,9 @@ async function playMini(p: HTMLElement) {
     await sleep(50);
   } else if (txt.includes('바람 따라 이타카로')) {
     mark('windSail');
-    const WIND = ['왼쪽 60°', '왼쪽 30°', '똑바로', '오른쪽 30°', '오른쪽 60°'];
-    const want = WIND.findIndex((n) => p.children[1].textContent?.includes(n));
-    const have = WIND.findIndex((n) => p.children[2].textContent?.includes(n));
+    // 위 줄(바람)과 아래 줄(돛)의 화살표 칸을 맞춘다
+    const want = Number(($('.sail-row.wind', p) as HTMLElement | null)?.dataset.dir ?? 0);
+    const have = Number(($('.sail-row.sail', p) as HTMLElement | null)?.dataset.dir ?? 0);
     const btn = clumsy() && rand() < 0.4 ? $('[aria-label="바람 받기"]', p) : want === have ? $('[aria-label="바람 받기"]', p) : $(want > have ? '[aria-label="오른쪽으로 돛 돌리기"]' : '[aria-label="왼쪽으로 돛 돌리기"]', p);
     if (btn && !(btn as HTMLButtonElement).disabled) tap(btn);
     await sleep(120);
@@ -493,6 +493,9 @@ async function handleScreens(): Promise<boolean> {
   const quizOpen = !!$('.quiz-backdrop');
   const mini = $('.mini-panel');
   if (quizOpen || $('.dialogue-layer') || $('.caption') || $('.screen') || mini || $('.hub-ui') || $('.wardrobe-screen')) stickUp();
+  // 창이 가려졌다 돌아오면 게임이 멈춤 창을 연다 — 그 아래 대사·퀴즈보다 먼저 닫는다
+  const paused = byText('.screen.dim .card .btn', '계속하기');
+  if (paused) { note('멈춤 창이 열려 닫음'); tap(paused); await sleep(100); return true; }
   if (quizOpen) {
     await answerQuiz();
     return true;
@@ -506,8 +509,16 @@ async function handleScreens(): Promise<boolean> {
   if ($('.book')) {
     const t = $('.book-text')?.textContent ?? '';
     if (t && pages[pages.length - 1] !== t) pages.push(t);
-    tap(byText('.book .btn', /다음|끝/)!);
+    tap(byText('.book .btn', /다음|끝|이타카로/)!);
     await sleep(40);
+    return true;
+  }
+  // 엔딩 마지막 장 (아이가 쓴 17장 문장과 '끝')
+  if ($('.the-end')) {
+    const t = $('.the-end .book-text')?.textContent ?? '';
+    if (t && pages[pages.length - 1] !== t) pages.push(t);
+    tap(byText('.the-end .btn', '크레딧')!);
+    await sleep(80);
     return true;
   }
   if ($('.credits')) { tap($('.credits-skip')!); await sleep(80); return true; }

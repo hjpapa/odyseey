@@ -3,6 +3,12 @@ import type { IslandStage } from '../../game/islandStage';
 import { h, linked } from '../../ui/dom';
 import { makeProp } from '../../world/props';
 
+/**
+ * 진열대 자리 — 아래 버튼 칸과 같은 순서로 보이게.
+ * 카메라가 +z 쪽을 보므로 화면 왼쪽은 +x, 화면 위쪽(먼 쪽)은 +z 다.
+ */
+export const slotPos = (index: number) => [(1 - (index % 3)) * 1.7, 0.4, index < 3 ? 0.6 : -1.4] as const;
+
 /** 무기를 골라 집은 뒤 창고에 놓는다. 탭·끌기와 방향키·Space를 지원한다. */
 export async function hideWeapons(stage: IslandStage, at: Vector3): Promise<void> {
   if (stage.signal.aborted) return;
@@ -40,7 +46,7 @@ export async function hideWeapons(stage: IslandStage, at: Vector3): Promise<void
     ] as const;
     const meshes = equipment.map((item, index) => {
       const mesh = makeProp(item.model);
-      mesh.position.set((index % 3 - 1) * 1.7, 0.4, index < 3 ? -1.4 : 0.6);
+      mesh.position.set(...slotPos(index));
       mesh.rotation.z = item.model === 'sword' ? -0.6 : 0;
       objects.add(mesh);
       return mesh;
@@ -121,7 +127,7 @@ export async function hideWeapons(stage: IslandStage, at: Vector3): Promise<void
       selected = index;
       if (held === index) return;
       if (held !== null && held !== index) {
-        meshes[held].position.set((held % 3 - 1) * 1.7, 0.4, held < 3 ? -1.4 : 0.6);
+        meshes[held].position.set(...slotPos(held));
       }
       held = index;
       meshes[index].position.set(0, 1.6, 0.8);

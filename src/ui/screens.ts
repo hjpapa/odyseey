@@ -107,6 +107,8 @@ export class Screens {
     onGrade(g: Grade): void;
     extra?: { label: string; onClick(): void }[];
     resumeLabel?: string;
+    /** 조작 안내를 바꿀 때 (바다 장처럼 조작이 다른 곳) — [터치, 키보드] */
+    help?: [string, string];
     /** 보호자 모드 (어른 확인 문제를 풀어야 열린다) */
     parent?: { report(): ParentReport; onTimeLimit(min: number): void };
   }): Promise<void> {
@@ -175,8 +177,8 @@ export class Screens {
         h('p', {
           class: 'settings-help',
           text: document.documentElement.classList.contains('touch-mode')
-            ? '조작: 왼쪽을 끌어 이동 · ⚔️ 공격 · ⤴️ 점프 · 🌀 구르기 · ✋ 말하기 · 오른쪽을 끌어 카메라'
-            : '조작: WASD 이동 · Space 점프 · J/클릭 공격 · Shift 구르기 · E 말하기 · 오른쪽 드래그 카메라',
+            ? opts.help?.[0] ?? '조작: 왼쪽을 끌어 이동 · ⚔️ 공격 · ⤴️ 점프 · 🌀 구르기 · ✋ 말하기 · 오른쪽을 끌어 카메라'
+            : opts.help?.[1] ?? '조작: WASD 이동 · Space 점프 · J/클릭 공격 · Shift 구르기 · E 말하기 · 오른쪽 드래그 카메라',
         }),
         h('div', { class: 'row' }, parentBtn, ...extras, resume),
       ];
@@ -281,6 +283,8 @@ export class Screens {
     nextLabel?: string;
     /** 보호자가 정한 놀이 시간이 다 됐으면 쉬자고 권한다 */
     rest?: boolean;
+    /** 이야기책에 더해진 한 장 — 아이가 쓴 그 장의 문장 (엔딩 이야기책으로 이어진다) */
+    story?: { emoji: string; text: string; pages: number; total: number };
   }): Promise<'next' | 'map' | 'title'> {
     return new Promise((resolve) => {
       const done = (v: 'next' | 'map' | 'title') => {
@@ -302,6 +306,11 @@ export class Screens {
           { class: 'card' },
           h('div', { class: 'big-emoji', text: '🏆' }),
           h('h2', { text: `${opts.no}장 「${opts.title}」 완료!` }),
+          opts.story
+            ? h('div', { class: 'story-earned' },
+                h('div', { class: 'story-earned-head', text: `📖 이야기책 ${opts.story.pages} / ${opts.story.total}장` }),
+                h('p', { class: 'story-earned-text' }, h('span', { 'aria-hidden': 'true', text: `${opts.story.emoji} ` }), opts.story.text))
+            : null,
           h('p', { text: `🫒 올리브잎 +${opts.coins}` }),
           opts.total > 0
             ? h('p', {
