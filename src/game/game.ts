@@ -15,7 +15,7 @@ import { LearningEngine } from '../learning/engine';
 import { CHILD_STORY } from '../story/childStory';
 import { CHAPTER_EMOJI, CREDITS } from '../story/credits';
 import { DialogueUI } from '../ui/dialogue';
-import { creditsRoll, reportCard, storybook } from '../ui/ending';
+import { creditsRoll, reportCard, skipButton, storybook, theEnd, type StoryPage } from '../ui/ending';
 import { Hud } from '../ui/hud';
 import { openHub, type HubIslandView } from '../ui/hub';
 import { QuizUI } from '../ui/quiz';
@@ -404,6 +404,7 @@ export class Game {
         hasNext: !!next,
         nextLabel: next ? undefined : '🎬 엔딩 보기',
         rest: this.restDue(),
+        story: { emoji: CHAPTER_EMOJI[id], text: CHILD_STORY[id], pages: data?.completed.length ?? 0, total: CHAPTER_IDS.length },
       });
       if (choice === 'title') {
         this.showTitle();
@@ -504,24 +505,77 @@ export class Game {
     else this.showTitle();
   }
 
+  /**
+   * 엔딩 — ① 지나온 바닷길: 배가 섬을 차례로 지나며 아이가 쓴 1~16장을 한 장씩 읽는다
+   * ② 이타카의 저녁: 가족이 다시 모이고 친구들이 축하하러 온다 ③ 마지막 장(아이가 쓴 17장)과 '끝' ④ 크레딧
+   */
   private async playEnding() {
     const { ui, audio } = this.svc;
     this.chapterStage = null;
     this.paused = false;
     this.clearOverlays();
-    await ui.screens.fade(true, 500);
-    this.setStage(new EndingStage(this.svc.save.data?.avatar));
-    this.playBgm('ending');
-    await ui.screens.fade(false, 700);
     const fast = ui.dialogue.fast;
-    const pages = CHAPTER_IDS.map((id, i) => ({
-      no: i + 1,
+    const page = (id: ChapterId): StoryPage => ({
+      no: CHAPTER_IDS.indexOf(id) + 1,
       title: chapters[id]?.title ?? '',
       text: CHILD_STORY[id],
       emoji: CHAPTER_EMOJI[id],
-    }));
-    await storybook(ui.root, pages, { pageMs: fast ? 300 : 4800, onPage: () => audio.sfx('ui_click', { volume: 0.35 }) });
+    });
+
+    // ① 지나온 바닷길
+    await ui.screens.fade(true, 500);
+    const voyage = this.voyageStage();
+    this.setStage(voyage.stage);
+    this.playBgm('memorySea');
+    await ui.screens.fade(false, 700);
+    const journey = CHAPTER_IDS.slice(0, -1);
+    await storybook(ui.root, journey.map(page), {
+      pageMs: fast ? 300 : 5200,
+      title: '📖 오디세우스가 지나온 바닷길',
+      lastLabel: '🏝️ 이타카로 ▶',
+      onPage: (i) => {
+        voyage.sail(journey[i]);
+        audio.sfx('ui_click', { volume: 0.35 });
+      },
+    });
+
+    // ② 이타카의 저녁 — 건너뛰면 모두 모인 마지막 모습으로
+    await ui.screens.fade(true, 600);
+    const end = new EndingStage(this.svc.save.data?.avatar);
+    this.setStage(end);
+    this.playBgm('ending');
+    await ui.screens.fade(false, 900);
+    const skip = skipButton(ui.root);
+    await Promise.race([
+      end.epilogue({ dialogue: ui.dialogue, sfx: (id, volume) => audio.sfx(id, { volume }), signal: skip.signal }),
+      new Promise<void>((done) => skip.signal.addEventListener('abort', () => done(), { once: true })),
+    ]);
+    skip.remove();
+    ui.dialogue.abortAll();
+    end.finale();
+
+    // ③ 마지막 장과 '끝' ④ 크레딧 (같은 장면 위로)
+    await theEnd(ui.root, page('ch17'), { ms: fast ? 300 : 9000 });
     await creditsRoll(ui.root, CREDITS, { ms: fast ? 1200 : 28000 });
+  }
+
+  /** 엔딩의 바다 지도 — 이름표 없이, 배가 이야기 순서대로 섬을 지나며 금빛 뱃길을 그린다 */
+  private voyageStage() {
+    const list: HubIsland[] = [];
+    for (const islandId of islandRoute(chapters)) {
+      const layout = islands[islandId];
+      if (!layout) continue;
+      const chs = CHAPTER_IDS.map((c) => chapters[c]).filter((c): c is ChapterData => !!c && c.island === islandId);
+      list.push({ layout, chapters: chs, state: 'done', memory: chs.some((c) => c.memory) });
+    }
+    const stage = new HubStage(list, chapters.ch01?.island ?? list[0].layout.id, { voyage: true });
+    return {
+      stage,
+      sail: (id: ChapterId) => {
+        const island = chapters[id]?.island;
+        if (island) stage.sailTo(island);
+      },
+    };
   }
 
   private async playChapter(ch: ChapterData, isl: IslandLayout): Promise<ChapterStage> {
@@ -551,6 +605,7 @@ export class Game {
       onVolume: (ch, v) => this.setVolume(ch, v),
       onGrade: (g) => this.setGrade(g),
       extra: [{ label: '🏠 처음 화면으로', onClick: () => stage.quit() }],
+      help: stage instanceof SeaStage ? stage.controlsHelp : undefined,
       parent: this.parentOption(),
     });
     this.paused = false;

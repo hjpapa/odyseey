@@ -4,7 +4,7 @@
  * 3~11장(회상) 섬 둘레에는 분홍빛 '기억의 바다'가 깔린다.
  */
 import {
-  Box3, BoxGeometry, BufferGeometry, Color, DoubleSide, Group, InstancedMesh, Line, LineBasicMaterial,
+  Box3, BoxGeometry, BufferAttribute, BufferGeometry, Color, DoubleSide, Group, InstancedMesh, Line, LineBasicMaterial,
   LineDashedMaterial, Matrix4, Mesh, MeshBasicMaterial, CylinderGeometry, PerspectiveCamera, Quaternion,
   Raycaster, RingGeometry, Scene, Vector2, Vector3, type Material, type Object3D,
 } from 'three';
@@ -184,10 +184,16 @@ export class HubStage implements Stage {
   private ray = new Raycaster();
   private owned = { geos: [] as BufferGeometry[], mats: [] as Material[] };
   private portrait = false;
+  /** 엔딩의 '지나온 바닷길': 이름표 없이, 배가 지나간 자리에 금빛 뱃길이 그려진다 */
+  private voyage: boolean;
+  private sailDur = 1.4;
+  private trail: { line: Line; points: Vector3[] } | null = null;
   selected: IslandId;
 
-  constructor(private islands: HubIsland[], selected: IslandId) {
-    this.env = createEnvironment(this.scene, 'day');
+  constructor(private islands: HubIsland[], selected: IslandId, opts: { voyage?: boolean } = {}) {
+    this.voyage = !!opts.voyage;
+    // 엔딩의 바닷길은 회상의 빛(분홍 노을) — 지나온 일을 떠올리는 장면
+    this.env = createEnvironment(this.scene, this.voyage ? 'memory' : 'day');
     const pickMat = new MeshBasicMaterial({ visible: false });
     const mistMat = new MeshBasicMaterial({ color: '#ffb8dc', transparent: true, opacity: 0.35, depthWrite: false, side: DoubleSide });
     this.owned.mats.push(pickMat, mistMat);
@@ -216,6 +222,7 @@ export class HubStage implements Stage {
       const mark = isl.state === 'done' ? '✅' : isl.state === 'next' ? '⭐' : '🔒';
       const tag = label(`${mark} ${range} ${L.name}`, `nametag hub-tag ${isl.state}`);
       tag.position.set(pos.x, mini.top + 3.2, pos.z);
+      tag.visible = !this.voyage;
       this.scene.add(tag);
       this.tags.set(L.id, tag);
 
@@ -227,18 +234,29 @@ export class HubStage implements Stage {
       this.picks.push({ id: L.id, obj: pick });
     }
 
-    // 항로 — 지나온 길은 금빛 실선, 앞으로 갈 길은 흰 점선
+    // 항로 — 지나온 길은 금빛 실선, 앞으로 갈 길은 흰 점선 (엔딩에서는 배를 따라 그려진다)
     const route = islands.map((i) => this.spots.get(i.layout.id)!.pos.clone().setY(0.5));
     const reached = Math.max(0, islands.findIndex((i) => i.state === 'next'));
     const lastReached = islands.every((i) => i.state === 'done') ? islands.length - 1 : reached;
-    if (lastReached > 0) {
+    if (this.voyage) {
+      const geo = new BufferGeometry();
+      geo.setAttribute('position', new BufferAttribute(new Float32Array(64 * 3), 3));
+      geo.setDrawRange(0, 0);
+      const mat = new LineBasicMaterial({ color: '#ffd34d' });
+      this.owned.geos.push(geo);
+      this.owned.mats.push(mat);
+      const line = new Line(geo, mat);
+      line.frustumCulled = false;
+      this.scene.add(line);
+      this.trail = { line, points: [] };
+    } else if (lastReached > 0) {
       const doneGeo = new BufferGeometry().setFromPoints(route.slice(0, lastReached + 1));
       const doneMat = new LineBasicMaterial({ color: '#ffd34d' });
       this.owned.geos.push(doneGeo);
       this.owned.mats.push(doneMat);
       this.scene.add(new Line(doneGeo, doneMat));
     }
-    if (lastReached < route.length - 1) {
+    if (!this.voyage && lastReached < route.length - 1) {
       const todoGeo = new BufferGeometry().setFromPoints(route.slice(lastReached));
       const todoMat = new LineDashedMaterial({ color: '#ffffff', dashSize: 1.4, gapSize: 1.1, transparent: true, opacity: 0.8 });
       this.owned.geos.push(todoGeo);
@@ -266,16 +284,35 @@ export class HubStage implements Stage {
     this.shipTo.copy(this.harbor(selected));
     this.shipFrom.copy(this.shipTo);
     this.ship.position.copy(this.shipTo);
-    this.focus.copy(spot.pos);
-    this.focusTarget.copy(spot.pos);
+    this.focus.copy(this.voyage ? this.voyageFocus(selected) : spot.pos);
+    this.focusTarget.copy(this.focus);
     this.placeRing();
+    if (this.trail) this.trail.points.push(this.shipTo.clone().setY(0.4));
   }
 
-  /** 섬 앞바다 (배가 머무는 자리) */
+  /** 엔딩: 다음 섬으로 천천히 항해하며 뱃길을 그린다 */
+  sailTo(id: IslandId) {
+    if (!this.spots.has(id) || id === this.selected) return;
+    // 가는 도중에 다음 장으로 넘기면 지금 자리에서 꺾어 간다
+    if (this.trail && this.sailT < 1) this.trail.points.push(this.ship.position.clone());
+    this.select(id);
+    this.sailDur = 2.2;
+    // 움직임 줄이기를 켜면 배는 바로 도착한다 — 뱃길도 그 자리까지 바로 그린다
+    if (this.sailT >= 1) this.trail?.points.push(this.shipTo.clone());
+    this.focusTarget.copy(this.voyageFocus(id));
+  }
+
+  /** 섬 앞바다 (배가 머무는 자리) — 엔딩에서는 섬을 가리지 않게 옆쪽 */
   private harbor(id: IslandId): Vector3 {
     const s = this.spots.get(id);
     if (!s) return new Vector3();
-    return s.pos.clone().add(new Vector3(0, 0, s.radius + 2.2));
+    return s.pos.clone().add(this.voyage ? new Vector3(s.radius + 2.6, 0, 1.4) : new Vector3(0, 0, s.radius + 2.2));
+  }
+
+  /** 엔딩 카메라가 볼 곳 — 섬과 배 사이 */
+  private voyageFocus(id: IslandId): Vector3 {
+    const s = this.spots.get(id);
+    return s ? s.pos.clone().lerp(this.harbor(id), 0.45) : this.shipTo.clone();
   }
 
   private placeRing() {
@@ -313,9 +350,10 @@ export class HubStage implements Stage {
     this.env.follow(this.focus);
     this.env.update(t);
     if (this.sailT < 1) {
-      this.sailT = Math.min(1, this.sailT + dt / 1.4);
+      this.sailT = Math.min(1, this.sailT + dt / this.sailDur);
       const k = this.sailT < 0.5 ? 2 * this.sailT * this.sailT : 1 - (-2 * this.sailT + 2) ** 2 / 2;
       this.ship.position.lerpVectors(this.shipFrom, this.shipTo, k);
+      if (this.sailT >= 1) this.trail?.points.push(this.shipTo.clone());
     } else {
       this.ship.position.x = this.shipTo.x;
       this.ship.position.z = this.shipTo.z;
@@ -328,9 +366,26 @@ export class HubStage implements Stage {
     this.ring.rotation.z = t * 0.6;
     (this.ring.material as MeshBasicMaterial).opacity = 0.55 + Math.sin(t * 3) * 0.3;
 
-    this.focus.lerp(this.focusTarget, Math.min(1, dt * 2.5));
+    if (this.trail) {
+      // 지나온 항구들 + 지금 배 자리까지 금빛 뱃길
+      const attr = this.trail.line.geometry.attributes.position as BufferAttribute;
+      let n = 0;
+      for (const q of this.trail.points) if (n < attr.count) attr.setXYZ(n++, q.x, 0.4, q.z);
+      if (sailing && n < attr.count) attr.setXYZ(n++, p.x, 0.4, p.z);
+      attr.needsUpdate = true;
+      this.trail.line.geometry.setDrawRange(0, n);
+    }
+
+    this.focus.lerp(this.focusTarget, Math.min(1, dt * (this.voyage ? 1.6 : 2.5)));
     const dist = this.portrait ? 1.45 : 1;
     const sway = prefs.calm ? 0 : Math.sin(t * 0.15) * 2;
+    if (this.voyage) {
+      // 엔딩: 배를 따라 더 낮고 가깝게 — 아래쪽 이야기책에 가리지 않게 배가 화면 위쪽에 온다
+      const lead = this.portrait ? 9 : 5.5;
+      this.camera.position.set(this.focus.x + sway, 11.5 * dist, this.focus.z + 14 * dist + lead);
+      this.camera.lookAt(this.focus.x, 0, this.focus.z + lead);
+      return;
+    }
     // 아래쪽 섬 안내판에 가리지 않도록 고른 섬이 화면 위쪽에 오게 본다
     const lead = this.portrait ? 11 : 5;
     this.camera.position.set(this.focus.x + sway, 26 * dist, this.focus.z + 25 * dist + lead);

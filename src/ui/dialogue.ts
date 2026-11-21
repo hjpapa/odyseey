@@ -19,8 +19,8 @@ export class DialogueUI {
     this.root.querySelectorAll('.dialogue-layer, .caption, .titlecard').forEach((el) => el.remove());
   }
 
-  /** 대사 한 줄: 글자가 하나씩 나오고, 탭하면 다음으로 */
-  async line(speaker: SpeakerId, text: string, _emote?: Emote): Promise<void> {
+  /** 대사 한 줄: 글자가 하나씩 나오고, 탭하면 다음으로 (autoMs 를 주면 가만히 있어도 그만큼 뒤에 넘어간다) */
+  async line(speaker: SpeakerId, text: string, _emote?: Emote, opts: { autoMs?: number } = {}): Promise<void> {
     if (this.fast) return sleep(20);
     const signal = this.ac.signal;
     const info = SPEAKERS[speaker] ?? SPEAKERS.narrator;
@@ -51,7 +51,7 @@ export class DialogueUI {
     typing.abort();
     textEl.textContent = text;
     more.style.visibility = 'visible';
-    await waitAdvance(layer, { minMs: 120, signal });
+    await waitAdvance(layer, { minMs: 120, autoMs: opts.autoMs, signal });
     layer.remove();
   }
 

@@ -8,6 +8,9 @@ import { h, linked } from '../../ui/dom';
 const MELODY = [1, 0, 2, 1, 2, 0];
 const ARRIVAL = 2.6;
 
+/** 줄의 x — 카메라가 +z 쪽을 보므로 화면 왼쪽이 +x 다 ('← 왼쪽' 버튼 = 화면 왼쪽 줄) */
+export const laneX = (lane: number) => (1 - lane) * 1.65;
+
 /** 세 줄의 음표를 골라 방패로 받는다. 놓친 음표는 더 천천히 연습한다. */
 export async function rhythmShield(stage: IslandStage, at: Vector3): Promise<void> {
   if (stage.signal.aborted) return;
@@ -43,7 +46,7 @@ export async function rhythmShield(stage: IslandStage, at: Vector3): Promise<voi
       return object;
     };
     for (let lane = 0; lane < 3; lane++) {
-      const x = (lane - 1) * 1.65;
+      const x = laneX(lane);
       mesh(new BoxGeometry(1.4, 0.08, 5.4), laneMaterial, x, 0.12, 1.5);
       mesh(new BoxGeometry(1.4, 0.05, 0.18), lineMaterial, x, 0.19, -0.7);
       mesh(new BoxGeometry(0.04, 0.05, 5.4), lineMaterial, x - 0.69, 0.18, 1.5);
@@ -121,7 +124,7 @@ export async function rhythmShield(stage: IslandStage, at: Vector3): Promise<voi
         button.style.background = index === lane ? '#bfeaf3' : '#e6f4fa';
         button.style.borderColor = index === lane ? '#286aa0' : '#8fbed3';
       });
-      shield.position.x = (lane - 1) * 1.65;
+      shield.position.x = laneX(lane);
     };
     const showNote = () => {
       const lane = MELODY[caught];
@@ -203,7 +206,7 @@ export async function rhythmShield(stage: IslandStage, at: Vector3): Promise<voi
           }
           const progress = Math.max(0, Math.min(1, noteTime / ARRIVAL));
           note.visible = noteTime >= 0;
-          note.position.set((MELODY[caught] - 1) * 1.65, 1.25 + (1 - progress) * 3.4, 3.8 - progress * 4.6);
+          note.position.set(laneX(MELODY[caught]), 1.25 + (1 - progress) * 3.4, 3.8 - progress * 4.6);
           noteIcon.style.top = `${8 + progress * 70}%`;
           noteIcon.style.visibility = noteTime >= 0 ? 'visible' : 'hidden';
           note.rotation.y += dt * 0.8;

@@ -75,16 +75,26 @@ export async function windSail(stage: IslandStage, at: Vector3): Promise<void> {
     tableau.add(wind);
     stage.scene.add(tableau);
     stage.player.root.visible = false;
+    // 아래 조작 창에 배가 가리지 않도록 배 쪽을 조금 더 높이서 본다
     stage.cinematic = {
-      pos: new Vector3(at.x - 8, y + 11, at.z + 15),
-      look: new Vector3(at.x, y + 0.6, at.z - 0.8),
+      pos: new Vector3(at.x - 7, y + 13, at.z + 16),
+      look: new Vector3(at.x, y + 0.6, at.z + 4.5),
     };
 
     const title = h('strong', { text: '⛵ 바람 따라 이타카로', style: { fontSize: 'calc(clamp(18px, 4vw, 23px) * var(--t))' } });
-    const target = h('div', { style: { fontSize: 'calc(19px * var(--t))', fontWeight: '700' } });
-    const direction = h('div', { style: { fontSize: 'calc(16px * var(--t))' } });
+    // 다섯 칸 — 위 줄에 바람 화살표, 아래 줄에 돛 화살표. 같은 칸에 오면 바람을 받을 수 있다 (각도 숫자 없이 맞추기만)
+    const dial = (role: 'wind' | 'sail', label: string) => {
+      const slots = [-2, -1, 0, 1, 2].map((d) => h('span', { class: 'sail-slot', 'data-dir': String(d) }));
+      const row = h('div', { class: `sail-row ${role}`, 'data-role': role, role: 'img' }, h('span', { class: 'sail-label', text: label }), ...slots);
+      return { row, slots };
+    };
+    const windDial = dial('wind', '🌬️ 바람');
+    const sailDial = dial('sail', '⛵ 우리 돛');
+    const matchNote = h('div', { class: 'sail-match', 'aria-live': 'polite' });
+    const target = h('div', { class: 'sail-dials' }, windDial.row, sailDial.row, matchNote);
     const progress = h('div', { text: '이타카까지 바람 0 / 6', style: { fontSize: 'calc(16px * var(--t))' } });
-    const message = h('div', { text: '← →로 돛 돌리기 · Space로 바람 받기', 'aria-live': 'polite', style: { minHeight: '20px', fontSize: 'calc(14px * var(--t))', lineHeight: '1.4' } });
+    const help = stage.svc.input.touchMode ? '← 돛 · 돛 → 으로 옮기고, 같은 칸이면 바람 받기!' : '← → 로 돛 옮기기 · Space 로 바람 받기';
+    const message = h('div', { text: help, 'aria-live': 'polite', style: { minHeight: '20px', fontSize: 'calc(14px * var(--t))', lineHeight: '1.4' } });
     const left = h('button', { class: 'btn blue', type: 'button', text: '← 돛', 'aria-label': '왼쪽으로 돛 돌리기' });
     const catchButton = h('button', { class: 'btn gold', type: 'button', text: '바람 받기', 'aria-label': '바람 받기' });
     const right = h('button', { class: 'btn blue', type: 'button', text: '돛 →', 'aria-label': '오른쪽으로 돛 돌리기' });
@@ -95,12 +105,22 @@ export async function windSail(stage: IslandStage, at: Vector3): Promise<void> {
     panel = h('div', {
       class: 'mini-panel',
       style: { width: 'min(94vw, 570px)', left: '50%', right: 'auto', transform: 'translateX(-50%)', bottom: 'max(12px, env(safe-area-inset-bottom))', gap: '6px', boxSizing: 'border-box', padding: '12px', borderRadius: '18px', background: 'rgba(255, 255, 255, 0.95)', color: '#193348', textAlign: 'center' },
-    }, title, target, direction, progress, message, controls);
+    }, title, target, progress, message, controls);
     stage.svc.ui.root.append(panel);
     catchButton.focus();
 
     const winds = [1, -1, 2, 0, -2, 1];
-    const names = ['↖ 왼쪽 60°', '↖ 왼쪽 30°', '↑ 똑바로', '↗ 오른쪽 30°', '↗ 오른쪽 60°'];
+    const NAMES = ['왼쪽으로 많이', '왼쪽으로 조금', '똑바로', '오른쪽으로 조금', '오른쪽으로 많이'];
+    /** 그 칸에만 기울어진 화살표를 그린다 */
+    const paint = (d: { row: HTMLElement; slots: HTMLElement[] }, dir: number, who: string) => {
+      d.row.dataset.dir = String(dir);
+      d.row.setAttribute('aria-label', `${who}: ${NAMES[dir + 2]}`);
+      d.slots.forEach((slot, i) => {
+        const on = i - 2 === dir;
+        slot.classList.toggle('on', on);
+        slot.replaceChildren(on ? h('b', { text: '⬆', style: { transform: `rotate(${dir * 30}deg)` } }) : '');
+      });
+    };
     let sailDirection = 0;
     let caught = 0;
     let travelled = 0;
@@ -113,11 +133,14 @@ export async function windSail(stage: IslandStage, at: Vector3): Promise<void> {
     const paused = () => document.hidden || !!stage.svc.ui.root.querySelector('.screen.dim');
     const refresh = () => {
       const expected = winds[Math.min(caught, winds.length - 1)];
-      target.textContent = `바람 ${names[expected + 2]}`;
-      direction.textContent = `우리 돛 ${names[sailDirection + 2]}`;
+      paint(windDial, expected, '바람');
+      paint(sailDial, sailDirection, '우리 돛');
       sail.rotation.y = -sailDirection * Math.PI / 6;
       wind.rotation.y = -expected * Math.PI / 6;
-      catchButton.style.background = expected === sailDirection ? '#ffe081' : '#e8e1d1';
+      const match = expected === sailDirection;
+      catchButton.style.background = match ? '#ffe081' : '#e8e1d1';
+      catchButton.classList.toggle('glow', match && sailing <= 0 && !won);
+      matchNote.textContent = won || sailing > 0 ? '' : match ? '✅ 같은 칸이에요! 바람 받기를 눌러요' : '돛 화살표를 바람과 같은 칸으로 옮겨요';
       progress.textContent = `이타카까지 바람 ${caught} / ${winds.length}`;
     };
     const turn = (step: number) => {
@@ -136,6 +159,8 @@ export async function windSail(stage: IslandStage, at: Vector3): Promise<void> {
       }
       caught++;
       sailing = 1.2;
+      catchButton.classList.remove('glow');
+      matchNote.textContent = '';
       message.textContent = '순풍이에요! 배가 앞으로 나아가요.';
       stage.svc.audio.sfx('sail');
       left.disabled = right.disabled = catchButton.disabled = true;

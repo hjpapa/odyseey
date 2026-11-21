@@ -33,7 +33,7 @@ function visibleTimer(ms: number, tick: (left: number) => void, done: () => void
 }
 
 /** 이야기책: 한 장씩 저절로 넘어가고, 누르거나 Space·Enter·→ 로 넘길 수 있다 */
-export function storybook(root: HTMLElement, pages: StoryPage[], opts: { pageMs: number; onPage?(i: number): void }): Promise<void> {
+export function storybook(root: HTMLElement, pages: StoryPage[], opts: { pageMs: number; title?: string; lastLabel?: string; onPage?(i: number): void }): Promise<void> {
   return new Promise((resolve) => {
     const life = new AbortController();
     let i = -1;
@@ -47,7 +47,7 @@ export function storybook(root: HTMLElement, pages: StoryPage[], opts: { pageMs:
     const nextBtn = h('button', { class: 'btn small', type: 'button', text: '다음 ▶' });
     const page = h('div', { class: 'book-page', role: 'group', 'aria-roledescription': '이야기책', 'aria-live': 'polite' }, emoji, no, text, bar);
     const el = h('div', { class: 'screen clear book' },
-      h('div', { class: 'book-head', text: '📖 아이가 쓴 17장의 이야기' }),
+      h('div', { class: 'book-head', text: opts.title ?? '📖 아이가 쓴 17장의 이야기' }),
       page,
       h('div', { class: 'row' }, skip, nextBtn));
     root.append(el);
@@ -71,7 +71,7 @@ export function storybook(root: HTMLElement, pages: StoryPage[], opts: { pageMs:
       page.classList.remove('turn');
       void page.offsetWidth;
       page.classList.add('turn');
-      nextBtn.textContent = i === pages.length - 1 ? '끝 ▶' : '다음 ▶';
+      nextBtn.textContent = i === pages.length - 1 ? opts.lastLabel ?? '끝 ▶' : '다음 ▶';
       opts.onPage?.(i);
       timer?.abort();
       timer = new AbortController();
@@ -95,6 +95,58 @@ export function storybook(root: HTMLElement, pages: StoryPage[], opts: { pageMs:
 
     nextBtn.focus();
     turn();
+  });
+}
+
+/** 엔딩 이야기를 건너뛰는 버튼 (오른쪽 위, 대화창보다 위). Esc 로도 건너뛴다 */
+export function skipButton(root: HTMLElement): { signal: AbortSignal; remove(): void } {
+  const skip = new AbortController();
+  const life = new AbortController();
+  const btn = h('button', { class: 'btn gray small skip-corner', type: 'button', text: '건너뛰기 ⏭' });
+  btn.addEventListener('click', () => skip.abort(), { signal: life.signal });
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Escape') {
+      e.preventDefault();
+      skip.abort();
+    }
+  }, { capture: true, signal: life.signal });
+  root.append(btn);
+  return {
+    signal: skip.signal,
+    remove: () => {
+      life.abort();
+      btn.remove();
+    },
+  };
+}
+
+/** 마지막 장 — 아이가 쓴 17장 문장과 '끝'. 누르거나 잠시 기다리면 크레딧으로 */
+export function theEnd(root: HTMLElement, page: StoryPage, opts: { ms: number }): Promise<void> {
+  return new Promise((resolve) => {
+    const life = new AbortController();
+    const next = h('button', { class: 'btn gold', type: 'button', text: '크레딧 보기 ▶' });
+    const el = h('div', { class: 'screen clear the-end' },
+      h('div', { class: 'book-page last', role: 'group', 'aria-roledescription': '이야기책 마지막 장' },
+        h('div', { class: 'book-emoji', 'aria-hidden': 'true', text: page.emoji }),
+        h('div', { class: 'book-no', text: `${page.no}장 · ${page.title}` }),
+        h('p', { class: 'book-text', text: page.text }),
+        h('div', { class: 'the-end-mark', text: '끝' })),
+      next);
+    root.append(el);
+    const end = () => {
+      life.abort();
+      el.remove();
+      resolve();
+    };
+    next.addEventListener('click', end, { signal: life.signal });
+    window.addEventListener('keydown', (e) => {
+      if (['Space', 'Enter', 'Escape', 'ArrowRight'].includes(e.code) && e.target !== next) {
+        e.preventDefault();
+        end();
+      }
+    }, { capture: true, signal: life.signal });
+    visibleTimer(opts.ms, () => {}, end, life.signal);
+    next.focus();
   });
 }
 
