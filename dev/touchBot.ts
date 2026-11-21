@@ -318,14 +318,41 @@ function install() {
 }
 
 /** 창이 가려져 그림 프레임이 오지 않으면 미니게임용으로 타이머로 대신한다 */
+/**
+ * 미리보기 창이 가려지면 브라우저가 화면 그리기(requestAnimationFrame)를 멈춘다 — 놀이 도중에 가려져도
+ * 미니게임이 멈추지 않도록, 진짜 프레임이 늦으면 타이머로 대신 부른다 (둘 중 먼저 오는 한 번만).
+ */
 async function ensureFrames() {
-  let fired = false;
-  requestAnimationFrame(() => { fired = true; });
-  await sleep(300);
-  if (!fired) {
-    w.requestAnimationFrame = (cb: FrameRequestCallback) => setTimeout(() => cb(performance.now()), 16) as unknown as number;
-    w.cancelAnimationFrame = (id: number) => clearTimeout(id);
-  }
+  if (w.__botFrames) return;
+  w.__botFrames = true;
+  const native = window.requestAnimationFrame.bind(window);
+  const cancelNative = window.cancelAnimationFrame.bind(window);
+  const pending = new Map<number, { raf: number; timer: ReturnType<typeof setTimeout> }>();
+  let nextId = 1;
+  w.requestAnimationFrame = (cb: FrameRequestCallback) => {
+    const id = nextId++;
+    let done = false;
+    const run = (t: number) => {
+      if (done) return;
+      done = true;
+      const p = pending.get(id);
+      pending.delete(id);
+      if (p) {
+        cancelNative(p.raf);
+        clearTimeout(p.timer);
+      }
+      cb(t);
+    };
+    pending.set(id, { raf: native(run), timer: setTimeout(() => run(performance.now()), 40) });
+    return id;
+  };
+  w.cancelAnimationFrame = (id: number) => {
+    const p = pending.get(id);
+    if (!p) return;
+    pending.delete(id);
+    cancelNative(p.raf);
+    clearTimeout(p.timer);
+  };
 }
 
 // ─── 퀴즈 ────────────────────────────────────────────────

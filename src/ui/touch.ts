@@ -17,6 +17,8 @@ export class TouchControls {
   private layout: TouchLayout = 'none';
   private actBtn: HTMLButtonElement | null = null;
   private jumpBtns: HTMLButtonElement[] = [];
+  /** 버튼을 다시 그려도(터치↔키보드 전환) 반짝임이 이어지게 기억해 둔다 */
+  private jumpReady = false;
   private repeat: ReturnType<typeof setInterval> | null = null;
 
   constructor(root: HTMLElement, private input: Input) {
@@ -45,6 +47,7 @@ export class TouchControls {
 
   /** 파도를 넘을 때가 되면 ⤴️ 버튼이 반짝인다 */
   setJumpReady(on: boolean) {
+    this.jumpReady = on;
     for (const b of this.jumpBtns) b.classList.toggle('ready', on);
   }
 
@@ -179,6 +182,7 @@ export class TouchControls {
       const dir = this.button(label, b, 'dir');
       if (!jump) return h('div', { class: 'group' }, dir);
       const up = this.button('⤴️', 'jump', 'big');
+      up.classList.toggle('ready', this.jumpReady);
       this.jumpBtns.push(up);
       return b === 'left' ? h('div', { class: 'group' }, dir, up) : h('div', { class: 'group' }, up, dir);
     };
