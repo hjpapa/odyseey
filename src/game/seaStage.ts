@@ -182,6 +182,8 @@ export class SeaStage extends ChapterStage {
   private buoys: InstancedMesh;
   /** 처음 본 장애물마다 한 번씩 피하는 법을 알려 준다 */
   private tipped = new Set<Kind>();
+  /** 출발 안내가 보이는 동안 (장면 시간) */
+  private hintUntil = 0;
   private jumpReady = false;
 
   constructor(chapter: ChapterData, layout: IslandLayout, svc: Services) {
@@ -242,13 +244,14 @@ export class SeaStage extends ChapterStage {
     this.placeBuoys();
   }
 
-  override begin() {
-    super.begin();
+  /** 출발 직후 조작 안내 — 이 안내가 보이는 동안에는 장애물 안내를 미룬다 (낮은 화면은 알림을 하나만 보여 준다) */
+  private showStartHint() {
     const touch = this.svc.input.touchMode;
     const hint = this.mode === 'runner'
       ? touch ? '◀ ▶ 로 줄을 바꾸고, ⤴️ 로 파도를 넘어요! 화면을 밀어도 돼요' : '← → (A/D) 로 줄 바꾸기 · Space 로 파도 넘기'
       : touch ? '◀ ▶ 로 줄을 바꿔 바위와 소용돌이를 피해요! 화면을 밀어도 돼요' : '← → (A/D) 로 줄을 바꿔 바위와 소용돌이를 피해요';
     this.svc.ui.hud.toast(hint, 4500);
+    this.hintUntil = this.time + 4;
   }
 
   /** 멈춤 창의 조작 안내 [터치, 키보드] — 항해에는 점프가 없다 */
@@ -266,7 +269,7 @@ export class SeaStage extends ChapterStage {
 
   /** 처음 보는 장애물마다 한 번, 피하는 법을 알려 준다 */
   private tip(kind: Kind) {
-    if (this.tipped.has(kind)) return;
+    if (this.tipped.has(kind) || this.time < this.hintUntil) return;
     this.tipped.add(kind);
     const touch = this.svc.input.touchMode;
     const move = touch ? '◀ ▶' : '← →';
@@ -339,7 +342,9 @@ export class SeaStage extends ChapterStage {
       this.svc.audio.sfx('ui_click');
       await sleep(650);
     }
+    if (this.signal.aborted) return;
     this.running = true;
+    this.showStartHint();
   }
 
   // ─── 매 프레임 ────────────────────────────────────────────
@@ -350,7 +355,8 @@ export class SeaStage extends ChapterStage {
     if (active) {
       if (input.left) this.lane = Math.max(0, this.lane - 1);
       if (input.right) this.lane = Math.min(2, this.lane + 1);
-      if (input.jump && this.y <= 0.01) {
+      // 항해(10장)에는 넘을 파도가 없다 — 터치에 점프 버튼이 없으니 키보드도 같게
+      if (input.jump && this.mode === 'runner' && this.y <= 0.01) {
         this.vy = JUMP;
         this.svc.audio.sfx('jump');
       }
