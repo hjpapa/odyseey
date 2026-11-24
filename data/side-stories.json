@@ -1,0 +1,164 @@
+[
+  {
+    "id": "stars-at-sea",
+    "island": "ogygia",
+    "unlockAfter": "ch01",
+    "emoji": "✨",
+    "title": "별을 따라가는 배",
+    "place": "칼립소의 밤바다",
+    "paragraphs": [
+      "원작에서 칼립소는 바다를 건널 때 살펴볼 별자리를 알려 줘요.",
+      "오디세우스는 뗏목 위에서 별들을 바라보며 길을 찾았어요."
+    ],
+    "reflect": "길을 찾을 때 어떤 표지를 살펴보나요?",
+    "source": {
+      "book": 5,
+      "passage": "5권 · 칼립소의 항해 조언",
+      "url": "https://en.wikisource.org/wiki/The_Odyssey_(Butler)/Book_V"
+    }
+  },
+  {
+    "id": "inos-returned-veil",
+    "island": "stormSea",
+    "unlockAfter": "ch02",
+    "emoji": "🧣",
+    "title": "돌려준 스카프",
+    "place": "이노의 파도",
+    "paragraphs": [
+      "이노는 오디세우스에게 몸을 지켜 줄 천을 빌려주었어요.",
+      "땅에 닿은 오디세우스는 약속대로 천을 물에 돌려보냈어요. 이노는 파도에서 천을 받아 들었어요."
+    ],
+    "reflect": "빌린 물건을 돌려줄 때 어떤 말을 할까요?",
+    "source": {
+      "book": 5,
+      "passage": "5권 · 이노의 도움과 천의 반환",
+      "url": "https://en.wikisource.org/wiki/The_Odyssey_(Butler)/Book_V"
+    }
+  },
+  {
+    "id": "cyclops-dairy",
+    "island": "cyclops",
+    "unlockAfter": "ch03",
+    "emoji": "🐑",
+    "title": "동굴의 우유 그릇",
+    "place": "폴리페모스의 양 우리",
+    "paragraphs": [
+      "원작의 동굴에는 치즈를 놓은 선반과 우유 그릇이 있어요. 어린 양과 염소들은 나이별로 우리에 나뉘어 있었어요.",
+      "폴리페모스는 양과 염소의 젖을 짜고 새끼들이 어미에게 가게 했어요."
+    ],
+    "reflect": "어린 동물을 돌볼 때 무엇이 필요할까요?",
+    "source": {
+      "book": 9,
+      "passage": "9권 · 동굴과 양 떼의 모습",
+      "url": "https://en.wikisource.org/wiki/The_Odyssey_(Butler)/Book_IX"
+    }
+  },
+  {
+    "id": "moly-colors",
+    "island": "aeaea",
+    "unlockAfter": "ch07",
+    "emoji": "🌼",
+    "title": "몰리의 두 가지 빛",
+    "place": "헤르메스의 꽃밭",
+    "paragraphs": [
+      "헤르메스는 키르케에게 가는 오디세우스에게 몰리라는 풀을 보여 주었어요.",
+      "원작은 그 뿌리가 검고 꽃은 우유처럼 희다고 들려줘요. 이 꽃은 키르케의 마법을 막는 데 쓰여요."
+    ],
+    "reflect": "게임에서 본 몰리(욜리꽃)의 색을 떠올려 봐요.",
+    "source": {
+      "book": 10,
+      "passage": "10권 · 헤르메스가 보여 준 몰리",
+      "url": "https://en.wikisource.org/wiki/The_Odyssey_(Butler)/Book_X"
+    }
+  },
+  {
+    "id": "circes-sailing-advice",
+    "island": "sirens",
+    "unlockAfter": "ch11",
+    "emoji": "🧭",
+    "title": "키르케가 알려 준 길",
+    "place": "세이렌 바다의 길잡이",
+    "paragraphs": [
+      "원작에서 키르케는 앞으로 만날 세이렌과 바닷길을 미리 알려 줘요.",
+      "동료들이 귀를 막을 밀랍과 오디세우스를 돛대에 묶을 방법도 이야기해 주었어요."
+    ],
+    "reflect": "낯선 곳에 가기 전에 누구에게 물어볼까요?",
+    "source": {
+      "book": 12,
+      "passage": "12권 · 세이렌을 지나기 위한 조언",
+      "url": "https://en.wikisource.org/wiki/The_Odyssey_(Butler)/Book_XII"
+    }
+  },
+  {
+    "id": "nausicaas-ball",
+    "island": "scheria",
+    "unlockAfter": "ch12",
+    "emoji": "⚽",
+    "title": "빨래가 마르는 동안",
+    "place": "나우시카의 해변",
+    "paragraphs": [
+      "나우시카와 친구들은 빨래를 씻어 햇볕에 널어 두고 공놀이를 했어요.",
+      "공이 물에 빠지자 모두 큰 소리를 냈어요. 그 소리에 나뭇잎 밑에서 쉬던 오디세우스가 깨어났어요."
+    ],
+    "reflect": "친구와 기다리는 동안 어떤 놀이를 할까요?",
+    "source": {
+      "book": 6,
+      "passage": "6권 · 해변의 빨래와 공놀이",
+      "url": "https://en.wikisource.org/wiki/The_Odyssey_(Butler)/Book_VI"
+    }
+  },
+  {
+    "id": "demodocus-lyre",
+    "island": "scheria",
+    "unlockAfter": "ch12",
+    "emoji": "🎶",
+    "title": "데모도코스의 리라",
+    "place": "알키노오스의 궁전",
+    "paragraphs": [
+      "파이아케스 사람들은 음악과 춤을 즐겼어요. 데모도코스는 리라를 켜며 옛이야기를 들려주었어요.",
+      "오디세우스는 그에게 음식을 보내며 노래를 들려주는 사람을 존중했어요."
+    ],
+    "reflect": "누군가 이야기를 들려주면 어떻게 귀 기울일까요?",
+    "source": {
+      "book": 8,
+      "passage": "8권 · 데모도코스의 연주와 연회",
+      "url": "https://en.wikisource.org/wiki/The_Odyssey_(Butler)/Book_VIII"
+    }
+  },
+  {
+    "id": "eumaeus-hospitality",
+    "island": "ithaca",
+    "unlockAfter": "ch13",
+    "emoji": "🏡",
+    "title": "낯선 손님의 자리",
+    "place": "에우마이오스의 오두막",
+    "paragraphs": [
+      "변장한 오디세우스가 오두막을 찾아갔을 때 에우마이오스는 그가 누구인지 몰랐어요.",
+      "그래도 자리를 마련하고 음식을 나누어 주었어요. 오디세우스는 따뜻한 환영에 고마워했어요."
+    ],
+    "reflect": "도움이 필요한 손님에게 무엇을 나눌 수 있나요?",
+    "source": {
+      "book": 14,
+      "passage": "14권 · 에우마이오스의 손님맞이",
+      "url": "https://en.wikisource.org/wiki/The_Odyssey_(Butler)/Book_XIV"
+    }
+  },
+  {
+    "id": "laertes-orchard",
+    "island": "ithaca",
+    "unlockAfter": "ch17",
+    "emoji": "🍐",
+    "title": "아버지의 과수원",
+    "place": "라에르테스의 나무들",
+    "paragraphs": [
+      "원작의 마지막 권에는 오디세우스가 아버지 라에르테스를 다시 만나는 장면도 나와요.",
+      "오디세우스는 어릴 때 아버지와 둘러본 과수원의 나무들을 기억했어요. 그 기억을 듣고 아버지는 아들을 알아보았어요."
+    ],
+    "reflect": "가족과 함께 기억하는 장소를 떠올려 봐요.",
+    "source": {
+      "book": 24,
+      "passage": "24권 · 과수원에서 나눈 어린 시절의 기억",
+      "url": "https://en.wikisource.org/wiki/The_Odyssey_(Butler)/Book_XXIV"
+    }
+  }
+]

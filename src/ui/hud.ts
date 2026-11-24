@@ -5,6 +5,8 @@ export class Hud {
   readonly el: HTMLElement;
   private hearts = h('span', { class: 'pill hearts' });
   private coins = h('span', { class: 'pill coins' });
+  private satchel = h('button', { class: 'pill satchel-trigger', type: 'button', hidden: true });
+  private guard = h('span', { class: 'pill satchel-guard', hidden: true, text: '🛡️ 보호 중' });
   private objective = h('div', { class: 'objective', 'aria-live': 'polite' });
   private prompt = h('div', { class: 'prompt' });
   private toasts = h('div', { class: 'toasts' });
@@ -16,6 +18,7 @@ export class Hud {
   private pauseBtn = h('button', { class: 'icon-btn', type: 'button', 'aria-label': '잠깐 멈추기', text: '⏸' });
   private promptText = '';
   onPause: () => void = () => {};
+  onSatchel: () => void = () => {};
   onPromptClick: () => void = () => {};
 
   constructor(root: HTMLElement) {
@@ -23,10 +26,16 @@ export class Hud {
       'div',
       { class: 'hud' },
       this.hurt,
-      h('div', { class: 'hud-top' }, h('div', { class: 'hud-left' }, this.hearts, this.coins), this.objective, this.pauseBtn),
+      h('div', { class: 'hud-top' }, h('div', { class: 'hud-left' }, this.hearts, this.coins, this.satchel, this.guard), this.objective, this.pauseBtn),
       this.extra,
       this.toasts,
     );
+    this.satchel.addEventListener('click', () => this.onSatchel());
+    this.satchel.addEventListener('keydown', (event) => {
+      if (event.code !== 'Space') return;
+      event.preventDefault();
+      if (!event.repeat) this.satchel.click();
+    });
     this.pauseBtn.addEventListener('click', () => this.onPause());
     this.prompt.addEventListener('click', () => this.onPromptClick());
     this.el.style.display = 'none';
@@ -52,6 +61,12 @@ export class Hud {
       void this.coins.offsetWidth;
       this.coins.classList.add('bump');
     }
+  }
+
+  setSatchel(count: number | null, guarded = false) {
+    this.satchel.hidden = count === null;
+    this.satchel.textContent = count === null ? '' : `🎒 가방 ${count}`;
+    this.guard.hidden = !guarded;
   }
 
   setObjective(text: string | null, done = false) {

@@ -65,7 +65,7 @@ export abstract class ChapterStage implements Stage, RunnerHost {
 
   unblock() {
     this.blocked = Math.max(0, this.blocked - 1);
-    if (this.blocked === 0) this.svc.input.enabled = true;
+    if (this.blocked === 0 && !this.signal.aborted) this.svc.input.enabled = true;
   }
 
   abstract update(dt: number, input: InputFrame): void;

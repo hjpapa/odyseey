@@ -28,12 +28,19 @@ function choice(base: Omit<ChoiceQuestion, 'kind' | 'choices' | 'answerIndex'>, 
   return { ...base, kind: 'choice', choices, answerIndex: choices.indexOf(answer) };
 }
 
-/** 학년에 맞는 영어 문제 방식 */
+/** 학년과 낱말 길이에 맞는 방식. 반복을 피할 때도 이 범위 안에서 고른다. */
+export function englishModesFor(grade: Grade, word: EnglishWord): EnglishMode[] {
+  const modes: EnglishMode[] = ['meaning', 'word'];
+  const single = !word.word.includes(' ');
+  if ((grade === 2 && single && word.word.length <= 5) || (grade === 3 && single)) modes.push('spell');
+  return modes;
+}
+
 export function englishModeFor(grade: Grade, word: EnglishWord, rng: Rng): EnglishMode {
-  const short = word.word.length <= 5 && !word.word.includes(' ');
+  const spelling = englishModesFor(grade, word).includes('spell');
   if (grade === 1) return rng.chance(0.5) ? 'meaning' : 'word';
-  if (grade === 2) return short && rng.chance(0.4) ? 'spell' : rng.chance(0.5) ? 'meaning' : 'word';
-  return !word.word.includes(' ') && rng.chance(0.5) ? 'spell' : rng.chance(0.5) ? 'meaning' : 'word';
+  if (grade === 2) return spelling && rng.chance(0.4) ? 'spell' : rng.chance(0.5) ? 'meaning' : 'word';
+  return spelling && rng.chance(0.5) ? 'spell' : rng.chance(0.5) ? 'meaning' : 'word';
 }
 
 export function englishQuestion(word: EnglishWord, mode: EnglishMode, pool: EnglishWord[], grade: Grade, rng: Rng): Question {

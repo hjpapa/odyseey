@@ -1,0 +1,32 @@
+.satchel-trigger[hidden], .satchel-guard[hidden] { display: none; }
+.satchel-trigger {
+  align-self: flex-start;
+  justify-content: center;
+  min-height: 44px;
+  border: 2px solid #dfba5b;
+  background: #fff2bd;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.satchel-trigger:focus-visible { outline: 3px solid var(--sea); }
+.satchel-guard { align-self: flex-start; color: #265a47; background: #e4f4df; }
+.satchel-screen { z-index: 5; }
+.satchel-card { width: min(460px, 100%); overflow-y: auto; }
+.satchel-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 8px;
+  border-radius: 14px;
+  background: #eff5fb;
+  text-align: left;
+}
+.satchel-item strong { font-size: calc(18px * var(--t)); font-weight: 400; }
+.satchel-card .satchel-item p { margin: 3px 0 0; font-size: calc(15px * var(--t)); line-height: 1.25; }
+.satchel-icon { font-size: 25px; }
+.satchel-count { white-space: nowrap; color: #315979; }
+.satchel-card .btn { min-height: 44px; }
+.satchel-card .btn[aria-disabled="true"] { background: #e5e9ed; box-shadow: 0 4px 0 #c3cbd2; color: #455263; }
+.satchel-card .satchel-status { min-height: 1.4em; font-size: calc(17px * var(--t)); color: #315979; }

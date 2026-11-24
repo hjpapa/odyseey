@@ -7,7 +7,22 @@ import { qualityTier } from '../core/quality';
 
 export type Mood = 'day' | 'memory' | 'storm' | 'dusk';
 
-const MOODS: Record<Mood, { top: string; bottom: string; fog: string; fogNear: number; fogFar: number; hemiSky: string; hemiGround: string; hemi: number; sun: string; sunI: number; water: string; waveAmp: number }> = {
+export interface Atmosphere {
+  top: string;
+  bottom: string;
+  fog: string;
+  fogNear: number;
+  fogFar: number;
+  hemiSky: string;
+  hemiGround: string;
+  hemi: number;
+  sun: string;
+  sunI: number;
+  water: string;
+  waveAmp: number;
+}
+
+const MOODS: Record<Mood, Atmosphere> = {
   day: { top: '#3d9bf0', bottom: '#d8f1ff', fog: '#d8f1ff', fogNear: 80, fogFar: 260, hemiSky: '#dff3ff', hemiGround: '#e9d9a8', hemi: 1.3, sun: '#fff1d6', sunI: 2.4, water: '#2a9df4', waveAmp: 1 },
   memory: { top: '#7a6fd6', bottom: '#ffd3c4', fog: '#f6cdd0', fogNear: 70, fogFar: 230, hemiSky: '#ffe3f0', hemiGround: '#d9c3a0', hemi: 1.25, sun: '#ffd9b0', sunI: 2.2, water: '#5b8fd8', waveAmp: 0.8 },
   storm: { top: '#2b3550', bottom: '#5d6b80', fog: '#4b586c', fogNear: 30, fogFar: 150, hemiSky: '#8fa0b8', hemiGround: '#3a4250', hemi: 1.1, sun: '#c9d6ea', sunI: 1.2, water: '#2b5f86', waveAmp: 2.2 },
@@ -42,8 +57,8 @@ export function waterMaterial(color: string | Color, simple: boolean): Material 
     : new MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.05, flatShading: true });
 }
 
-export function createEnvironment(scene: Scene, mood: Mood): Environment {
-  const m = MOODS[mood];
+export function createEnvironment(scene: Scene, mood: Mood, atmosphere: Partial<Atmosphere> = {}): Environment {
+  const m = { ...MOODS[mood], ...atmosphere };
   scene.fog = new Fog(m.fog, m.fogNear, m.fogFar);
   scene.background = new Color(m.bottom);
 

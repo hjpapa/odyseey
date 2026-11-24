@@ -1,7 +1,6 @@
 /**
- * 학습 엔진 — 퀴즈 자리(QuizSlot)에 맞는 문제를 골라 보여 주고, 결과를 복습 상자에 기록한다.
- * - 틀려도 벌은 없다: 힌트 → 다시 도전 → 그래도 어려우면 정답과 설명을 보고 넘어간다.
- * - 틀린 문제는 복습 목록에 들어가 나중에 다시 나온다 (라이트너 상자 1~3).
+ * 학습 엔진 — 이야기 범위와 복습을 유지하면서 최근에 낸 항목·형식을 되풀이하지 않는다.
+ * 틀린 문제는 복습 상자에 남기고, 잠시 다른 문제를 본 뒤 다시 만난다.
  */
 import {
   SUBJECTS,
@@ -12,7 +11,11 @@ import { createRng, type Rng } from '../core/rng';
 import type { LearningProgress } from '../game/save';
 import { englishWords, hanjaList, mannersScenes } from './data';
 import { generateClock, generateMath } from './generators';
-import { englishModeFor, englishQuestion, hanjaQuestion, mannersQuestion, type EnglishMode, type HanjaMode } from './builders';
+import {
+  englishModeFor, englishModesFor, englishQuestion, hanjaQuestion, mannersQuestion,
+  type EnglishMode, type HanjaMode,
+} from './builders';
+import { storyOrderQuestion } from './storyOrder';
 
 export interface PresentContext {
   placement: QuizPlacement;
@@ -33,7 +36,6 @@ export interface LearningData {
 
 export interface LearningEngineOptions {
   getGrade(): Grade;
-  /** 저장 데이터 안의 진행 상황 (직접 고쳐 쓴다) */
   progress(): LearningProgress;
   onChange(): void;
   presenter: QuizPresenter;
@@ -44,16 +46,18 @@ export interface LearningEngineOptions {
 
 const REVIEW_CHANCE = 0.35;
 const MAX_REVIEW = 30;
-const RECENT = 8;
+const RECENT = 12;
 
 export class LearningEngine implements LearningApi {
   private recent: string[] = [];
+  private activeProgress: LearningProgress | null = null;
   private data: LearningData;
   private random: () => number;
 
   constructor(private o: LearningEngineOptions) {
     this.data = o.data ?? { english: englishWords, hanja: hanjaList, manners: mannersScenes };
     this.random = o.random ?? Math.random;
+    this.currentProgress();
   }
 
   async ask(req: AskRequest): Promise<AskResult> {
@@ -76,22 +80,30 @@ export class LearningEngine implements LearningApi {
     return { correct: true, firstTry, questionIds };
   }
 
-  /** 다음 문제 고르기 */
   next(slot: QuizSlot): Question {
+    this.currentProgress();
     const grade = this.o.getGrade();
     const rng = createRng(Math.floor(this.random() * 2 ** 31));
-    // 이야기에 맞춘 자리(문장형·주제·지정 항목·형식)는 그 맛을 살려 새 문제로, 일반 자리에서만 복습을 섞는다
     const tailored = !!(slot.ids?.length || slot.mathTemplate || slot.topic || slot.kind || slot.clockType);
-    if (!tailored && rng.next() < REVIEW_CHANCE) {
-      const review = this.fromReview(slot.subject, rng);
-      if (review) return review;
+    let question: Question | null = null;
+    if (!tailored && rng.next() < REVIEW_CHANCE) question = this.fromReview(slot.subject, rng);
+    if (!question) {
+      question = this.fresh(slot, grade, rng) ?? generateMath({ grade, seed: Math.floor(rng.next() * 1e9) });
+      if (slot.subject === 'math' || slot.subject === 'clock' || question.kind === 'order') {
+        // 생성기만 다시 뽑는다. 고정 단어·주제 범위는 fresh의 항목 선택에서 지킨다.
+        for (let attempt = 1; attempt < RECENT * 2 && this.lastSeen(question.id) >= 0; attempt++) {
+          const candidate = this.fresh(slot, grade, rng);
+          if (!candidate) break;
+          if (this.lastSeen(candidate.id) < this.lastSeen(question.id)) question = candidate;
+        }
+      }
     }
-    return this.fresh(slot, grade, rng) ?? generateMath({ grade, seed: Math.floor(rng.next() * 1e9) });
+    this.remember(question.id);
+    return question;
   }
 
-  /** 결과 기록 — 복습 상자와 통계 */
   record(q: Question, firstTry: boolean): void {
-    const p = this.o.progress();
+    const p = this.currentProgress();
     const st = (p.stats[q.subject] ??= { total: 0, firstTry: 0 });
     st.total++;
     if (firstTry) st.firstTry++;
@@ -99,18 +111,18 @@ export class LearningEngine implements LearningApi {
     p.boxes[q.id] = firstTry ? Math.min(3, box + 1) : 1;
     p.review = p.review.filter((r) => r.id !== q.id);
     if (!firstTry) {
-      const generated = q.subject === 'math' || q.subject === 'clock';
+      const generated = q.subject === 'math' || q.subject === 'clock' || q.kind === 'order';
       p.review.push({ subject: q.subject, id: q.id, grade: q.grade, question: generated ? q : undefined });
       if (p.review.length > MAX_REVIEW) p.review.splice(0, p.review.length - MAX_REVIEW);
     }
-    this.recent.push(q.id);
-    if (this.recent.length > RECENT) this.recent.shift();
+    this.remember(q.id);
+    p.recentQuestionIds = [...this.recent];
     this.o.onChange();
   }
 
-  /** 정답률이 낮은 과목을 조금 더 자주 (부엉이 신전 등 즉석 출제) */
+  /** 정답률이 낮은 과목을 조금 더 자주 고른다. */
   pickSubject(): Subject {
-    const p = this.o.progress();
+    const p = this.currentProgress();
     const weights = SUBJECTS.map((s) => {
       const st = p.stats[s];
       const rate = st && st.total > 0 ? st.firstTry / st.total : 0.5;
@@ -124,23 +136,61 @@ export class LearningEngine implements LearningApi {
     return SUBJECTS[0];
   }
 
+  private currentProgress(): LearningProgress {
+    const progress = this.o.progress();
+    if (progress !== this.activeProgress) {
+      this.activeProgress = progress;
+      this.recent = [];
+      for (const id of (progress.recentQuestionIds ?? []).slice(-RECENT)) this.remember(id);
+    }
+    return progress;
+  }
+
+  private remember(id: string): void {
+    this.recent = this.recent.filter((seen) => seen !== id);
+    this.recent.push(id);
+    if (this.recent.length > RECENT) this.recent.shift();
+  }
+
+  private lastSeen(id: string): number {
+    for (let i = this.recent.length - 1; i >= 0; i--) {
+      if (this.recent[i] === id || this.recent[i].startsWith(id + ':')) return i;
+    }
+    return -1;
+  }
+
+  /** 최근에 안 낸 후보를 먼저, 모두 냈다면 가장 오래전에 만난 후보를 고른다. */
+  private available<T>(pool: T[], idOf: (item: T) => string): T[] {
+    const ranks = pool.map((item) => this.lastSeen(idOf(item)));
+    const oldest = Math.min(...ranks);
+    return pool.filter((_, index) => ranks[index] === oldest);
+  }
+
+  private variedMode<T extends string>(preferred: T, modes: T[], idOf: (mode: T) => string): T {
+    const choices = this.available(modes, idOf);
+    return choices.includes(preferred) ? preferred : choices[0];
+  }
+
   private fromReview(subject: Subject, rng: Rng): Question | null {
-    const items = this.o.progress().review.filter((r) => r.subject === subject && !this.recent.includes(r.id));
-    if (items.length === 0) return null;
+    const items = this.currentProgress().review.filter((item) => {
+      const content = subject === 'english' || subject === 'hanja' ? item.id.split(':')[0] : item.id;
+      return item.subject === subject && this.lastSeen(content) < 0;
+    });
+    if (!items.length) return null;
     const item = rng.pick(items);
     if (item.question) return reshuffle(item.question, rng);
     const [key, mode] = item.id.split(':') as [string, string | undefined];
     if (subject === 'english') {
-      const w = this.data.english.find((x) => x.id === key);
-      return w ? englishQuestion(w, (mode as EnglishMode) ?? 'meaning', this.data.english, item.grade, rng) : null;
+      const word = this.data.english.find((entry) => entry.id === key);
+      return word ? englishQuestion(word, (mode as EnglishMode) ?? 'meaning', this.data.english, item.grade, rng) : null;
     }
     if (subject === 'hanja') {
-      const h = this.data.hanja.find((x) => x.id === key);
-      return h ? hanjaQuestion(h, (mode as HanjaMode) ?? 'hunEum', this.data.hanja, item.grade, rng) : null;
+      const entry = this.data.hanja.find((value) => value.id === key);
+      return entry ? hanjaQuestion(entry, (mode as HanjaMode) ?? 'hunEum', this.data.hanja, item.grade, rng) : null;
     }
     if (subject === 'manners') {
-      const m = this.data.manners.find((x) => x.id === key);
-      return m ? mannersQuestion(m, item.grade) : null;
+      const entry = this.data.manners.find((value) => value.id === key);
+      return entry ? reshuffle(mannersQuestion(entry, item.grade), rng) : null;
     }
     return null;
   }
@@ -153,63 +203,68 @@ export class LearningEngine implements LearningApi {
       case 'clock':
         return generateClock({ grade, seed, type: slot.clockType ?? (slot.kind === 'clockSet' ? 'set' : undefined) });
       case 'english': {
-        const pool = this.pool(this.data.english, slot, grade, (w) => w.topic);
-        const w = this.choose(pool, rng, (x) => x.id);
-        if (!w) return null;
-        const mode: EnglishMode =
-          slot.kind === 'spell' ? 'spell' : slot.kind === 'choice' ? (rng.chance(0.5) ? 'meaning' : 'word') : englishModeFor(grade, w, rng);
-        return englishQuestion(w, mode, this.data.english, grade, rng);
+        const pool = this.pool(this.data.english, slot, grade, (word) => word.topic);
+        const word = this.choose(pool, rng, (entry) => entry.id);
+        if (!word) return null;
+        const modes: EnglishMode[] = slot.kind === 'spell' ? ['spell']
+          : slot.kind === 'choice' ? ['meaning', 'word'] : englishModesFor(grade, word);
+        const preferred: EnglishMode = slot.kind === 'spell' ? 'spell'
+          : slot.kind === 'choice' ? (rng.chance(0.5) ? 'meaning' : 'word') : englishModeFor(grade, word, rng);
+        const mode = this.variedMode(preferred, modes, (value) => word.id + ':' + value);
+        return englishQuestion(word, mode, this.data.english, grade, rng);
       }
       case 'hanja': {
         const pool = this.pool(this.data.hanja, slot, grade, () => undefined);
-        const h = this.choose(pool, rng, (x) => x.id);
-        if (!h) return null;
-        const mode: HanjaMode = rng.chance(grade === 1 ? 0.7 : 0.5) ? 'hunEum' : 'find';
-        return hanjaQuestion(h, mode, this.data.hanja, grade, rng);
+        const entry = this.choose(pool, rng, (value) => value.id);
+        if (!entry) return null;
+        const mode = this.variedMode<HanjaMode>(rng.chance(grade === 1 ? 0.7 : 0.5) ? 'hunEum' : 'find',
+          ['hunEum', 'find'], (value) => entry.id + ':' + value);
+        return hanjaQuestion(entry, mode, this.data.hanja, grade, rng);
       }
       case 'manners': {
-        const pool = this.pool(this.data.manners, slot, grade, (m) => m.category);
-        const m = this.choose(pool, rng, (x) => x.id);
-        return m ? mannersQuestion(m, grade) : null;
+        if (slot.id === 'story-order' && slot.kind === 'order' && !slot.ids?.length) return storyOrderQuestion(grade, rng);
+        const pool = this.pool(this.data.manners, slot, grade, (entry) => entry.category);
+        const entry = this.choose(pool, rng, (value) => value.id);
+        return entry ? reshuffle(mannersQuestion(entry, grade), rng) : null;
       }
     }
   }
 
-  /** 슬롯 조건(ids → topic → 학년)으로 후보 좁히기. 너무 좁으면 단계적으로 넓힌다 */
-  private pool<T extends { id: string; grade: Grade }>(all: T[], slot: QuizSlot, grade: Grade, topicOf: (x: T) => string | undefined): T[] {
+  private pool<T extends { id: string; grade: Grade }>(all: T[], slot: QuizSlot, grade: Grade, topicOf: (item: T) => string | undefined): T[] {
     if (slot.ids?.length) {
-      const fixed = all.filter((x) => slot.ids!.includes(x.id));
+      const fixed = all.filter((item) => slot.ids!.includes(item.id));
       if (fixed.length) return fixed;
     }
-    let list = slot.topic ? all.filter((x) => topicOf(x) === slot.topic) : all;
-    if (list.length === 0) list = all;
-    const byGrade = list.filter((x) => x.grade <= grade);
+    let list = slot.topic ? all.filter((item) => topicOf(item) === slot.topic) : all;
+    if (!list.length) list = all;
+    const byGrade = list.filter((item) => item.grade <= grade);
     return byGrade.length ? byGrade : list;
   }
 
-  /** 틀린 것·처음 보는 것을 먼저, 방금 낸 것은 피해서 */
-  private choose<T>(pool: T[], rng: Rng, idOf: (x: T) => string): T | null {
-    if (pool.length === 0) return null;
-    const boxes = this.o.progress().boxes;
-    const weightOf = (x: T) => {
-      const id = idOf(x);
-      const box = Object.entries(boxes).find(([k]) => k === id || k.startsWith(`${id}:`))?.[1];
-      let w = box === undefined ? 2 : box === 1 ? 3 : box === 2 ? 1 : 0.5;
-      if (this.recent.some((r) => r === id || r.startsWith(`${id}:`))) w *= 0.05;
-      return w;
-    };
-    const weights = pool.map(weightOf);
+  private choose<T>(pool: T[], rng: Rng, idOf: (item: T) => string): T | null {
+    if (!pool.length) return null;
+    const candidates = this.available(pool, idOf);
+    const boxes = Object.entries(this.currentProgress().boxes);
+    const weights = candidates.map((item) => {
+      const id = idOf(item);
+      const levels = boxes.filter(([key]) => key === id || key.startsWith(id + ':')).map(([, value]) => value);
+      const box = levels.length ? Math.min(...levels) : undefined;
+      return box === undefined ? 2 : box === 1 ? 3 : box === 2 ? 1 : 0.5;
+    });
     let r = rng.next() * weights.reduce((a, b) => a + b, 0);
-    for (let i = 0; i < pool.length; i++) {
+    for (let i = 0; i < candidates.length; i++) {
       r -= weights[i];
-      if (r <= 0) return pool[i];
+      if (r <= 0) return candidates[i];
     }
-    return pool[pool.length - 1];
+    return candidates[candidates.length - 1];
   }
 }
 
-/** 저장해 둔 보기 문제는 보기 순서를 다시 섞어서 낸다 */
 function reshuffle(q: Question, rng: Rng): Question {
+  if (q.kind === 'order') {
+    const indices = rng.shuffle(q.items.map((_, index) => index));
+    return { ...q, items: indices.map((index) => q.items[index]), answerOrder: q.answerOrder.map((index) => indices.indexOf(index)) };
+  }
   if (q.kind !== 'choice') return q;
   const answer = q.choices[q.answerIndex];
   const choices = rng.shuffle(q.choices);

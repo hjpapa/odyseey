@@ -40,6 +40,8 @@ export class Player {
   hp = 5;
   maxHp = 5;
   invuln = 0;
+  guarded = false;
+  onGuard: () => void = () => {};
   /** 조작 잠금 (대화·퀴즈 중) */
   frozen = false;
   private vel = new Vector3();
@@ -203,6 +205,13 @@ export class Player {
   /** 맞음 — 구르는 중이거나 무적이면 무시. 실제로 맞았으면 true */
   damage(n: number, from: Vector3): boolean {
     if (this.invuln > 0 || this.rollT >= 0 || this.hp <= 0) return false;
+    if (this.guarded) {
+      this.guarded = false;
+      this.invuln = 1.2;
+      this.audio.sfx('shield_block');
+      this.onGuard();
+      return false;
+    }
     this.hp = Math.max(0, this.hp - n);
     this.invuln = 1.2;
     const away = this.body.pos.clone().sub(from).setY(0);
