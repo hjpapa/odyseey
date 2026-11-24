@@ -35,8 +35,10 @@ const FLORA: Partial<Record<IslandId, Flora>> = {
   lotus: { density: 1, props: ['lotus', 'lotus', 'flowerPatch', 'bush'] },
   aeolia: { density: 0.6, props: ['grassTuft', 'grassTuft', 'flowerPatch'] },
   laestrygonia: { density: 0.45, props: ['grassTuft', 'bush'] },
-  aeaea: { density: 0.85, props: ['molyFlower', 'molyFlower', 'flowerPatch', 'bush'] },
-  underworld: { density: 0.4, props: ['grassTuft', 'grassTuft', 'torch'] },
+  // 몰리(욜리꽃)는 7장의 찾을 물건이라 장식으로 흩뿌리지 않는다 — 똑같이 생긴 가짜가 생긴다
+  aeaea: { density: 0.85, props: ['flowerPatch', 'flowerPatch', 'bush', 'grassTuft'] },
+  // 횃불은 그림자 나라의 길 안내라 장식으로 흩뿌리지 않는다
+  underworld: { density: 0.4, props: ['grassTuft', 'grassTuft', 'bush'] },
   thrinacia: { density: 0.75, props: ['grassTuft', 'grassTuft', 'flowerPatch'] },
   sirens: { density: 0.45, props: ['grassTuft', 'grassTuft', 'flowerPatch'] },
   scheria: { density: 0.9, props: ['flowerPatch', 'flowerPatch', 'bush'] },
