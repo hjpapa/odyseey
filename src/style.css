@@ -1192,7 +1192,7 @@ body {
 .hub-story-text { font-size: calc(20px * var(--t)); line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
 .hub-story-reflect { padding: 12px; border-radius: 12px; background: #eaf4e2; color: #496136; font-size: calc(17px * var(--t)); line-height: 1.5; }
 .hub-story-note, .hub-story-source { display: block; margin: 10px 0; font-size: calc(13px * var(--t)); line-height: 1.5; color: #71665a; overflow-wrap: anywhere; }
-.hub-story-source { color: #315b9a; }
+.hub-story-source { color: #6b6358; }
 .hub-story-reader > .btn { display: block; min-height: 48px; margin: 18px auto 0; }
 @media (max-width: 520px) {
   .hub-mast .hub-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; width: 100%; padding: 6px 10px; font-size: calc(18px * var(--t)); }
@@ -1210,7 +1210,7 @@ body {
   .hub-mast { gap: 4px; }
   .hub-mast .hub-top { padding: 3px 9px; font-size: calc(16px * var(--t)); }
   .hub-mast .hub-top .btn { min-height: 36px; padding: 4px 9px; font-size: calc(14px * var(--t)); }
-  .hub-route-stop { flex-basis: 112px; min-height: 44px; gap: 0 4px; padding: 4px 8px; }
-  .hub-legend { display: none; }
+  /* 낮은 화면에서는 항로 줄이 섬을 가린다 — 아래 패널의 ◀ ▶ 로 고른다 */
+  .hub-route, .hub-legend { display: none; }
   .hub-story-text { font-size: calc(17px * var(--t)); line-height: 1.5; }
 }

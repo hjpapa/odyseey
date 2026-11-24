@@ -37,7 +37,9 @@ export function openSatchel(
     }
     life.signal.addEventListener('abort', () => {
       screen.remove();
-      if (!signal.aborted && opener?.isConnected) opener.focus();
+      // HUD 의 가방 버튼으로는 포커스를 돌려주지 않는다 — 돌려주면 다음 Space(점프)가 가방을 다시 연다
+      if (!signal.aborted && opener?.isConnected && !opener.closest('.hud')) opener.focus();
+      else opener?.blur();
       resolve();
     }, { once: true });
     close.addEventListener('click', () => life.abort(), { signal: life.signal });

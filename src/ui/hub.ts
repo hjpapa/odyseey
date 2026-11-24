@@ -106,8 +106,8 @@ export function openHub(root: HTMLElement, opts: HubOptions): Promise<HubChoice>
         ...story.paragraphs.map((text) => h('p', { class: 'hub-story-text', text })),
         h('p', { class: 'hub-story-reflect', text: '💭 ' + story.reflect }),
         h('p', { class: 'hub-story-note', text: '원작의 한 장면을 쉬운 말로 다시 썼어요.' }),
-        h('a', { class: 'hub-story-source', href: story.source.url, target: '_blank', rel: 'noopener noreferrer',
-          text: '출처 · 호메로스 『오디세이아』 ' + story.source.passage + ' · Samuel Butler 번역 ↗' }),
+        // 출처는 글로만 — 아이가 '지도로 돌아가기' 대신 눌러 영어 웹 페이지로 나가지 않게 (주소는 데이터에 남겨 둔다)
+        h('p', { class: 'hub-story-source', text: '출처 · 호메로스 『오디세이아』 ' + story.source.passage + ' · Samuel Butler 번역' }),
         close));
       mast.inert = true;
       panel.inert = true;
