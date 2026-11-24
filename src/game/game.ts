@@ -158,7 +158,7 @@ export class Game {
   /** 한 프레임 진행 — 실제 루프와 개발용 debugStep 이 같이 쓴다 */
   private step(dt: number, input: InputFrame) {
     if (input.pause && this.chapterStage && !this.paused) void this.openPause();
-    if (!this.stage || this.paused || this.stageComplete) return;
+    if (!this.stage || this.paused || this.stageComplete || (this.stage instanceof IslandStage && this.stage.satchelOpen)) return;
     this.stage.update(dt, input);
     if (this.chapterStage) this.countPlay(dt);
   }
@@ -284,6 +284,7 @@ export class Game {
     this.paused = false;
     this.clearOverlays();
     this.setStage(new TitleStage(this.svc.save.data?.avatar));
+    void this.svc.ui.screens.fade(false, 0);
     this.playBgm('title');
     const data = this.svc.save.data;
     const no = data ? CHAPTER_IDS.indexOf(data.chapter) + 1 : 0;
@@ -458,7 +459,7 @@ export class Game {
       });
     }
     const start = chapters[focus ?? data.chapter]?.island ?? route[0];
-    const hub = new HubStage(hubIslands, start);
+    const hub = new HubStage(hubIslands, start, { completed: data.completed });
     this.setStage(hub);
     let memoryMusic = views.find((v) => v.id === start)?.memory ?? false;
     this.playBgm(memoryMusic ? 'memorySea' : 'sailing');
@@ -587,8 +588,11 @@ export class Game {
     this.setStage(stage);
     this.playBgm(ch.bgm.explore);
     await ui.screens.fade(false, 300);
-    await ui.dialogue.titleCard(ch);
-    stage.begin();
+    const ready = await Promise.race([
+      ui.dialogue.titleCard(ch).then(() => true),
+      stage.result.then(() => false),
+    ]);
+    if (ready) stage.begin();
     return stage;
   }
 
@@ -596,7 +600,7 @@ export class Game {
 
   private async openPause() {
     const stage = this.chapterStage;
-    if (this.paused || !stage) return;
+    if (this.paused || !stage || (stage instanceof IslandStage && stage.satchelOpen)) return;
     this.paused = true;
     this.svc.audio.sfx('ui_open');
     await this.svc.ui.screens.settings({

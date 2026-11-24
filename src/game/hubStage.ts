@@ -9,7 +9,7 @@ import {
   Raycaster, RingGeometry, Scene, Vector2, Vector3, type Material, type Object3D,
 } from 'three';
 import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import type { ChapterData, IslandId, IslandLayout, PropId } from '../types/contracts';
+import type { ChapterData, ChapterId, IslandId, IslandLayout, PropId } from '../types/contracts';
 import type { InputFrame } from '../core/input';
 import { toonMaterial } from '../core/placeholders';
 import { createEnvironment, type Environment } from '../world/environment';
@@ -18,6 +18,7 @@ import { makeProp } from '../world/props';
 import { PALETTES } from '../world/terrain';
 import { label } from '../play/effects';
 import { prefs } from './prefs';
+import { sideStoriesAt, sideStoryUnlocked } from '../story/sideStories';
 import type { ChapterState } from './progress';
 import type { Stage } from './services';
 
@@ -181,6 +182,8 @@ export class HubStage implements Stage {
   private picks: { id: IslandId; obj: Object3D }[] = [];
   private spots = new Map<IslandId, { pos: Vector3; radius: number; top: number }>();
   private tags = new Map<IslandId, CSS2DObject>();
+  private storyTags = new Map<IslandId, CSS2DObject>();
+  private storyBooks: Group[] = [];
   private ray = new Raycaster();
   private owned = { geos: [] as BufferGeometry[], mats: [] as Material[] };
   private portrait = false;
@@ -190,13 +193,19 @@ export class HubStage implements Stage {
   private trail: { line: Line; points: Vector3[] } | null = null;
   selected: IslandId;
 
-  constructor(private islands: HubIsland[], selected: IslandId, opts: { voyage?: boolean } = {}) {
+  constructor(private islands: HubIsland[], selected: IslandId, opts: { voyage?: boolean; completed?: readonly ChapterId[] } = {}) {
     this.voyage = !!opts.voyage;
     // 엔딩의 바닷길은 회상의 빛(분홍 노을) — 지나온 일을 떠올리는 장면
     this.env = createEnvironment(this.scene, this.voyage ? 'memory' : 'day');
     const pickMat = new MeshBasicMaterial({ visible: false });
     const mistMat = new MeshBasicMaterial({ color: '#ffb8dc', transparent: true, opacity: 0.35, depthWrite: false, side: DoubleSide });
     this.owned.mats.push(pickMat, mistMat);
+    const bookGeo = new BoxGeometry(1, 1, 1);
+    const bookCover = new MeshBasicMaterial({ color: '#b17c31' });
+    const bookPage = new MeshBasicMaterial({ color: '#fff6d7' });
+    const lockedBook = new MeshBasicMaterial({ color: '#97a5b6' });
+    this.owned.geos.push(bookGeo);
+    this.owned.mats.push(bookCover, bookPage, lockedBook);
 
     for (const isl of islands) {
       const L = isl.layout;
@@ -232,6 +241,39 @@ export class HubStage implements Stage {
       pick.position.set(pos.x, 3, pos.z);
       this.scene.add(pick);
       this.picks.push({ id: L.id, obj: pick });
+
+      // Small book beacons mark optional original-story stops beside the islands.
+      const stories = sideStoriesAt(L.id);
+      if (!this.voyage && stories.length) {
+        const ready = stories.filter((story) => sideStoryUnlocked(story, opts.completed ?? [])).length;
+        const book = new Group();
+        book.name = 'side-story-beacon-' + L.id;
+        book.position.set(pos.x + mini.radius + 2, 1.2, pos.z + mini.radius * 0.25);
+        const cover = new Mesh(bookGeo, ready ? bookCover : lockedBook);
+        cover.scale.set(2, 0.15, 1.5);
+        book.add(cover);
+        for (const side of [-1, 1]) {
+          const page = new Mesh(bookGeo, ready ? bookPage : lockedBook);
+          page.scale.set(0.86, 0.16, 1.32);
+          page.position.set(side * 0.47, 0.17, 0);
+          page.rotation.z = side * 0.13;
+          book.add(page);
+        }
+        this.scene.add(book);
+        this.storyBooks.push(book);
+        const storyTag = label(ready ? '📜 ' + ready + '/' + stories.length : '📜 🔒',
+          'nametag hub-story-tag' + (ready ? ' available' : ''));
+        storyTag.position.set(book.position.x, 3.5, book.position.z);
+        storyTag.element.setAttribute('aria-label', L.name + ' 원작 곁이야기 ' + ready + '편 열림');
+        this.scene.add(storyTag);
+        this.storyTags.set(L.id, storyTag);
+        const storyPickGeo = new CylinderGeometry(2.1, 2.1, 8, 10);
+        this.owned.geos.push(storyPickGeo);
+        const storyPick = new Mesh(storyPickGeo, pickMat);
+        storyPick.position.copy(book.position).setY(3);
+        this.scene.add(storyPick);
+        this.picks.push({ id: L.id, obj: storyPick });
+      }
     }
 
     // 항로 — 지나온 길은 금빛 실선, 앞으로 갈 길은 흰 점선 (엔딩에서는 배를 따라 그려진다)
@@ -321,6 +363,7 @@ export class HubStage implements Stage {
     this.ring.position.set(s.pos.x, 0.45, s.pos.z);
     this.ring.scale.setScalar(s.radius + 1.2);
     for (const [id, tag] of this.tags) tag.element.classList.toggle('selected', id === this.selected);
+    for (const [id, tag] of this.storyTags) tag.element.classList.toggle('selected', id === this.selected);
   }
 
   /** 다른 섬을 고르면 배가 그리로 간다 */
@@ -349,6 +392,10 @@ export class HubStage implements Stage {
     const t = this.t;
     this.env.follow(this.focus);
     this.env.update(t);
+    this.storyBooks.forEach((book, index) => {
+      book.position.y = 1.2 + (prefs.calm ? 0 : Math.sin(t * 1.2 + index) * 0.12);
+      book.rotation.y = prefs.calm ? 0 : Math.sin(t * 0.5 + index) * 0.1;
+    });
     if (this.sailT < 1) {
       this.sailT = Math.min(1, this.sailT + dt / this.sailDur);
       const k = this.sailT < 0.5 ? 2 * this.sailT * this.sailT : 1 - (-2 * this.sailT + 2) ** 2 / 2;

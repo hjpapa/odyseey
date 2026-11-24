@@ -10,6 +10,7 @@ import { buildTerrain, type Terrain } from './terrain';
 import { block } from '../core/placeholders';
 import { makeProp, SOLID_RADIUS } from './props';
 import { compactModel, mergeStatic } from './merge';
+import { createDestinationScenery, destinationAtmosphere, destinationFlora, softenSceneryShadows } from './islandScenery';
 
 export interface Collider {
   x: number;
@@ -51,7 +52,8 @@ export class IslandWorld {
     this.keyPoints = flatten.map((f) => f.pos);
     this.terrain = buildTerrain(L, flatten);
     this.scene.add(this.terrain.group);
-    this.env = createEnvironment(this.scene, mood);
+    this.env = createEnvironment(this.scene, mood, destinationAtmosphere(L.id));
+    this.scene.add(createDestinationScenery(L));
 
     const statics = new Group();
     for (const p of L.props) {
@@ -172,9 +174,10 @@ export class IslandWorld {
     const L = this.layout;
     const rng = createRng(L.terrain.seed + 77);
     const R = L.terrain.radius * 0.85;
-    const count = Math.round(L.terrain.radius * 0.9);
+    const flora = destinationFlora(L.id);
+    const count = Math.round(L.terrain.radius * flora.density);
     const avoid: XZ[] = [...this.keyPoints, ...L.props.map((p) => p.pos), ...L.collectibles.map((c) => c.pos)];
-    const flowery = L.terrain.palette === 'flower' || L.terrain.palette === 'tropical';
+
     let placed = 0;
     for (let tries = 0; tries < count * 6 && placed < count; tries++) {
       const a = rng.next() * Math.PI * 2;
@@ -184,8 +187,9 @@ export class IslandWorld {
       if (this.ground(x, z) < 1.5) continue;
       if (avoid.some((p) => Math.hypot(p[0] - x, p[1] - z) < 3.5)) continue;
       const roll = rng.next();
-      const id: PropId = roll < 0.4 ? 'grassTuft' : roll < (flowery ? 0.7 : 0.85) ? 'bush' : 'flowerPatch';
-      this.placeProp(id, [x, z], rng.next() * Math.PI * 2, 0.8 + rng.next() * 0.5, parent);
+      const id = flora.props[Math.floor(roll * flora.props.length)];
+      const decoration = this.placeProp(id, [x, z], rng.next() * Math.PI * 2, 0.8 + rng.next() * 0.5, parent);
+      softenSceneryShadows(decoration);
       placed++;
     }
   }

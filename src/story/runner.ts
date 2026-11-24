@@ -25,6 +25,8 @@ export interface RunnerHost {
   onObjectiveDone(o: Objective): void;
   /** 지금까지 주운 아이템 수 */
   inventory(item: string): number;
+  /** 목표가 켜지기 전에 이미 이곳에 서 있는 경우 */
+  atZone?(id: string): boolean;
   /** 퀴즈 자리 하나를 묻는다 */
   askSlot(slotId: string): Promise<void>;
   /** 지금 할 일과 상관없는 말 걸기 */
@@ -36,6 +38,7 @@ export class ChapterRunner {
   finished = false;
   progress = 0;
   private played = new Set<string>();
+  private openedGates = new Set<string>();
   private queue: Promise<void> = Promise.resolve();
   private resolveDone!: () => void;
   /** 장 끝 장면까지 모두 끝나면 풀린다 */
@@ -101,6 +104,7 @@ export class ChapterRunner {
         }
         return;
       case 'quiz':
+        this.openedGates.add(e.slot);
         if (o?.type === 'quiz' && o.target === e.slot) await this.complete();
         return;
       case 'minigame':
@@ -128,13 +132,14 @@ export class ChapterRunner {
     }
     this.host.onObjective(o, i);
     if (o.type === 'collect' || o.type === 'rescue') await this.checkCollect(o);
+    else if (o.type === 'reach' && o.target && this.host.atZone?.(o.target)) await this.complete();
     else if (o.type === 'quiz') {
       const slot = this.chapter.quizSlots.find((s) => s.id === o.target);
       // 지혜의 문은 문 앞에서, 그 밖의 퀴즈 목표는 바로 묻는다
       if (!slot || slot.placement !== 'gate') {
         if (slot) await this.host.askSlot(slot.id);
         await this.complete();
-      }
+      } else if (this.openedGates.has(slot.id)) await this.complete();
     }
   }
 

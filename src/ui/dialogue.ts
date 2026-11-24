@@ -93,6 +93,7 @@ export class DialogueUI {
       };
       start.addEventListener('click', finish, { once: true, signal: local.signal });
       window.addEventListener('keydown', (e) => {
+        if (e.defaultPrevented || document.hidden || this.root.querySelector('.screen.dim')) return;
         if (e.code === 'Enter' || e.code === 'Space') {
           e.preventDefault();
           finish();

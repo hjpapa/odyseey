@@ -2,6 +2,7 @@
  * 저장 데이터 (localStorage). 저장소를 못 쓰는 환경(사생활 보호 모드 등)에서도
  * 게임은 메모리로 계속 돌아가야 하므로 모든 접근을 try/catch 로 감싼다.
  */
+import { emptySupplies, normalizeSupplies, type Supplies } from './supplies';
 import {
   CHAPTER_IDS, DEFAULT_AVATAR, SUBJECTS,
   type AvatarCustomization, type ChapterId, type Grade, type Question, type Subject,
@@ -21,6 +22,8 @@ export interface LearningProgress {
   boxes: Record<string, number>;
   stats: Record<Subject, { total: number; firstTry: number }>;
   review: ReviewItem[];
+  /** 최근에 낸 문제를 다음 실행에서도 되풀이하지 않도록 기억한다. */
+  recentQuestionIds?: string[];
 }
 
 export interface SaveData {
@@ -37,6 +40,8 @@ export interface SaveData {
   shrines: string[];
   /** 꾸미기 상점에서 산 물건 id */
   owned: string[];
+  /** 보물상자에서 얻어 섬에서 쓰는 물건 */
+  supplies: Supplies;
   learning: LearningProgress;
   /** timeLimit: 한 번에 놀 시간(분) 알림, 0 이면 끔 */
   settings: { master: number; sfx: number; bgm: number; timeLimit: number };
@@ -65,6 +70,7 @@ export function newSave(grade: Grade): SaveData {
     opened: [],
     shrines: [],
     owned: [],
+    supplies: emptySupplies(),
     learning: emptyProgress(),
     settings: { master: 0.9, sfx: 0.8, bgm: 0.6, timeLimit: 0 },
     playSeconds: 0,
@@ -95,7 +101,12 @@ export function normalizeSave(raw: unknown): SaveData | null {
     opened: r.opened ?? [],
     shrines: r.shrines ?? [],
     owned: Array.isArray(r.owned) ? r.owned.filter((x) => typeof x === 'string') : [],
-    learning: { boxes: learning.boxes ?? {}, stats: progress.stats, review: learning.review ?? [] },
+    supplies: normalizeSupplies(r.supplies),
+    learning: {
+      boxes: learning.boxes ?? {}, stats: progress.stats, review: learning.review ?? [],
+      recentQuestionIds: Array.isArray(learning.recentQuestionIds)
+        ? learning.recentQuestionIds.filter((id): id is string => typeof id === 'string').slice(-12) : [],
+    },
     settings: {
       ...base.settings,
       ...(r.settings ?? {}),

@@ -25,6 +25,8 @@ import { BossFight, type BossArena, type BossHost } from '../play/bossFight';
 import { bossFactory } from '../enemies/bosses';
 import { ISLAND_MINIGAMES, MINIGAME_LABEL } from '../story/minigames';
 import { ChapterStage } from './chapterStage';
+import { chestSupply, SUPPLY_IDS, SUPPLY_INFO, useSupply } from './supplies';
+import { openSatchel } from '../ui/satchel';
 import { prefs } from './prefs';
 import type { Services } from './services';
 
@@ -79,6 +81,7 @@ export class IslandStage extends ChapterStage {
   private zonesInside = new Set<string>();
   private checkpoint = new Vector3();
   private busy = false;
+  satchelOpen = false;
   private respawning = false;
   private beacon: Group;
   private beaconArrow: Mesh;
@@ -119,6 +122,11 @@ export class IslandStage extends ChapterStage {
       svc.ui.hud.setHearts(hp, this.player.maxHp);
       svc.ui.hud.flashHurt();
     };
+    this.player.onGuard = () => {
+      this.refreshSatchel();
+      this.svc.ui.hud.toast('🦉 부엉이가 공격을 막아 줬어요!');
+      this.fx.burst(this.player.pos.clone().setY(this.player.pos.y + 1.2), '#ffe29a', 12, 3, 2);
+    };
     this.cam.snap(this.focus(), heading);
 
     this.buildNpcs();
@@ -145,11 +153,50 @@ export class IslandStage extends ChapterStage {
   }
 
   override begin() {
+    // 이전 장면의 HUD 정리가 끝난 뒤 이 장면이 가방 버튼을 맡는다.
+    this.svc.ui.hud.onSatchel = () => void this.showSatchel();
+    this.refreshSatchel();
     super.begin();
     const hint = this.svc.input.touchMode
       ? '왼쪽을 끌어 움직이고, ⚔️ 버튼으로 칼을 휘둘러요!'
       : 'WASD 이동 · Space 점프 · J 공격 · Shift 구르기 · E 말하기';
     this.svc.ui.hud.toast(hint, 4500);
+  }
+
+  atZone(id: string) {
+    const zone = this.layout.zones.find((z) => z.id === id);
+    return !!zone && Math.hypot(this.player.pos.x - zone.center[0], this.player.pos.z - zone.center[1]) < zone.radius;
+  }
+
+  private refreshSatchel() {
+    const supplies = this.svc.save.data?.supplies;
+    const count = supplies ? SUPPLY_IDS.reduce((total, id) => total + supplies[id], 0) : null;
+    this.svc.ui.hud.setSatchel(count, this.player.guarded);
+  }
+
+  private async showSatchel() {
+    const { save, ui, audio } = this.svc;
+    const supplies = save.data?.supplies;
+    if (!supplies || this.signal.aborted || this.isBlocked || this.runner.index < 0 || this.runner.finished || ui.root.querySelector('.screen.dim')) return;
+    this.satchelOpen = true;
+    this.block();
+    try {
+      audio.sfx('ui_open');
+      await openSatchel(ui.root, supplies, this.signal, (id) => {
+        const before = supplies[id];
+        const message = useSupply(supplies, id, this.player);
+        if (supplies[id] !== before) {
+          audio.sfx('pickup');
+          ui.hud.setHearts(this.player.hp, this.player.maxHp);
+          this.refreshSatchel();
+          save.touch();
+        }
+        return message;
+      });
+    } finally {
+      this.satchelOpen = false;
+      this.unblock();
+    }
   }
 
   focus() {
@@ -257,7 +304,7 @@ export class IslandStage extends ChapterStage {
 
   private buildChests() {
     const save = this.svc.save.data;
-    for (const c of this.layout.chests) {
+    for (const [index, c] of this.layout.chests.entries()) {
       const key = `${this.layout.id}:${c.id}`;
       let opened = save?.opened.includes(key) ?? false;
       const obj = this.world.placeProp('chest', c.pos, Math.atan2(-c.pos[0], -c.pos[1]), 1, this.scene);
@@ -270,7 +317,15 @@ export class IslandStage extends ChapterStage {
         act: async () => {
           opened = true;
           if (lid) this.lids.push({ lid, target: -1.9 });
-          this.svc.save.data?.opened.push(key);
+          const save = this.svc.save.data;
+          if (save) {
+            save.opened.push(key);
+            const id = chestSupply(index);
+            save.supplies[id]++;
+            this.refreshSatchel();
+            const item = SUPPLY_INFO[id];
+            this.svc.ui.hud.toast(item.icon + ' 가방에 넣었어요 · ' + item.name);
+          }
           this.svc.addCoins(c.coins);
           this.svc.audio.sfx('chest_open');
           this.fx.burst(obj.position.clone().setY(obj.position.y + 1), '#f6c343', 22, 4, 5);
@@ -679,6 +734,7 @@ export class IslandStage extends ChapterStage {
     this.block();
     this.hazards.clear();
     await this.svc.ui.screens.fade(true, 350);
+    if (this.signal.aborted) return;
     this.player.place(this.checkpoint.x, this.checkpoint.y, this.checkpoint.z);
     // 두 번 쓰러지면 아테나가 하트를 나눠 준다 (이 장이 끝날 때까지)
     this.falls++;
@@ -689,6 +745,7 @@ export class IslandStage extends ChapterStage {
     this.svc.ui.hud.setHearts(this.player.hp, this.player.maxHp);
     this.cam.snap(this.focus());
     await this.svc.ui.screens.fade(false, 350);
+    if (this.signal.aborted) return;
     this.unblock();
     this.respawning = false;
     this.svc.ui.hud.toast(blessed ? '🦉 아테나가 하트 2개를 나눠 줬어요!' : '다시 해 보자! 💪');
@@ -696,6 +753,8 @@ export class IslandStage extends ChapterStage {
 
   override dispose() {
     super.dispose();
+    this.svc.ui.hud.setSatchel(null);
+    this.svc.ui.hud.onSatchel = () => {};
     for (const npc of this.npcs.values()) npc.dispose();
     this.boss?.dispose();
     this.hazards.clear();
