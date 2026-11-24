@@ -335,9 +335,11 @@ export class SeaStage extends ChapterStage {
   }
 
   private async countdown() {
+    if (this.signal.aborted) return;
     this.started = true;
     this.svc.audio.playBgm(this.chapter.bgm.explore);
     for (const n of ['3', '2', '1', '출발! ⛵']) {
+      if (this.signal.aborted) return;
       this.svc.ui.hud.toast(n, 700);
       this.svc.audio.sfx('ui_click');
       await sleep(650);
@@ -829,15 +831,18 @@ export class SeaStage extends ChapterStage {
   }
 
   private async broken() {
+    if (this.signal.aborted) return;
     this.running = false;
     const canScarf = this.mode === 'runner' && !this.scarfUsed && this.layout.zones.some((z) => z.id === 'ino-scarf');
     if (canScarf) {
       this.scarfUsed = true;
       this.runner.emit({ type: 'zone', zone: 'ino-scarf' });
       await this.runner.idle();
+      if (this.signal.aborted) return;
       this.svc.ui.hud.toast('🧣 이노의 스카프! 뗏목이 다시 튼튼해졌어요', 2600);
     } else {
       await this.svc.ui.screens.fade(true, 350);
+      if (this.signal.aborted) return;
       this.fails++;
       this.z = this.lastCheckpoint;
       this.clearAhead();
@@ -850,12 +855,14 @@ export class SeaStage extends ChapterStage {
       }
       this.halted = false;
       await this.svc.ui.screens.fade(false, 350);
+      if (this.signal.aborted) return;
       this.svc.ui.hud.toast(this.fails >= 2 ? '🌊 바다가 조금 잔잔해졌어요. 천천히 가 봐요!' : '🚩 체크포인트에서 다시! 할 수 있어요 💪', 2400);
     }
     this.hp = MAX_HP;
     this.invuln = 2;
     this.svc.ui.hud.setHearts(this.hp, MAX_HP);
     await sleep(600);
+    if (this.signal.aborted) return;
     this.running = true;
   }
 
@@ -884,6 +891,7 @@ export class SeaStage extends ChapterStage {
   }
 
   private async finishRun() {
+    if (this.signal.aborted) return;
     this.finishing = true;
     this.running = false;
     this.clearAhead();
@@ -892,9 +900,11 @@ export class SeaStage extends ChapterStage {
     const start = this.z;
     const t0 = performance.now();
     while (performance.now() - t0 < 1500) {
+      if (this.signal.aborted) return;
       this.z = start + ((performance.now() - t0) / 1500) * 10;
       await sleep(16);
     }
+    if (this.signal.aborted) return;
     this.svc.ui.hud.setExtra(null);
     this.runner.emit({ type: 'minigame', id: 'waveRunner' });
   }

@@ -124,6 +124,7 @@ export abstract class ChapterStage implements Stage, RunnerHost {
    * @returns 모든 문제를 첫 시도에 맞혔는지
    */
   async ask(slot: QuizSlot | undefined, reason: QuizPlacement = slot?.placement ?? 'story'): Promise<boolean> {
+    if (this.ended || this.signal.aborted) return false;
     this.block();
     try {
       const r = slot

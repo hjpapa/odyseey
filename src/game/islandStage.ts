@@ -149,12 +149,13 @@ export class IslandStage extends ChapterStage {
     svc.ui.hud.setHearts(this.player.hp, this.player.maxHp);
     svc.ui.hud.setCoins(save?.coins ?? 0);
     svc.ui.hud.onPromptClick = () => this.tryInteract();
-    svc.ui.hud.onSatchel = () => void this.showSatchel();
-    this.refreshSatchel();
     svc.ui.touch.set('explore');
   }
 
   override begin() {
+    // 이전 장면의 HUD 정리가 끝난 뒤 이 장면이 가방 버튼을 맡는다.
+    this.svc.ui.hud.onSatchel = () => void this.showSatchel();
+    this.refreshSatchel();
     super.begin();
     const hint = this.svc.input.touchMode
       ? '왼쪽을 끌어 움직이고, ⚔️ 버튼으로 칼을 휘둘러요!'
@@ -754,7 +755,6 @@ export class IslandStage extends ChapterStage {
     super.dispose();
     this.svc.ui.hud.setSatchel(null);
     this.svc.ui.hud.onSatchel = () => {};
-    if (this.respawning) void this.svc.ui.screens.fade(false, 0);
     for (const npc of this.npcs.values()) npc.dispose();
     this.boss?.dispose();
     this.hazards.clear();

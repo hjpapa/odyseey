@@ -62,6 +62,18 @@ describe('UI와 게임 키보드 입력 분리', () => {
     expect(input.frame().pause).toBe(false);
   });
 
+  it('메뉴 버튼의 Space는 브라우저 동작에 맡기고 플레이 화면에서는 점프한다', () => {
+    const menuKey = new Event('keydown', { cancelable: true });
+    Object.assign(menuKey, { code: 'Space', repeat: false });
+    Object.defineProperty(menuKey, 'target', { value: { tagName: 'BUTTON', closest: () => ({}) } });
+    keyboard.dispatchEvent(menuKey);
+    expect(menuKey.defaultPrevented).toBe(false);
+    expect(input.frame().jump).toBe(false);
+
+    sendKey('Space');
+    expect(input.frame().jump).toBe(true);
+  });
+
   it('일반 이동은 유지되고 상호작용과 공격은 한 번씩 전달된다', () => {
     sendKey('KeyW');
     sendKey('KeyD');

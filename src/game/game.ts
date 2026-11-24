@@ -284,6 +284,7 @@ export class Game {
     this.paused = false;
     this.clearOverlays();
     this.setStage(new TitleStage(this.svc.save.data?.avatar));
+    void this.svc.ui.screens.fade(false, 0);
     this.playBgm('title');
     const data = this.svc.save.data;
     const no = data ? CHAPTER_IDS.indexOf(data.chapter) + 1 : 0;

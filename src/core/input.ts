@@ -119,6 +119,8 @@ export class Input {
     if (e.repeat && !e.code.startsWith('Key') && !e.code.startsWith('Arrow')) return;
     const target = e.target as HTMLElement | null;
     if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+    // 메뉴에서 포커스된 버튼의 Space는 브라우저가 클릭으로 처리한다.
+    if (e.code === 'Space' && target?.tagName === 'BUTTON' && target.closest('.screen, .skip-corner')) return;
     this.setTouchMode(false);
     this.keys.add(e.code);
     if (e.repeat) return;
